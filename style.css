@@ -119,7 +119,7 @@ section, h2, h3, h4, h5, h6 {
   padding: 0;
   background: #fff;
   max-height: 0;
-  overflow: hidden;
+  overflow-y: hidden;
   transition: max-height 0.3s ease-out;
   border-bottom: 1px solid #ccc;
 }
@@ -135,7 +135,9 @@ section, h2, h3, h4, h5, h6 {
 
 /* Expand the mobile menu when .open is toggled via JS */
 .mobile-nav-links.open {
-  max-height: 600px; /* adjust if your menu is taller */
+  /* Set a maximum height relative to the viewport, e.g., 80% of viewport height */
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 /* ---------------------------------------------------
