@@ -1,25 +1,38 @@
-/* Base */
-body {
+/* ---------------------------------------------------
+   BASE STYLES
+--------------------------------------------------- */
+html, body {
   margin: 0;
+  padding: 0;
   font-family: Arial, sans-serif;
-  color: #333;
   background: #fff;
+  color: #333;
 }
 
+/* This container centers and limits main content width */
 .container {
   max-width: 800px;
   margin: 0 auto;
   padding: 1em;
 }
 
-/* NAVIGATION */
+/* Ensure headings offset from sticky nav when using anchor links */
+section, h2, h3, h4, h5, h6 {
+  scroll-margin-top: 80px; /* Adjust to match nav height */
+}
+
+/* ---------------------------------------------------
+   NAVIGATION (STICKY NAV)
+--------------------------------------------------- */
 .navbar {
-  background: #fff;
-  border-bottom: 1px solid #ccc;
   position: sticky;
   top: 0;
   z-index: 999;
+  background: #fff;
+  border-bottom: 1px solid #ccc;
 }
+
+/* The nav content is centered and spaced */
 .nav-content {
   display: flex;
   align-items: center;
@@ -28,54 +41,79 @@ body {
   margin: 0 auto;
   padding: 0.5em 1em;
 }
+
+/* Logo image smaller on desktop */
 .logo img {
   height: 40px;
   width: auto;
 }
+
+/* ---------------------------------------------------
+   DESKTOP MENU (Hover Trigger)
+--------------------------------------------------- */
 .desktop-menu-trigger {
   position: relative;
+  display: inline-block; /* ensures no gap on hover */
   cursor: pointer;
   font-weight: bold;
   user-select: none;
   padding: 0.5em;
 }
+
+/* The dropdown itself */
 .desktop-dropdown {
   display: none;
   position: absolute;
-  right: 0;
-  top: 2.5em;
+  top: 100%;   /* directly below the trigger */
+  left: 0;     /* or right: 0 if you prefer right-aligned */
   background: #fff;
   border: 1px solid #ccc;
   list-style: none;
   margin: 0;
   padding: 0.5em;
-  min-width: 220px;
   z-index: 9999;
 
-  /* Make two columns on desktop */
+  /* Enough width so items don't wrap onto two lines */
+  min-width: 380px;
+
+  /* Create two columns for the menu items */
   columns: 2;
   column-gap: 1em;
+
+  /* Keep text on one line for each link (no wrap) */
+  white-space: nowrap;
 }
+
+/* Show dropdown on hover */
 .desktop-menu-trigger:hover .desktop-dropdown {
   display: block;
 }
+
+/* Each list item in the dropdown */
 .desktop-dropdown li {
   margin-bottom: 0.5em;
 }
+
+/* Links in the dropdown */
 .desktop-dropdown a {
-  text-decoration: none;
   color: #000;
+  text-decoration: none;
+  display: inline-block; /* keeps each link on one line */
 }
 .desktop-dropdown a:hover {
   text-decoration: underline;
 }
 
-/* Mobile Menu */
+/* ---------------------------------------------------
+   MOBILE MENU (Hamburger)
+--------------------------------------------------- */
 .menu-icon {
-  display: none;
+  display: none; /* hidden on desktop */
   font-size: 1.5em;
   cursor: pointer;
 }
+
+/* Collapsible list for mobile nav */
 .mobile-nav-links {
   list-style: none;
   margin: 0;
@@ -93,27 +131,37 @@ body {
   display: block;
   padding: 0.75em 1em;
   color: #000;
+  text-decoration: none;
 }
 
-/* Variation Classes (Hide by default) */
+/* Expand the mobile menu when .open is toggled via JS */
+.mobile-nav-links.open {
+  max-height: 600px; /* adjust if your menu is taller */
+}
+
+/* ---------------------------------------------------
+   RESPONSIVE BREAKPOINTS
+--------------------------------------------------- */
+@media (max-width: 768px) {
+  /* Hide desktop menu, show hamburger */
+  .desktop-menu-trigger {
+    display: none;
+  }
+  .menu-icon {
+    display: block;
+  }
+}
+
+@media (min-width: 769px) {
+  /* Hide mobile menu on desktop */
+  .mobile-nav-links {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------
+   VARIATION CLASSES (Hidden by Default)
+--------------------------------------------------- */
 .variation {
   display: none;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .menu-icon {
-    display: block; /* show hamburger on mobile */
-  }
-  .desktop-menu-trigger {
-    display: none; /* hide desktop dropdown trigger on mobile */
-  }
-  .mobile-nav-links.open {
-    max-height: 600px; /* enough to display all links */
-  }
-}
-@media (min-width: 769px) {
-  .mobile-nav-links {
-    display: none; /* hide mobile menu on desktop */
-  }
 }
