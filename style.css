@@ -1,105 +1,118 @@
-/* General page style */
+/* Base Styles */
 body {
-  font-family: Arial, sans-serif;
-  font-size: 16px;
-  line-height: 1.6;
-  color: #333;
   margin: 0;
-  background-color: #fff;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #333;
+  background: #fff;
+  line-height: 1.6;
 }
-
-/* Container to center content and limit width */
-.container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-/* Header with logo */
-header {
-  text-align: center;
-  padding: 20px;
-  background-color: #fff;
-  border-bottom: 2px solid #eee;
-}
-header img {
-  max-width: 250px;  /* Make sure logo is not too large */
-  height: auto;
-}
-
-/* Headings style */
-h2, h3 {
+h1, h2, h3 {
   color: #000;
-  margin-top: 1.5em;
-  margin-bottom: 0.5em;
-}
-h2 {
-  font-size: 1.5em;
-  border-bottom: 2px solid #eee;
-  padding-bottom: 0.2em;
-}
-h3 {
-  font-size: 1.2em;
   margin-top: 1em;
 }
-
-/* Paragraph spacing */
-p {
-  margin-bottom: 1em;
+.content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1em;
 }
 
-/* List styles */
-ul {
-  margin: 0 0 1em 1.2em;
+/* Navigation Bar */
+nav {
+  background: #fff;
+  border-bottom: 1px solid #ccc;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+nav .content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.menu-icon {
+  font-size: 1.5em;
+  cursor: pointer;
+  display: none;
+}
+.nav-links {
+  list-style: none;
+  margin: 0;
   padding: 0;
+  display: flex;
 }
-ul li {
+.nav-links li {
+  margin: 0;
+}
+.nav-links a {
+  display: block;
+  padding: 0.5em 1em;
+  text-decoration: none;
+  color: #000;
+}
+.nav-links a:hover {
+  background: #f0f0f0;
+}
+
+/* Banner Image */
+.banner-container {
+  text-align: center;
+}
+.banner {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Section Content */
+section {
+  margin-bottom: 2em;
+}
+section h2 {
+  margin-top: 2em;
+}
+ul {
+  padding-left: 1.2em;
+}
+li {
   margin-bottom: 0.5em;
 }
 
-/* Table of Contents list (no bullets for a cleaner look) */
-.toc {
-  list-style: none;
-  padding-left: 0;
-  margin-bottom: 2em;
+/* Responsive: Mobile Menu */
+@media (max-width: 768px) {
+  .menu-icon {
+    display: block;
+  }
+  .nav-links {
+    flex-direction: column;
+    width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+  }
+  .nav-links li {
+    text-align: center;
+    border-bottom: 1px solid #eee;
+  }
+  .nav-links a {
+    padding: 1em;
+  }
+  .nav-links.open {
+    max-height: 500px;
+  }
+  /* Allow nav content to wrap on mobile when expanded */
+  nav .content {
+    flex-wrap: wrap;
+  }
 }
-.toc li {
-  margin: 0.3em 0;
-}
-.toc a {
-  color: #000;
-  text-decoration: none;
-}
-.toc a:hover {
-  text-decoration: underline;
-}
-
-/* Link styles in content */
-a:link, a:visited {
-  color: #000;
-  text-decoration: underline;
-}
-a:hover {
-  color: #555;
-  text-decoration: underline;
-}
-
-/* Footer style */
-footer {
-  text-align: center;
-  padding: 10px 0;
-  color: #777;
-  font-size: 0.9em;
-}
-footer a {
-  color: #777;
-  text-decoration: none;
-}
-footer a:hover {
-  text-decoration: underline;
-}
-
-/* Smooth scrolling for anchor links */
-html {
-  scroll-behavior: smooth;
+@media (min-width: 769px) {
+  .nav-links {
+    display: flex;
+    max-height: none;
+    overflow: visible;
+  }
+  .menu-icon {
+    display: none;
+  }
 }
