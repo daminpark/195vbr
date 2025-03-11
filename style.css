@@ -1,0 +1,105 @@
+/* General page style */
+body {
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #333;
+  margin: 0;
+  background-color: #fff;
+}
+
+/* Container to center content and limit width */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header with logo */
+header {
+  text-align: center;
+  padding: 20px;
+  background-color: #fff;
+  border-bottom: 2px solid #eee;
+}
+header img {
+  max-width: 250px;  /* Make sure logo is not too large */
+  height: auto;
+}
+
+/* Headings style */
+h2, h3 {
+  color: #000;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+h2 {
+  font-size: 1.5em;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 0.2em;
+}
+h3 {
+  font-size: 1.2em;
+  margin-top: 1em;
+}
+
+/* Paragraph spacing */
+p {
+  margin-bottom: 1em;
+}
+
+/* List styles */
+ul {
+  margin: 0 0 1em 1.2em;
+  padding: 0;
+}
+ul li {
+  margin-bottom: 0.5em;
+}
+
+/* Table of Contents list (no bullets for a cleaner look) */
+.toc {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 2em;
+}
+.toc li {
+  margin: 0.3em 0;
+}
+.toc a {
+  color: #000;
+  text-decoration: none;
+}
+.toc a:hover {
+  text-decoration: underline;
+}
+
+/* Link styles in content */
+a:link, a:visited {
+  color: #000;
+  text-decoration: underline;
+}
+a:hover {
+  color: #555;
+  text-decoration: underline;
+}
+
+/* Footer style */
+footer {
+  text-align: center;
+  padding: 10px 0;
+  color: #777;
+  font-size: 0.9em;
+}
+footer a {
+  color: #777;
+  text-decoration: none;
+}
+footer a:hover {
+  text-decoration: underline;
+}
+
+/* Smooth scrolling for anchor links */
+html {
+  scroll-behavior: smooth;
+}
