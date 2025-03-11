@@ -8,136 +8,154 @@
 </head>
 <body>
 
-  <nav>
-    <div class="content">
-      <span class="menu-icon" onclick="toggleMenu()">&#9776;</span>
-      <ul class="nav-links">
-        <li><a href="#what-not-to-bring">What Not to Bring</a></li>
-        <li><a href="#domestic-directions">Domestic Directions</a></li>
-        <li><a href="#airport-directions">Airport Directions</a></li>
-        <li><a href="#getting-around">Getting Around</a></li>
-        <li><a href="#check-in-luggage-drop-off">Check-in &amp; Luggage Drop-off</a></li>
-        <li><a href="#kitchen-rules">Kitchen Rules</a></li>
-        <li><a href="#laundry">Laundry</a></li>
-        <li><a href="#tv-instructions">TV Instructions</a></li>
-        <li><a href="#early-check-in-details">Early Check-in Details</a></li>
-        <li><a href="#local-guidebook">Local Guidebook</a></li>
-      </ul>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-content">
+      <!-- Logo (smaller on desktop) -->
+      <div class="logo">
+        <img src="logo.jpeg" alt="195VBR Logo" />
+      </div>
+
+      <!-- Desktop Menu Trigger -->
+      <div class="desktop-menu-trigger">
+        MENU
+        <ul class="desktop-dropdown">
+          <li><a href="#what-not-to-bring">🚫 WHAT NOT TO BRING</a></li>
+          <li><a href="#domestic-directions">🚶 DOMESTIC DIRECTIONS</a></li>
+          <li><a href="#airport-directions">✈️ AIRPORT DIRECTIONS</a></li>
+          <li><a href="#getting-around">🚇 GETTING AROUND</a></li>
+          <li><a href="#check-in-luggage">🧳 CHECK-IN &amp; LUGGAGE DROP-OFF</a></li>
+          <li><a href="#kitchen-rules">🍳 KITCHEN (BASEMENT)</a></li>
+          <li><a href="#laundry">🧺 LAUNDRY</a></li>
+          <li><a href="#tv">📺 TV</a></li>
+          <li><a href="#early-check-in">⏰ EARLY CHECK-IN</a></li>
+          <li><a href="#local-guidebook">📍 LOCAL GUIDEBOOK</a></li>
+        </ul>
+      </div>
+
+      <!-- Mobile Hamburger Icon -->
+      <span class="menu-icon" onclick="toggleMobileMenu()">&#9776;</span>
     </div>
+
+    <!-- Mobile Dropdown Menu -->
+    <ul class="mobile-nav-links" id="mobileNav">
+      <li><a href="#what-not-to-bring" onclick="closeMobileMenu()">🚫 WHAT NOT TO BRING</a></li>
+      <li><a href="#domestic-directions" onclick="closeMobileMenu()">🚶 DOMESTIC DIRECTIONS</a></li>
+      <li><a href="#airport-directions" onclick="closeMobileMenu()">✈️ AIRPORT DIRECTIONS</a></li>
+      <li><a href="#getting-around" onclick="closeMobileMenu()">🚇 GETTING AROUND</a></li>
+      <li><a href="#check-in-luggage" onclick="closeMobileMenu()">🧳 CHECK-IN &amp; LUGGAGE DROP-OFF</a></li>
+      <li><a href="#kitchen-rules" onclick="closeMobileMenu()">🍳 KITCHEN (BASEMENT)</a></li>
+      <li><a href="#laundry" onclick="closeMobileMenu()">🧺 LAUNDRY</a></li>
+      <li><a href="#tv" onclick="closeMobileMenu()">📺 TV</a></li>
+      <li><a href="#early-check-in" onclick="closeMobileMenu()">⏰ EARLY CHECK-IN</a></li>
+      <li><a href="#local-guidebook" onclick="closeMobileMenu()">📍 LOCAL GUIDEBOOK</a></li>
+    </ul>
   </nav>
 
-  <!-- Banner / Header image -->
-  <div class="banner-container">
-    <img src="logo.png" alt="195VBR.com" class="banner" />
-  </div>
+  <!-- Main Content -->
+  <main class="container">
+    <h1>195VBR Guidebook</h1>
 
-  <main class="content">
-    <h1>195VBR Guest Guidebook</h1>
-
+    <!-- WHAT NOT TO BRING -->
     <section id="what-not-to-bring">
-      <h2>What Not to Bring</h2>
-      <p>We provide a variety of amenities, so you can pack light! Here are some things you <em>don’t</em> need to bring:</p>
-      <ul>
-        <li><strong>Towels &amp; Linens:</strong> Fresh bath towels and bed linens are provided for every guest.</li>
-        <li><strong>Toiletries:</strong> Shampoo, conditioner, body wash, and hand soap are available in the bathrooms.</li>
-        <li><strong>Hair Dryers:</strong> A hairdryer is provided in each bedroom.</li>
-        <li><strong>Adapters &amp; Chargers:</strong> Every room has universal power adapters and USB-C, Lightning (iPhone), and Micro-USB chargers, so you can charge your devices without bringing extra plugs.</li>
-        <li><strong>Extra Blankets:</strong> All beds have an electric underblanket, and we can provide additional blankets if needed.</li>
-      </ul>
+      <h2>🚫 WHAT NOT TO BRING</h2>
+      <p>Each room has a hairdryer, travel adapters (all countries), heated mattress, two fresh towels (not changed daily) and a set of fresh bed linen (not changed daily).</p>
+      <p>We also provide shampoo &amp; conditioner &amp; body gel, coffee &amp; tea, iron, all cooking equipment.</p>
     </section>
 
+    <!-- DOMESTIC DIRECTIONS -->
     <section id="domestic-directions">
-      <h2>Domestic Directions</h2>
-      <p><strong>By Train/Tube:</strong> The house is a short 7-minute walk from <strong>London Victoria Station</strong>, which is a major hub for the Underground, national rail, and coaches. If you arrive at Victoria, take the exit toward Victoria Street/Vauxhall Bridge Road. Once outside, turn left onto Vauxhall Bridge Road and walk straight for about 5–7 minutes. The house (195 Vauxhall Bridge Road) will be on your left.</p>
-      <p><strong>By Coach:</strong> If you arrive at Victoria Coach Station, it’s about a 10-minute walk. Head east on Elizabeth Street toward Buckingham Palace Road, then continue toward Victoria Station and onto Vauxhall Bridge Road.</p>
-      <p><strong>By Car/Taxi:</strong> Use the address “195 Vauxhall Bridge Road, SW1V 1ER, London.” Note that we do not have on-site parking. If driving, you may need to find a public parking garage nearby (and be mindful of London’s congestion charges). Taxis and rideshares will easily find the address using the postcode.</p>
+      <h2>🚶 DOMESTIC DIRECTIONS</h2>
+      <p>We are a 7 minute walk from <strong>Victoria Station</strong>, a major rail, coach, and bus hub. You will find plenty of connections to this station (especially by coach – <a href="https://www.nationalexpress.com" target="_blank" rel="noopener noreferrer">nationalexpress.com</a>).</p>
     </section>
 
+    <!-- AIRPORT DIRECTIONS -->
     <section id="airport-directions">
-      <h2>Airport Directions</h2>
-      <p>We are well-connected to all major London airports. Typical travel times: ~30 minutes from Gatwick, ~50 minutes from Heathrow, ~1 hour from Stansted or Luton.</p>
-      <ul>
-        <li><strong>Heathrow (LHR):</strong> Take the London Underground – Piccadilly Line (dark blue) from Heathrow and change at Hammersmith (or Barons Court) for the District Line (green) to Victoria Station. Travel time is around 50 minutes. Alternatively, you can take the Heathrow Express train to Paddington Station and then a taxi or the Underground to Victoria.</li>
-        <li><strong>Gatwick (LGW):</strong> Take the Gatwick Express train direct to Victoria Station (around 30 minutes). This is the fastest option. (Southern Rail trains and National Express coaches also connect Gatwick to Victoria.)</li>
-        <li><strong>Stansted (STN):</strong> Take the Stansted Express train to Tottenham Hale (about 35 minutes), then switch to the Victoria Line (light blue Underground line) toward Brixton and get off at Victoria. Total journey ~1 hour. Alternatively, National Express coaches run from Stansted to Victoria Coach Station (about 1 hour 30 minutes).</li>
-        <li><strong>Luton (LTN):</strong> Take the train from Luton Airport Parkway to London St. Pancras (around 40 minutes), then transfer to the Victoria Line Underground to Victoria Station (~15 minutes). Alternatively, coach services run from Luton directly to Victoria Coach Station (around 1 hour 15 minutes).</li>
-      </ul>
+      <h2>✈️ AIRPORT DIRECTIONS</h2>
+      <p>You can book buses on <a href="https://www.nationalexpress.com" target="_blank" rel="noopener noreferrer">nationalexpress.com</a>, and trains on <a href="https://www.thetrainline.com" target="_blank" rel="noopener noreferrer">trainline.com</a>.</p>
+
+      <p><strong>GATWICK:</strong><br>
+      We recommend a train as it goes directly to Victoria – trains run every 10 minutes, takes 30 minutes, and costs around 15 pounds one way. You can tap in and tap out using a contactless card (no need to buy a ticket).<br>
+      Please be aware the train goes to the South Terminal, and you must leave some more time to transfer to the North Terminal (around 15 minutes extra).</p>
+
+      <p><strong>STANSTED:</strong><br>
+      We recommend the train to Tottenham Hale, and change to the Victoria line to Victoria. Please be aware you cannot use contactless from Stansted – you must buy a ticket.</p>
+
+      <p><strong>LUTON:</strong><br>
+      We recommend the coach to Victoria. You can buy a ticket when you get out of the airport. Buses take 1h30, direct, comes every 30 minutes, costs 12 pounds one way.</p>
+
+      <p><strong>HEATHROW:</strong><br>
+      We recommend the underground – Piccadilly line to South Kensington, and changing for the Circle/District to Victoria. You can tap in/out using a contactless card (no need to buy a ticket).</p>
     </section>
 
+    <!-- GETTING AROUND -->
     <section id="getting-around">
-      <h2>Getting Around</h2>
-      <p>Public transportation is excellent in London. Victoria Station (a 7-minute walk away) is a major transport hub for the Underground, trains, and buses. There are also local bus stops just outside our door that go to popular tourist areas. (Insider tip: the <strong>24 bus</strong> route, which stops near the house, doubles as a cheaper sightseeing tour through central London!)</p>
-      <p>You can pay for all public transit with just a tap of a contactless credit or debit card. Fares are capped daily, so you’ll automatically get the best rate by the end of the day without needing to buy a special day pass.</p>
-      <p>London is very walkable and also has public bicycle hire stations nearby if you want to cycle. You can even take a scenic <strong>Thames river bus</strong> (ferry) from a pier near Westminster — about £10 one way, and you can use contactless for that as well.</p>
-      <p>For navigation, smartphone apps like <strong>Citymapper</strong> or Google Maps are extremely helpful to plan your routes around the city.</p>
+      <h2>🚇 GETTING AROUND</h2>
+      <p>You can pay for everything with a tap of a contactless credit/debit card. There is no need to get an “all-day” ticket to save money as it gets calculated at the end of the day and you get charged for the cheapest ticket.</p>
+      <p>You can also take a public boat along the river!</p>
     </section>
 
-    <section id="check-in-luggage-drop-off">
-      <h2>Check-in &amp; Luggage Drop-off</h2>
-      <p><strong>Self Check-in:</strong> Check-in time is 3:00 PM (or anytime after). We operate a self check-in system, so there’s no need to wait for anyone to meet you. On the day of your arrival, we will send you detailed check-in instructions and your entry code around late morning or noon. You can let yourself in anytime after 3 PM with that code.</p>
-      <p><strong>Luggage Drop-off:</strong> If you arrive in London before the 3 PM check-in time, you can usually drop off your luggage earlier. Please message us in advance to arrange this. We’ll let you know where to securely leave your bags until your room is ready. This way, you can start exploring the city without being weighed down. (Note: while we’re happy to hold your bags and you may find the common areas in use, the rooms themselves won’t be accessible until they’ve been cleaned and prepared.)</p>
-      <p><strong>Check-out:</strong> Check-out time is 11:00 AM. Unfortunately, we cannot offer late check-outs, as we need time to prepare for the next guests. However, if you have a later departure from London, let us know — we may be able to hold your luggage for a few hours after check-out so you can enjoy your final day hands-free.</p>
+    <!-- CHECK-IN & LUGGAGE DROP-OFF -->
+    <section id="check-in-luggage">
+      <h2>🧳 CHECK-IN &amp; LUGGAGE DROP-OFF</h2>
+      <p>Check-in is from 15:00, and as it is self check-in anytime after that is okay with us. You can leave bags at the house from 11:00. You may store luggage downstairs in cupboard V. Please message me the day before check-in if you need an earlier dropoff before check-in (subject to availability).</p>
     </section>
 
+    <!-- KITCHEN RULES -->
     <section id="kitchen-rules">
-      <h2>Kitchen Rules</h2>
-      <p>Our kitchen is a shared space for all guests. To keep it clean and comfortable for everyone, please follow these guidelines:</p>
-      <ul>
-        <li><strong>Personal Storage:</strong> Each room has its own designated refrigerator section and cabinet space. Please use only your assigned spaces for storing food.</li>
-        <li><strong>Clean Up After Yourself:</strong> Wash any dishes, utensils, or cookware you use and put them back once you’re done. Wipe down the counters and leave the kitchen as you found it, so it’s ready for the next person.</li>
-        <li><strong>Shared Supplies:</strong> We provide complimentary tea and coffee (Nespresso pods) for you. Feel free to use basic condiments and spices in the kitchen, but be considerate and leave some for other guests.</li>
-        <li><strong>Respect Quiet Hours:</strong> If you’re cooking late in the evening or early in the morning, keep noise to a minimum so as not to disturb others sleeping nearby.</li>
-        <li><strong>No Food in Rooms:</strong> Please enjoy your meals in the kitchen or dining area, rather than in the bedrooms. This helps avoid spills, crumbs, and unwelcome pests in sleeping areas.</li>
-      </ul>
+      <h2>🍳 KITCHEN (BASEMENT, DOOR MARKED K)</h2>
+      <p>You have a food storage compartment and a fridge space with your room number on it. Anything that isn’t in your compartment or left after check-out time will be thrown away!</p>
+      <p>The doors of the fridges are communal, and there is a dry communal compartment where you can store leftover dry food items.</p>
+      <p>You can leave your dirty dishes in the dishwasher, the staff will turn this on when it's full.</p>
+      <p>To clean the kitchen we provide disinfectant wipes.</p>
+      <p>The big metal bin is for recycling (there are labels on the bin for what can go in). Liquid waste goes in the sink and solid food waste goes in the black bin, along with general waste.</p>
     </section>
 
+    <!-- LAUNDRY -->
     <section id="laundry">
-      <h2>Laundry</h2>
-      <p>There is a washing machine and dryer available for guest use (located in the basement). However, these machines are primarily used for our housekeeping (laundering linens), so <strong>guest laundry is only available in the evenings and by request.</strong> If you need to do laundry during your stay, just let us know and we’ll arrange a time after our cleaning schedule (usually after 6 PM) when you can use the machines.</p>
-      <p>We can provide laundry detergent and softener. Please only run the washer/dryer after we’ve confirmed the timing, to ensure it doesn’t conflict with our cleaning team’s use. (If you prefer or need daytime service, there’s also a laundromat on Wilton Road, a short walk away.)</p>
+      <h2>🧺 LAUNDRY</h2>
+      <p>We do not have any washing machines for guests. There is a coin launderette nearby we recommend called <a href="https://maps.app.goo.gl/uYuoqcrG3xC3Q2Nz8" target="_blank" rel="noopener noreferrer">True Colours Launderette</a>.</p>
+      <p>We do not change towels daily because we do not have the washing capacity to support this. However, if you would like a change of towels maximum once every two days, please leave them outside your door and we will replace them with fresh ones.</p>
     </section>
 
-    <section id="tv-instructions">
-      <h2>TV Instructions</h2>
-      <p>Each bedroom is equipped with a Smart 4K TV loaded with popular streaming apps (Disney+, Apple TV+, Amazon Prime Video, BBC iPlayer, etc.). Here’s how to make the most of it:</p>
-      <ul>
-        <li><strong>Power &amp; Input:</strong> Use the TV remote in your room to turn on the television. It should go straight to the home menu of the smart TV interface (no need to change HDMI inputs).</li>
-        <li><strong>Streaming Apps:</strong> Navigate the on-screen menu with the remote. Select the app you want (e.g., Disney+ or Prime Video) and press OK/Enter. We’ve provided access to several streaming services for you to enjoy. (Live local channels are also available via Freeview on the TV.)</li>
-        <li><strong>Logging In/Out:</strong> If you wish to log into any of your personal streaming accounts (like Netflix), you’re welcome to do so. Just remember to log out of your accounts before you check out, for your privacy. Please do not log out of any of the pre-configured apps/accounts that we’ve set up.</li>
-        <li><strong>Troubleshooting:</strong> If an app freezes or the internet connection drops on the TV, try turning the TV off and on again. This usually resets the connection. Feel free to contact us if you encounter any issues with the TV.</li>
-      </ul>
+    <!-- TV -->
+    <section id="tv">
+      <h2>📺 TV</h2>
+      <p>If any of Netflix, Apple TV, Amazon Prime are logged out or not working, please contact me and I should be able to log you in remotely.</p>
     </section>
 
-    <section id="early-check-in-details">
-      <h2>Early Check-in Details</h2>
-      <p>We understand some guests arrive in London very early. While we wish we could let everyone into their rooms immediately, our cleaning team needs time to prepare rooms between guests. This means we typically cannot guarantee access to your room before the standard 3 PM check-in time.</p>
-      <p>If you do arrive early in the day, the best approach is to take advantage of our luggage drop-off option (see above). You can leave your bags with us in the morning, go enjoy the city, and return after 3 PM when your room is ready.</p>
-      <p>Occasionally, if the room was unoccupied the night before, we might be able to arrange an earlier check-in. Feel free to ask us, but please understand it’s not always possible. If an early check-in is essential for you (for example, if you have an early morning flight and need to rest), the only way to guarantee that is to book the previous night as well, so the room is free and ready when you arrive.</p>
-      <p>Communication is key – let us know your arrival plans, and we’ll do our best to accommodate. We want to make your check-in as smooth as possible!</p>
+    <!-- EARLY CHECK-IN -->
+    <section id="early-check-in">
+      <h2>⏰ EARLY CHECK-IN (PLEASE READ IF YOU REALLY NEED THIS)</h2>
+      <p>Check-in is at 15:00, if you enter at this time, we guarantee the room is clean and your things will not be thrown away. The earliest you can enter your room/bathroom is at 12:00. HOWEVER, it is unlikely your room is ready by this time. If you see that the room is not ready/clean yet, please do not enter and please do not leave your things in there – the cleaners may throw away your things as they think the previous guests have left them, and will also mean the cleaners cannot do their job properly and result in an unclean room. Please do not store anything in the bathroom or kitchen before 15:00, as the cleaners empty out the fridge/food/bathroom compartments during the hours of 11:00–15:00.</p>
     </section>
 
+    <!-- LOCAL GUIDEBOOK -->
     <section id="local-guidebook">
-      <h2>Local Guidebook (Restaurants &amp; Sights)</h2>
-      <p>To help you make the most of our neighborhood, we’ve compiled a few of our favorite nearby restaurants and attractions. All are within walking distance or a quick ride from the house:</p>
-      <h3>Recommended Restaurants &amp; Cafés</h3>
-      <ul>
-        <li><strong>The Queen’s Arms:</strong> A classic British pub just around the corner, known for its cozy atmosphere, great ales, and a tasty Sunday roast. Perfect for an evening pint or a traditional pub meal.</li>
-        <li><strong>Cacio &amp; Pepe (Italian):</strong> A popular local Italian trattoria on Churton Street. They serve authentic pasta (their namesake cheese and pepper pasta is excellent) and other Italian favorites in a warm, friendly setting.</li>
-        <li><strong>Pimlico Fresh:</strong> A charming café offering hearty breakfasts, brunch, and fresh juices. It’s excellent for a morning coffee or an English breakfast to start your day.</li>
-        <li><strong>About Thyme:</strong> A highly-rated European bistro on Wilton Road. They offer a seasonal menu of British and Mediterranean dishes – great for a nice dinner out with a relaxed, upscale vibe.</li>
-        <li><strong>Tachbrook Street Market:</strong> (Weekdays &amp; Sat daytime) A local street market with various food stalls and fresh produce. Great for grabbing a quick lunch or browsing local vendors. It’s a true neighborhood gem, just a short walk away.</li>
-      </ul>
-      <h3>Nearby Sights &amp; Attractions</h3>
-      <ul>
-        <li><strong>Buckingham Palace:</strong> The King’s official London residence is only about a 15-minute walk away. Don’t miss the Changing of the Guard ceremony (around 11 AM on scheduled days), and enjoy a stroll through St. James’s Park next door.</li>
-        <li><strong>Westminster Abbey &amp; Big Ben:</strong> Walk ~20 minutes (or take a quick bus/tube) to reach Westminster Abbey – the historic coronation church – and the Houses of Parliament with the iconic Big Ben clock tower. This area is the heart of London’s royal and governmental history.</li>
-        <li><strong>Tate Britain:</strong> One of London’s premier art museums (free entry) is about a 15-minute walk south across Vauxhall Bridge. You can see British artworks from Turner to Hockney. The stroll along the Thames to get there is lovely, too.</li>
-        <li><strong>Westminster Cathedral:</strong> Often overlooked, this stunning neo-Byzantine cathedral (not to be confused with the Abbey) is just 5 minutes from the house, near Victoria station. You can tour inside and even take an elevator up the bell tower for great views of the city.</li>
-        <li><strong>Victoria Palace &amp; Apollo Victoria Theatres:</strong> For West End shows close by, these two theaters (5–10 minutes away) host big musicals. The Victoria Palace is home to “Hamilton” and the Apollo Victoria hosts “Wicked.” If you’re interested in seeing a show, consider booking tickets in advance.</li>
-      </ul>
-      <p>Of course, London has endless things to do. These are just a few highlights in our area to get you started. If you need more recommendations or directions, just ask — we’re happy to help make your stay memorable!</p>
-    </section>
+      <h2>📍 LOCAL GUIDEBOOK (ALL THINGS ARE CLOSE TO THE HOUSE UNLESS STATED)</h2>
+      <p>Here are some restaurant and sightseeing recommendations we have compiled!</p>
 
+      <p><strong>FOOD:</strong><br>
+      Regency Cafe – traditional full english breakfast<br>
+      Jugged Hare – great pub across the road<br>
+      Tachbrook Street Market – a local market great for lunch on weekdays<br>
+      Kimchimama – great Korean food (especially fried chicken) for casual dinner<br>
+      Ben Venuti – amazing Italian cafe around the corner.<br>
+      Tozi – upscale Italian restaurant nearby.<br>
+      A. Wong – Michelin starred Chinese restaurant behind the house.<br>
+      Little Waitrose – closest supermarket, upmarket.<br>
+      Sainsbury's – big supermarket.<br>
+      Rippon Cheese – famous cheese store on the other side<br>
+      Dishoom – famous for Indian food (further away, book in advance)<br>
+      Gold Mine – great Peking duck (further away)</p>
+
+      <p><strong>SIGHTS:</strong><br>
+      Wicked and Hamilton – two great musicals on our doorstep<br>
+      St James Park – beautiful park<br>
+      Walk to Big Ben, cross Westminster Bridge then walk along the South Bank to Tower Bridge (can take a boat back!)</p>
+
+      <p>We look forward to hosting you and hope you are having a pleasant journey here.</p>
+    </section>
   </main>
 
   <script src="script.js"></script>
