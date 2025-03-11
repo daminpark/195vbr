@@ -107,6 +107,11 @@ section {
   background: #f0f0f0;
 }
 
+.no-break {
+  display: inline-block;
+  /* or display: inline; depending on your needs */
+}
+
 /* MOBILE MENU ICON */
 .menu-icon {
   display: none;
