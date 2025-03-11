@@ -1,118 +1,153 @@
-/* Base Styles */
+/* RESET & BASE STYLES */
+* {
+  box-sizing: border-box;
+}
 body {
   margin: 0;
   padding: 0;
   font-family: Arial, Helvetica, sans-serif;
-  color: #333;
   background: #fff;
+  color: #333;
   line-height: 1.6;
 }
-h1, h2, h3 {
-  color: #000;
+h1, h2 {
   margin-top: 1em;
-}
-.content {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 0 1em;
-}
-
-/* Navigation Bar */
-nav {
-  background: #fff;
-  border-bottom: 1px solid #ccc;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-nav .content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.menu-icon {
-  font-size: 1.5em;
-  cursor: pointer;
-  display: none;
-}
-.nav-links {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-}
-.nav-links li {
-  margin: 0;
-}
-.nav-links a {
-  display: block;
-  padding: 0.5em 1em;
-  text-decoration: none;
+  margin-bottom: 0.5em;
   color: #000;
 }
-.nav-links a:hover {
-  background: #f0f0f0;
-}
-
-/* Banner Image */
-.banner-container {
-  text-align: center;
-}
-.banner {
-  max-width: 100%;
-  height: auto;
-  display: block;
-  margin: 0 auto;
-}
-
-/* Section Content */
-section {
-  margin-bottom: 2em;
-}
-section h2 {
-  margin-top: 2em;
+p {
+  margin-bottom: 1em;
 }
 ul {
   padding-left: 1.2em;
+  margin-bottom: 1em;
 }
-li {
-  margin-bottom: 0.5em;
+a {
+  color: #0066cc;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
 }
 
-/* Responsive: Mobile Menu */
+/* Make headings stop below the sticky nav bar */
+h2,
+h3,
+section {
+  scroll-margin-top: 80px; /* offset for sticky navbar */
+}
+
+/* CONTAINER */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1em;
+}
+
+/* NAVIGATION BAR */
+.navbar {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background: #fff;
+  border-bottom: 1px solid #ccc;
+  z-index: 999;
+}
+.nav-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0.5em 1em;
+}
+
+/* LOGO */
+.logo img {
+  height: 40px; /* smaller on desktop */
+  width: auto;
+}
+
+/* DESKTOP MENU */
+.desktop-menu-trigger {
+  position: relative;
+  cursor: pointer;
+  font-weight: bold;
+  user-select: none;
+  padding: 0.5em;
+}
+.desktop-menu-trigger:hover .desktop-dropdown {
+  display: block;
+}
+.desktop-dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 2em;
+  background: #fff;
+  border: 1px solid #ccc;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-width: 200px;
+  z-index: 9999;
+}
+.desktop-dropdown li {
+  border-bottom: 1px solid #eee;
+}
+.desktop-dropdown li:last-child {
+  border-bottom: none;
+}
+.desktop-dropdown a {
+  display: block;
+  padding: 0.5em 1em;
+  color: #000;
+}
+.desktop-dropdown a:hover {
+  background: #f0f0f0;
+}
+
+/* MOBILE MENU ICON */
+.menu-icon {
+  display: none;
+  font-size: 1.8em;
+  cursor: pointer;
+}
+
+/* MOBILE NAV LINKS */
+.mobile-nav-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  border-bottom: 1px solid #ccc;
+}
+.mobile-nav-links li {
+  border-bottom: 1px solid #eee;
+}
+.mobile-nav-links a {
+  display: block;
+  padding: 0.75em 1em;
+  color: #000;
+}
+
+/* RESPONSIVE BREAKPOINT */
 @media (max-width: 768px) {
+  .desktop-menu-trigger {
+    display: none; /* hide the desktop dropdown trigger on mobile */
+  }
   .menu-icon {
-    display: block;
+    display: block; /* show hamburger on mobile */
   }
-  .nav-links {
-    flex-direction: column;
-    width: 100%;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out;
-  }
-  .nav-links li {
-    text-align: center;
-    border-bottom: 1px solid #eee;
-  }
-  .nav-links a {
-    padding: 1em;
-  }
-  .nav-links.open {
-    max-height: 500px;
-  }
-  /* Allow nav content to wrap on mobile when expanded */
-  nav .content {
-    flex-wrap: wrap;
+  .logo img {
+    height: 30px; /* even smaller logo on mobile */
   }
 }
-@media (min-width: 769px) {
-  .nav-links {
-    display: flex;
-    max-height: none;
-    overflow: visible;
-  }
-  .menu-icon {
-    display: none;
-  }
+
+/* MOBILE NAV LINKS (expanded) */
+.mobile-nav-links.open {
+  max-height: 500px; /* enough space to show all links */
 }
