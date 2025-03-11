@@ -60,28 +60,27 @@ section, h2, h3, h4, h5, h6 {
   padding: 0.5em;
 }
 
-/* The dropdown itself */
 .desktop-dropdown {
   display: none;
   position: absolute;
-  top: 100%;   /* directly below the trigger */
-  left: 0;     /* or right: 0 if you prefer right-aligned */
+  top: 100%;        /* directly below the trigger */
+  right: 0;         /* right edge aligned with the trigger's right edge */
   background: #fff;
   border: 1px solid #ccc;
   list-style: none;
   margin: 0;
   padding: 0.5em;
   z-index: 9999;
-
-  /* Enough width so items don't wrap onto two lines */
-  min-width: 380px;
-
-  /* Create two columns for the menu items */
+  
+  /* Two-column layout */
   columns: 2;
   column-gap: 1em;
-
-  /* Keep text on one line for each link (no wrap) */
+  
+  /* Prevent text from wrapping */
   white-space: nowrap;
+  
+  /* Ensure it's wide enough for each item */
+  min-width: 380px; /* Adjust this value as needed */
 }
 
 /* Show dropdown on hover */
