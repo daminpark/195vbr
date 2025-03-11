@@ -15,3 +15,18 @@ function closeMobileMenu() {
     mobileNav.classList.remove('open');
   }
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+  const params = new URLSearchParams(window.location.search);
+  // List of flag parameters to check for:
+  const keys = ['193', '195', 'room1', 'room2', 'room3', 'room4', 'room5', 'room6', 'rooma', 'roomb', 'wholehome'];
+
+  keys.forEach(key => {
+    if (params.has(key)) {
+      // Show all divs that have the corresponding class
+      document.querySelectorAll('.variation-' + key).forEach(el => {
+        el.style.display = 'block';
+      });
+    }
+  });
+});
