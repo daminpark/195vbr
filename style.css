@@ -134,6 +134,10 @@ section {
   color: #000;
 }
 
+.variation {
+  display: none;
+}
+
 /* RESPONSIVE BREAKPOINT */
 @media (max-width: 768px) {
   .desktop-menu-trigger {
