@@ -8,78 +8,23 @@
 </head>
 <body>
 
-  <!-- Navigation Bar -->
-  <nav class="navbar">
-    <div class="nav-content">
-      <!-- Logo -->
-      <div class="logo">
-        <img src="logo.png" alt="195VBR Logo" />
-      </div>
-
-      <!-- Wrap the trigger and dropdown together to avoid gaps -->
-      <div class="desktop-menu-trigger">
-        <span class="menu-label">MENU</span>
-        <ul class="desktop-dropdown">
-          <!-- Two columns, no wrapping -->
-          <li><a href="#consideration">🤍 Consideration</a></li>
-          <li><a href="#room-consideration">🥾 Room consideration</a></li>
-          <li><a href="#video">🎬 Video instructions</a></li>
-          <li><a href="#what-not-to-bring">🚫 What not to bring</a></li>
-          <li><a href="#domestic-directions">🚶 Domestic directions</a></li>
-          <li><a href="#airport-directions">✈️ Airport directions</a></li>
-          <li><a href="#getting-around">🚇 Getting around</a></li>
-          <li><a href="#codetimes">*️⃣ Lock info</a></li>
-          <li><a href="#check-in-luggage">🧳 Check-in & luggage drop-off</a></li>
-          <li><a href="#early-check-in">⏰ Early check-in</a></li>
-          <li><a href="#wifi">🛜 Wifi</a></li>
-          <li><a href="#heating">♨️ Heating</a></li>
-          <li><a href="#room">🛏️ Bedroom</a></li>
-          <li><a href="#bathroom">🛁 Bathroom</a></li>
-          <li><a href="#kitchen-rules">🍳 Kitchen</a></li>
-          <li><a href="#laundry">🧺 Laundry</a></li>
-          <li><a href="#tv">📺 TV</a></li>
-          <li><a href="#local-guidebook">📍 Local guidebook</a></li>
-        </ul>
-      </div>
-
-
-      <!-- Mobile Hamburger Icon -->
-      <span class="menu-icon" onclick="toggleMobileMenu()">&#9776;</span>
-    </div>
-  
-    <!-- Mobile Dropdown Menu -->
-    <ul class="mobile-nav-links" id="mobileNav">
-      <li><a href="#consideration" onclick="closeMobileMenu()">🤍 Consideration</a></li>
-      <li><a href="#room-consideration" onclick="closeMobileMenu()">🥾 Room consideration</a></li>
-      <li><a href="#video" onclick="closeMobileMenu()">🎬 Video instructions</a></li>
-      <li><a href="#what-not-to-bring" onclick="closeMobileMenu()">🚫 What not to bring</a></li>
-      <li><a href="#domestic-directions" onclick="closeMobileMenu()">🚶 Domestic directions</a></li>
-      <li><a href="#airport-directions" onclick="closeMobileMenu()">✈️ Airport directions</a></li>
-      <li><a href="#getting-around" onclick="closeMobileMenu()">🚇 Getting around</a></li>
-      <li><a href="#codetimes" onclick="closeMobileMenu()">*️⃣ Lock info</a></li>
-      <li><a href="#check-in-luggage" onclick="closeMobileMenu()">🧳 Check-in &amp; luggage drop-off</a></li>
-      <li><a href="#early-check-in" onclick="closeMobileMenu()">⏰ Early check-in</a></li>
-      <li><a href="#wifi" onclick="closeMobileMenu()">🛜 Wifi</a></li>
-      <li><a href="#heating" onclick="closeMobileMenu()">♨️ Heating</a></li>
-      <li><a href="#room" onclick="closeMobileMenu()">🛏️ Bedroom</a></li>
-      <li><a href="#bathroom" onclick="closeMobileMenu()">🛁 Bathroom</a></li>
-      <li><a href="#kitchen-rules" onclick="closeMobileMenu()">🍳 Kitchen</a></li>
-      <li><a href="#laundry" onclick="closeMobileMenu()">🧺 Laundry</a></li>
-      <li><a href="#tv" onclick="closeMobileMenu()">📺 TV</a></li>
-      <li><a href="#local-guidebook" onclick="closeMobileMenu()">📍 Local guidebook</a></li>
-    </ul>
-  </nav>
+  <!-- Optional: Logo / Seitenkopf -->
+  <header class="site-header">
+    <img src="logo.png" alt="195VBR Logo" class="logo">
+  </header>
 
   <!-- Main Content -->
   <main class="container">
     <h1>195VBR Guidebook</h1>
+
+    <!-- ====== ALLE ABSCHNITTE WIE IM ORIGINAL (nur Navigation entfernt) ====== -->
 
     <!-- CONSIDERATION -->
     <section id="consideration">
       <h2>🤍 Consideration</h2>
       <p>We are a shared house, and we only want guests who will be considerate!</p>
       <p>Please leave shared spaces as you would like to find them.</p>
-      <p>The walls are not so thick, so we would appreciate being considerate of noise at all times, especially between 22:00-07:00. There are earplugs in the kitchen if you need.</p>
+      <p>The walls are not so thick, so we would appreciate being considerate of noise at all times, especially between 22:00‑07:00. There are earplugs in the kitchen if you need.</p>
       <p>If you agree, welcome!</p>
     </section>
 
@@ -111,7 +56,6 @@
         </ul>
       </span>
     </section>
-
     <!-- VIDEO INSTRUCTIONS -->
     <section id="video">
       <h2>🎬 Video instructions</h2>
@@ -471,8 +415,6 @@
       </ul>
       <p>We look forward to hosting you and hope you are having a pleasant journey here.</p>
     </section>
-
-    
   </main>
 
   <script src="script.js"></script>
