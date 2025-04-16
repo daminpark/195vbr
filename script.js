@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   /* ------------------------------------------------------------------
-     1. Show variation spans based on URL parameters  (unchanged logic)
+     1.  Show variation spans based on URL parameters
   ------------------------------------------------------------------ */
   const params = new URLSearchParams(window.location.search);
   [
@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ------------------------------------------------------------------
-     2. Build & control the accordion
+     2.  Build & control the accordion
   ------------------------------------------------------------------ */
   const sections = document.querySelectorAll('main.container section');
 
@@ -39,12 +39,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* click handler */
     header.addEventListener('click',()=>{
-      /* remember where the header sits before anything moves */
-      const startY = header.getBoundingClientRect().top;
+      /* record where the header sits BEFORE layout change */
+      const startTop = header.getBoundingClientRect().top;
 
       const wasOpen = !sec.classList.contains('collapsed');
       if(wasOpen){
-        /* just close it – no sections open */
+        /* close it – leaves all sections closed */
         sec.classList.add('collapsed');
       }else{
         /* close others, open this one */
@@ -52,9 +52,13 @@ document.addEventListener('DOMContentLoaded', () => {
         sec.classList.remove('collapsed');
       }
 
-      /* after layout shift, compensate scroll so header stays in place */
-      const endY = header.getBoundingClientRect().top;
-      window.scrollBy({top:endY - startY, left:0, behavior:'instant'});
+      /* compensate scroll so the header appears fixed in place */
+      const endTop   = header.getBoundingClientRect().top;
+      const wantedY  = window.scrollY + (endTop - startTop);
+
+      /* clamp to document height so we don't overshoot */
+      const maxY = document.documentElement.scrollHeight - window.innerHeight;
+      window.scrollTo({top: Math.min(wantedY, maxY), left:0});
     });
   });
 });
