@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-  /* ------------------------------------------------------------------
-     1.  Show variation spans based on URL parameters
-  ------------------------------------------------------------------ */
+  /* -----------------------------------------------------------
+     1.  Reveal any spans requested via URL parameters
+  ----------------------------------------------------------- */
   const params = new URLSearchParams(window.location.search);
   [
     '193','195',
@@ -15,50 +15,44 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  /* ------------------------------------------------------------------
-     2.  Build & control the accordion
-  ------------------------------------------------------------------ */
+  /* -----------------------------------------------------------
+     2.  Build the accordion
+  ----------------------------------------------------------- */
   const sections = document.querySelectorAll('main.container section');
 
   sections.forEach(sec=>{
-    /* locate first <h2> */
     const header = sec.querySelector('h2');
     if(!header) return;
+
+    /* ignore sections whose heading is hidden (e.g. behind a variation) */
+    const headerVisible = header.offsetParent !== null;   // fast & simple
+    if(!headerVisible){
+      sec.style.display = 'none';                         // removes extra line
+      return;
+    }
+
     header.classList.add('accordion-header');
 
     /* wrap everything after the header */
-    const content = document.createElement('div');
-    content.className = 'accordion-content';
+    const wrap = document.createElement('div');
+    wrap.className = 'accordion-content';
     while(header.nextSibling){
-      content.appendChild(header.nextSibling);
+      wrap.appendChild(header.nextSibling);
     }
-    sec.appendChild(content);
+    sec.appendChild(wrap);
 
     /* start closed */
     sec.classList.add('collapsed');
 
-    /* click handler */
+    /* toggle logic: close others, or close itself if open */
     header.addEventListener('click',()=>{
-      /* record where the header sits BEFORE layout change */
-      const startTop = header.getBoundingClientRect().top;
-
-      const wasOpen = !sec.classList.contains('collapsed');
-      if(wasOpen){
-        /* close it – leaves all sections closed */
-        sec.classList.add('collapsed');
+      const isOpen = !sec.classList.contains('collapsed');
+      if(isOpen){
+        sec.classList.add('collapsed');        // all collapse, so zero open
       }else{
-        /* close others, open this one */
         sections.forEach(s=>s.classList.add('collapsed'));
         sec.classList.remove('collapsed');
       }
-
-      /* compensate scroll so the header appears fixed in place */
-      const endTop   = header.getBoundingClientRect().top;
-      const wantedY  = window.scrollY + (endTop - startTop);
-
-      /* clamp to document height so we don't overshoot */
-      const maxY = document.documentElement.scrollHeight - window.innerHeight;
-      window.scrollTo({top: Math.min(wantedY, maxY), left:0});
     });
   });
 });
