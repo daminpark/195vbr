@@ -24,10 +24,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const header = sec.querySelector('h2');
     if(!header) return;
 
-    /* ignore sections whose heading is hidden (e.g. behind a variation) */
-    const headerVisible = header.offsetParent !== null;   // fast & simple
-    if(!headerVisible){
-      sec.style.display = 'none';                         // removes extra line
+    /* hide entire section if its heading is invisible (variation not selected) */
+    if (header.offsetParent === null){
+      sec.style.display = 'none';
       return;
     }
 
@@ -44,14 +43,27 @@ document.addEventListener('DOMContentLoaded', () => {
     /* start closed */
     sec.classList.add('collapsed');
 
-    /* toggle logic: close others, or close itself if open */
+    /* toggle logic */
     header.addEventListener('click',()=>{
+      /* ---- keep the header glued to its current viewport position ---- */
+      const startTop = header.getBoundingClientRect().top;
+
       const isOpen = !sec.classList.contains('collapsed');
       if(isOpen){
-        sec.classList.add('collapsed');        // all collapse, so zero open
+        sec.classList.add('collapsed');      // close it: zero open sections
       }else{
         sections.forEach(s=>s.classList.add('collapsed'));
-        sec.classList.remove('collapsed');
+        sec.classList.remove('collapsed');   // open this one
+      }
+
+      /* after layout shift, scroll back by the exact delta (if possible) */
+      const endTop = header.getBoundingClientRect().top;
+      const delta  = endTop - startTop;
+
+      if (delta !== 0){
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        const targetY   = Math.min(maxScroll, window.scrollY + delta);
+        window.scrollTo({top: targetY, left: 0, behavior: 'instant'});   // no animation
       }
     });
   });
