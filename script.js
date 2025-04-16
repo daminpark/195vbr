@@ -85,36 +85,37 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* -----------------------------------------------------------
-     4.  SAVE‑AS‑PDF BUTTON
+     SAVE‑AS‑PDF BUTTON
   ----------------------------------------------------------- */
   const pdfBtn = document.getElementById('pdfBtn');
   if (pdfBtn){
     pdfBtn.addEventListener('click', () => {
-
-      /* a) remember which sections are open */
+  
+      /* a) remember which sections are currently open */
       const openSections = Array.from(document.querySelectorAll('section'))
                                 .filter(sec => !sec.classList.contains('collapsed'));
-
-      /* b) expand ALL sections so the PDF includes everything */
+  
+      /* b) expand ALL sections so the PDF shows everything */
       document.querySelectorAll('section.collapsed')
               .forEach(sec => sec.classList.remove('collapsed'));
-
+  
       /* c) clone the body for a clean capture */
       const clone = document.body.cloneNode(true);
-
-      /* remove the PDF button and spacer from the clone */
+  
+      /* remove the PDF button & spacer from the clone */
       clone.querySelector('#pdfBtn')?.remove();
       clone.querySelector('#accordion-spacer')?.remove();
-
-      /* d) generate PDF */
-      const options = {
+  
+      /* d) generate PDF with page‑break awareness */
+      const opt = {
         margin:      10,
         filename:    '195VBR-guidebook.pdf',
         image:       { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, scrollY: 0 },
+        pagebreak:   { mode: ['avoid-all', 'css'] },   // <—— key line
         jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
-      html2pdf().set(options).from(clone).save().then(() => {
+      html2pdf().set(opt).from(clone).save().then(()=>{
         /* e) restore previous accordion state */
         document.querySelectorAll('section').forEach(sec => sec.classList.add('collapsed'));
         openSections.forEach(sec => sec.classList.remove('collapsed'));
