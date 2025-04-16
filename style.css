@@ -15,12 +15,12 @@ html, body {
   padding: 1em;
 }
 
-/* anchor offset for sticky headers (future‑proof) */
+/* anchor offset for sticky headers */
 section, h2, h3, h4, h5, h6 {
   scroll-margin-top: 80px;
 }
 
-/* conditional chunks hidden until JS reveals them */
+/* hidden until variation parameter reveals them */
 .variation {
   display: none;
 }
@@ -42,8 +42,6 @@ section, h2, h3, h4, h5, h6 {
 /* ---------------------------------------------------
    ACCORDION
 --------------------------------------------------- */
-
-/* one clean separator under every visible section */
 section {
   border-bottom: 1px solid #e0e0e0;
 }
@@ -53,10 +51,9 @@ section {
   position: relative;
   user-select: none;
   margin: 0;
-  padding: .65rem 2rem .65rem 0;        /* right‑side room for chevron */
+  padding: .65rem 2rem .65rem 0;   /* room for chevron */
 }
 
-/* CSS‑drawn chevron ► / ▼ */
 .accordion-header::after {
   content: '';
   position: absolute;
@@ -66,15 +63,14 @@ section {
   height: .6rem;
   border-right: 2px solid currentColor;
   border-bottom: 2px solid currentColor;
-  transform: translateY(-50%) rotate(45deg);    /* ► */
+  transform: translateY(-50%) rotate(45deg);  /* ► */
   transition: transform .25s ease;
 }
 
 section:not(.collapsed) .accordion-header::after {
-  transform: translateY(-50%) rotate(135deg);   /* ▼ */
+  transform: translateY(-50%) rotate(135deg); /* ▼ */
 }
 
-/* collapsible part */
 .accordion-content {
   display: none;
   padding: .5rem 0 0 0;
@@ -92,33 +88,32 @@ section:not(.collapsed) .accordion-content {
 
 /* ---------------------------------------------------
    EXTRA SPACE AT PAGE BOTTOM
-   (stops headings jumping when a shorter panel opens)
 --------------------------------------------------- */
 
-/* default – desktops & large tablets */
+/* desktops & large tablets */
 body::after {
   content: '';
   display: block;
-  height: 60vh;
+  height: 100vh;     /* was 60 vh → now 100 vh for more slack */
 }
 
 /* medium tablets / landscape phones */
 @media (max-width: 900px) {
   body::after {
-    height: 50vh;
+    height: 70vh;    /* was 50 vh */
   }
 }
 
 /* portrait phones / small tablets */
 @media (max-width: 600px) {
   body::after {
-    height: 60vh;
+    height: 60vh;    /* unchanged */
   }
 }
 
 /* very small devices */
 @media (max-width: 400px) {
   body::after {
-    height: 80vh;
+    height: 80vh;    /* unchanged */
   }
 }
