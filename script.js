@@ -1,40 +1,54 @@
-/* ---------------------------------------------------
-   BASE
---------------------------------------------------- */
-html,body{margin:0;padding:0;font-family:Arial,sans-serif;background:#fff;color:#333;}
-.container{max-width:800px;margin:0 auto;padding:1em;}
-section,h2{scroll-margin-top:80px;}   /* avoids overlap with fixed headers */
-.variation{display:none;}             /* default hidden spans */
+document.addEventListener('DOMContentLoaded', () => {
 
-/* Optional logo header -------------------------------------------- */
-.site-header{display:flex;justify-content:center;padding:.5em;}
-.logo{height:40px;width:auto;}
+  /* ----------------------------------------------
+     1.  Show variation spans based on URL params
+  ---------------------------------------------- */
+  const params = new URLSearchParams(window.location.search);
+  [
+    '193','195',
+    'room1','room2','room3','room4','room5','room6',
+    'rooma','roomb','wholehome','sharedb','sharedk'
+  ].forEach(key=>{
+    if(params.has(key)){
+      document.querySelectorAll('.variation-'+key)
+              .forEach(el=>{ el.style.display='inline'; });
+    }
+  });
 
-/* ---------------------------------------------------
-   PROFESSIONAL ACCORDION
---------------------------------------------------- */
-section{border-bottom:1px solid #e0e0e0;padding:.5rem 0;}
+  /* ----------------------------------------------
+     2.  Build & control the accordion
+  ---------------------------------------------- */
+  const sections = document.querySelectorAll('main.container section');
 
-.accordion-header{
-  cursor:pointer;position:relative;user-select:none;margin:0;padding-right:2rem;
-}
-/* Chevron (CSS‑drawn) */
-.accordion-header::after{
-  content:'';position:absolute;top:50%;right:.5rem;width:.6rem;height:.6rem;
-  border-right:2px solid currentColor;border-bottom:2px solid currentColor;
-  transform:translateY(-50%) rotate(45deg);          /* ► */
-  transition:transform .25s ease;
-}
-/* Rotated when open */
-section:not(.collapsed) .accordion-header::after{
-  transform:translateY(-50%) rotate(135deg);         /* ▼ */
-}
+  sections.forEach(sec=>{
+    /* find the first <h2> and mark it as header */
+    const header = sec.querySelector('h2');
+    if(!header) return;
+    header.classList.add('accordion-header');
 
-/* Content wrapper */
-.accordion-content{display:none;padding:.5rem 0 0 0;}
-section:not(.collapsed) .accordion-content{
-  display:block;animation:fade .25s ease-in;
-}
+    /* wrap everything AFTER the <h2> in .accordion-content */
+    const content = document.createElement('div');
+    content.className = 'accordion-content';
+    while(header.nextSibling){
+      content.appendChild(header.nextSibling);
+    }
+    sec.appendChild(content);
 
-/* Fade‑in */
-@keyframes fade{from{opacity:0;}to{opacity:1;}}
+    /* start closed */
+    sec.classList.add('collapsed');
+
+    /* click logic */
+    header.addEventListener('click',()=>{
+      const currentlyOpen = !sec.classList.contains('collapsed');
+
+      if(currentlyOpen){
+        /* close it – leaving all sections closed */
+        sec.classList.add('collapsed');
+      }else{
+        /* close others, open this one */
+        sections.forEach(s=>s.classList.add('collapsed'));
+        sec.classList.remove('collapsed');
+      }
+    });
+  });
+});
