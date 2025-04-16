@@ -117,3 +117,11 @@ body::after {
     height: 80vh;    /* unchanged */
   }
 }
+
+/* PDF button */
+.pdf-button{
+  background:#007bff;color:#fff;border:none;border-radius:4px;
+  padding:.5rem 1rem;font-size:.9rem;cursor:pointer;
+  margin-bottom:1rem;
+}
+.pdf-button:hover{background:#0056b3;}
