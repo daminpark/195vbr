@@ -9,155 +9,54 @@ html, body {
   color: #333;
 }
 
-/* This container centers and limits main content width */
+/* Container begrenzt Breite & zentriert Inhalt */
 .container {
   max-width: 800px;
   margin: 0 auto;
   padding: 1em;
 }
 
-/* Ensure headings offset from sticky nav when using anchor links */
+/* Überschriften springen nicht unter den Sticky‑Header */
 section, h2, h3, h4, h5, h6 {
-  scroll-margin-top: 80px; /* Adjust to match nav height */
+  scroll-margin-top: 80px;
 }
 
-/* ---------------------------------------------------
-   NAVIGATION (STICKY NAV)
---------------------------------------------------- */
-.navbar {
-  position: sticky;
-  top: 0;
-  z-index: 999;
-  background: #fff;
-  border-bottom: 1px solid #ccc;
-}
-
-/* The nav content is centered and spaced */
-.nav-content {
+/* Optional: Logo */
+.site-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 0.5em 1em;
+  justify-content: center;
+  padding: 0.5em;
 }
-
-/* Logo image smaller on desktop */
-.logo img {
+.logo {
   height: 40px;
   width: auto;
 }
 
 /* ---------------------------------------------------
-   DESKTOP MENU (Hover Trigger)
+   ACCORDION
 --------------------------------------------------- */
-.desktop-menu-trigger {
+.accordion-header {
+  cursor: pointer;
   position: relative;
-  display: inline-block; /* ensures no gap on hover */
-  cursor: pointer;
-  font-weight: bold;
-  user-select: none;
-  padding: 0.5em;
+  padding-right: 1.5em;      /* Platz für Pfeil */
+  margin: 0;                 /* kompakter Klickbereich */
 }
 
-.desktop-dropdown {
-  display: none;
+.accordion-header::after {
+  content: '▶';
   position: absolute;
-  top: 100%;        /* directly below the trigger */
-  right: 0;         /* right edge aligned with the trigger's right edge */
-  background: #fff;
-  border: 1px solid #ccc;
-  list-style: none;
-  margin: 0;
-  padding: 0.5em;
-  z-index: 9999;
-  
-  /* Two-column layout */
-  columns: 2;
-  column-gap: 1em;
-  
-  /* Prevent text from wrapping */
-  white-space: nowrap;
-  
-  /* Ensure it's wide enough for each item */
-  min-width: 380px; /* Adjust this value as needed */
+  right: 0;
+  transition: transform 0.2s ease;
 }
 
-/* Show dropdown on hover */
-.desktop-menu-trigger:hover .desktop-dropdown {
-  display: block;
+/* Pfeil dreht, wenn geöffnet */
+section:not(.collapsed) .accordion-header::after {
+  transform: rotate(90deg);
 }
 
-/* Each list item in the dropdown */
-.desktop-dropdown li {
-  margin-bottom: 0.5em;
-}
-
-/* Links in the dropdown */
-.desktop-dropdown a {
-  color: #000;
-  text-decoration: none;
-  display: inline-block; /* keeps each link on one line */
-}
-.desktop-dropdown a:hover {
-  text-decoration: underline;
-}
-
-/* ---------------------------------------------------
-   MOBILE MENU (Hamburger)
---------------------------------------------------- */
-.menu-icon {
-  display: none; /* hidden on desktop */
-  font-size: 1.5em;
-  cursor: pointer;
-}
-
-/* Collapsible list for mobile nav */
-.mobile-nav-links {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  background: #fff;
-  max-height: 0;
-  overflow-y: hidden;
-  transition: max-height 0.3s ease-out;
-  border-bottom: 1px solid #ccc;
-}
-.mobile-nav-links li {
-  border-bottom: 1px solid #eee;
-}
-.mobile-nav-links a {
-  display: block;
-  padding: 0.75em 1em;
-  color: #000;
-  text-decoration: none;
-}
-
-/* Expand the mobile menu when .open is toggled via JS */
-.mobile-nav-links.open {
-  /* Set a maximum height relative to the viewport, e.g., 80% of viewport height */
-  max-height: 80vh;
-  overflow-y: auto;
-}
-
-/* ---------------------------------------------------
-   RESPONSIVE BREAKPOINTS
---------------------------------------------------- */
-@media (max-width: 768px) {
-  /* Hide desktop menu, show hamburger */
-  .desktop-menu-trigger {
-    display: none;
-  }
-  .menu-icon {
-    display: block;
-  }
-}
-
-@media (min-width: 769px) {
-  /* Hide mobile menu on desktop */
-  .mobile-nav-links {
-    display: none;
-  }
+/* Inhalt ausblenden, solange .collapsed gesetzt ist */
+section.collapsed > :not(.accordion-header) {
+  display: none;
 }
 
 /* ---------------------------------------------------
