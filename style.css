@@ -38,4 +38,23 @@ section:not(.collapsed) .accordion-content{
 @keyframes fade{from{opacity:0;}to{opacity:1;}}
 
 /* spare space so the last panel can open comfortably */
-body::after{content:'';display:block;height:30vh;}
+/* spare space so the last panel can open comfortably */
+body::after{
+  content:'';
+  display:block;
+  height:30vh;              /* desktop & large tablets */
+}
+
+/* phones / small tablets in portrait */
+@media (max-width:600px){
+  body::after{
+    height:60vh;            /* ~1.5× more room */
+  }
+}
+
+/* very small devices */
+@media (max-width:400px){
+  body::after{
+    height:80vh;
+  }
+}
