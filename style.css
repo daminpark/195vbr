@@ -125,3 +125,16 @@ body::after {
   margin-bottom:1rem;
 }
 .pdf-button:hover{background:#0056b3;}
+
+/* ---------- accordion text should always be black ---------- */
+.accordion-content{
+  color:#000;          /* override any inherited grey */
+}
+
+/* ---------- print / PDF rules ---------- */
+@media print{
+  section{ 
+    break-inside: avoid;        /* modern browsers   */
+    page-break-inside: avoid;   /* older browsers    */
+  }
+}
