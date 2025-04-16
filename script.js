@@ -1,51 +1,40 @@
 /* ---------------------------------------------------
-   URL‑Parameter‑Variationen  (unverändert)
+   BASE
 --------------------------------------------------- */
-document.addEventListener('DOMContentLoaded', () => {
-  const params = new URLSearchParams(window.location.search);
-  const keys = [
-    '193', '195',
-    'room1', 'room2', 'room3', 'room4', 'room5', 'room6',
-    'rooma', 'roomb',
-    'wholehome', 'sharedb', 'sharedk'
-  ];
+html,body{margin:0;padding:0;font-family:Arial,sans-serif;background:#fff;color:#333;}
+.container{max-width:800px;margin:0 auto;padding:1em;}
+section,h2{scroll-margin-top:80px;}   /* avoids overlap with fixed headers */
+.variation{display:none;}             /* default hidden spans */
 
-  keys.forEach(key => {
-    if (params.has(key)) {
-      document.querySelectorAll('.variation-' + key).forEach(el => {
-        el.style.display = 'inline';
-      });
-    }
-  });
+/* Optional logo header -------------------------------------------- */
+.site-header{display:flex;justify-content:center;padding:.5em;}
+.logo{height:40px;width:auto;}
 
-  /* -------------------------------------------------
-     Akkordeon‑Logik  (nur ein Abschnitt offen)
-  ------------------------------------------------- */
-  const sections = document.querySelectorAll('main.container section');
+/* ---------------------------------------------------
+   PROFESSIONAL ACCORDION
+--------------------------------------------------- */
+section{border-bottom:1px solid #e0e0e0;padding:.5rem 0;}
 
-  sections.forEach(sec => {
-    const header = sec.querySelector('h2');
-    if (!header) return;
+.accordion-header{
+  cursor:pointer;position:relative;user-select:none;margin:0;padding-right:2rem;
+}
+/* Chevron (CSS‑drawn) */
+.accordion-header::after{
+  content:'';position:absolute;top:50%;right:.5rem;width:.6rem;height:.6rem;
+  border-right:2px solid currentColor;border-bottom:2px solid currentColor;
+  transform:translateY(-50%) rotate(45deg);          /* ► */
+  transition:transform .25s ease;
+}
+/* Rotated when open */
+section:not(.collapsed) .accordion-header::after{
+  transform:translateY(-50%) rotate(135deg);         /* ▼ */
+}
 
-    /* Klick‑Cursor & Pfeil anbringen */
-    header.classList.add('accordion-header');
-    /* Start: alles zugeklappt */
-    sec.classList.add('collapsed');
+/* Content wrapper */
+.accordion-content{display:none;padding:.5rem 0 0 0;}
+section:not(.collapsed) .accordion-content{
+  display:block;animation:fade .25s ease-in;
+}
 
-    header.addEventListener('click', () => {
-      /* zuerst alle schließen … */
-      sections.forEach(s => s.classList.add('collapsed'));
-      /* … dann geklickten Abschnitt umschalten */
-      sec.classList.toggle('collapsed');
-    });
-  });
-
-  /* Optional: ersten Abschnitt offen lassen */
-  if (sections.length) {
-    sections[0].classList.remove('collapsed');
-  }
-
-  /* ---- Mehrere Abschnitte gleichzeitig offen?
-         -> die Zeile   sections.forEach(s => …)
-         einfach entfernen. ---- */
-});
+/* Fade‑in */
+@keyframes fade{from{opacity:0;}to{opacity:1;}}
