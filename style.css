@@ -138,3 +138,15 @@ body::after {
     page-break-inside: avoid;   /* older browsers    */
   }
 }
+
+
+/* ---- force black text inside every open panel ---- */
+.accordion-content,
+.accordion-content * {
+  color: #000 !important;     /* overrides any inherited grey */
+}
+
+/* ---- hide the bottom spacer only while we’re exporting ---- */
+body.print-mode::after {
+  display: none !important;   /* spacer vanishes in the PDF */
+}
