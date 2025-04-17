@@ -15,15 +15,13 @@ html, body {
   padding: 1em;
 }
 
-/* anchor offset for sticky headers */
+/* anchor offset for sticky headers (future‑proof) */
 section, h2, h3, h4, h5, h6 {
   scroll-margin-top: 80px;
 }
 
-/* hidden until variation parameter reveals them */
-.variation {
-  display: none;
-}
+/* variation blocks hidden until JS reveals them */
+.variation { display: none; }
 
 /* ---------------------------------------------------
    OPTIONAL LOGO
@@ -33,11 +31,7 @@ section, h2, h3, h4, h5, h6 {
   justify-content: center;
   padding: .5em;
 }
-
-.logo {
-  height: 40px;
-  width: auto;
-}
+.logo { height: 40px; width: auto; }
 
 /* ---------------------------------------------------
    ACCORDION
@@ -51,7 +45,7 @@ section {
   position: relative;
   user-select: none;
   margin: 0;
-  padding: .65rem 2rem .65rem 0;          /* room for chevron */
+  padding: .65rem 2rem .65rem 0;   /* room for chevron */
 }
 
 .accordion-header::after {
@@ -63,69 +57,70 @@ section {
   height: .6rem;
   border-right: 2px solid currentColor;
   border-bottom: 2px solid currentColor;
-  transform: translateY(-50%) rotate(45deg);       /* ► */
+  transform: translateY(-50%) rotate(45deg);      /* ► */
   transition: transform .25s ease;
 }
-
 section:not(.collapsed) .accordion-header::after {
-  transform: translateY(-50%) rotate(135deg);      /* ▼ */
+  transform: translateY(-50%) rotate(135deg);     /* ▼ */
 }
 
-/* collapsible part */
 .accordion-content {
   display: none;
   padding: .5rem 0 0 0;
 }
-
 section:not(.collapsed) .accordion-content {
   display: block;
   animation: fade .25s ease-in;
 }
+@keyframes fade { from {opacity:0;} to {opacity:1;} }
 
-@keyframes fade {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-/* ---------- FORCE PURE BLACK TEXT IN OPEN PANELS ---------- */
+/* force pure black inside open panels (on screen) */
 .accordion-content,
-.accordion-content * {
-  color: #000 !important;                     /* overrides any inherited grey */
-}
+.accordion-content * { color: #000 !important; }
 
 /* ---------------------------------------------------
-   EXTRA SPACE AT PAGE BOTTOM
+   PDF / PRINT BUTTON
 --------------------------------------------------- */
-body::after {
-  content: '';
-  display: block;
-  height: 100vh;            /* generous desktop slack */
+.pdf-button{
+  background:#007bff;color:#fff;border:none;border-radius:4px;
+  padding:.5rem 1rem;font-size:.9rem;cursor:pointer;margin-bottom:1rem;
 }
-
-@media (max-width: 900px) {
-  body::after { height: 70vh; }
-}
-@media (max-width: 600px) {
-  body::after { height: 60vh; }
-}
-@media (max-width: 400px) {
-  body::after { height: 80vh; }
-}
-
-/* hide spacer during PDF export */
-body.print-mode::after {
-  display: none !important;
-}
+.pdf-button:hover{background:#0056b3;}
 
 /* ---------------------------------------------------
-   PRINT / PDF RULES
+   EXTRA SPACE AT PAGE BOTTOM (prevents jump)
 --------------------------------------------------- */
-@media print {
-  /* avoid splitting any accordion block */
-  section {
+body::after{
+  content:'';
+  display:block;
+  height:100vh;          /* generous for desktop */
+}
+@media (max-width:900px){ body::after{height:70vh;} }
+@media (max-width:600px){ body::after{height:60vh;} }
+@media (max-width:400px){ body::after{height:80vh;} }
+
+/* hide spacer while printing */
+body.print-mode::after{ display:none !important; }
+
+/* ---------------------------------------------------
+   PRINT‑ONLY RULES
+--------------------------------------------------- */
+@media print{
+
+  /* open every accordion panel */
+  section.collapsed .accordion-content{ display:block !important; }
+
+  /* avoid splitting a section across pages */
+  section{
     break-inside: avoid;
     page-break-inside: avoid;
   }
-  /* enforce black text in print (fallback) */
-  * { color: #000 !important; }
+
+  /* always pure black text */
+  *{ color:#000 !important; }
+
+  /* hide UI extras */
+  .pdf-button,
+  .accordion-header::after,
+  body::after{ display:none !important; }
 }
