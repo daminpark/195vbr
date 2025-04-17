@@ -51,7 +51,7 @@ section {
   position: relative;
   user-select: none;
   margin: 0;
-  padding: .65rem 2rem .65rem 0;   /* room for chevron */
+  padding: .65rem 2rem .65rem 0;          /* room for chevron */
 }
 
 .accordion-header::after {
@@ -63,14 +63,15 @@ section {
   height: .6rem;
   border-right: 2px solid currentColor;
   border-bottom: 2px solid currentColor;
-  transform: translateY(-50%) rotate(45deg);  /* ► */
+  transform: translateY(-50%) rotate(45deg);       /* ► */
   transition: transform .25s ease;
 }
 
 section:not(.collapsed) .accordion-header::after {
-  transform: translateY(-50%) rotate(135deg); /* ▼ */
+  transform: translateY(-50%) rotate(135deg);      /* ▼ */
 }
 
+/* collapsible part */
 .accordion-content {
   display: none;
   padding: .5rem 0 0 0;
@@ -86,67 +87,45 @@ section:not(.collapsed) .accordion-content {
   to   { opacity: 1; }
 }
 
+/* ---------- FORCE PURE BLACK TEXT IN OPEN PANELS ---------- */
+.accordion-content,
+.accordion-content * {
+  color: #000 !important;                     /* overrides any inherited grey */
+}
+
 /* ---------------------------------------------------
    EXTRA SPACE AT PAGE BOTTOM
 --------------------------------------------------- */
-
-/* desktops & large tablets */
 body::after {
   content: '';
   display: block;
-  height: 100vh;     /* was 60 vh → now 100 vh for more slack */
+  height: 100vh;            /* generous desktop slack */
 }
 
-/* medium tablets / landscape phones */
 @media (max-width: 900px) {
-  body::after {
-    height: 70vh;    /* was 50 vh */
-  }
+  body::after { height: 70vh; }
 }
-
-/* portrait phones / small tablets */
 @media (max-width: 600px) {
-  body::after {
-    height: 60vh;    /* unchanged */
-  }
+  body::after { height: 60vh; }
 }
-
-/* very small devices */
 @media (max-width: 400px) {
-  body::after {
-    height: 80vh;    /* unchanged */
-  }
+  body::after { height: 80vh; }
 }
 
-/* PDF button */
-.pdf-button{
-  background:#007bff;color:#fff;border:none;border-radius:4px;
-  padding:.5rem 1rem;font-size:.9rem;cursor:pointer;
-  margin-bottom:1rem;
-}
-.pdf-button:hover{background:#0056b3;}
-
-/* ---------- accordion text should always be black ---------- */
-.accordion-content{
-  color:#000;          /* override any inherited grey */
-}
-
-/* ---------- print / PDF rules ---------- */
-@media print{
-  section{ 
-    break-inside: avoid;        /* modern browsers   */
-    page-break-inside: avoid;   /* older browsers    */
-  }
-}
-
-
-/* ---- force black text inside every open panel ---- */
-.accordion-content,
-.accordion-content * {
-  color: #000 !important;     /* overrides any inherited grey */
-}
-
-/* ---- hide the bottom spacer only while we’re exporting ---- */
+/* hide spacer during PDF export */
 body.print-mode::after {
-  display: none !important;   /* spacer vanishes in the PDF */
+  display: none !important;
+}
+
+/* ---------------------------------------------------
+   PRINT / PDF RULES
+--------------------------------------------------- */
+@media print {
+  /* avoid splitting any accordion block */
+  section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  /* enforce black text in print (fallback) */
+  * { color: #000 !important; }
 }
