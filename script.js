@@ -85,29 +85,34 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* -----------------------------------------------------------
-     4.  SAVE‑AS‑PDF BUTTON
+     SAVE‑AS‑PDF BUTTON  (force–black inline colour)
   ----------------------------------------------------------- */
   const pdfBtn = document.getElementById('pdfBtn');
   if (pdfBtn){
     pdfBtn.addEventListener('click', () => {
-
-      /*  a) remember which sections are open */
+  
+      /* 1 | remember which sections are open */
       const openSections = Array.from(document.querySelectorAll('section'))
                                 .filter(sec => !sec.classList.contains('collapsed'));
-
-      /*  b) expand ALL to show everything */
+  
+      /* 2 | expand everything so PDF shows the full guide */
       document.querySelectorAll('section.collapsed')
               .forEach(sec => sec.classList.remove('collapsed'));
-
-      /*  c) enter print‑mode (spacer disappears) */
+  
+      /* 3 | enter print‑mode (hides spacer) */
       document.body.classList.add('print-mode');
-
-      /*  d) clone the body for capture */
+  
+      /* 4 | clone the body for capture */
       const clone = document.body.cloneNode(true);
-      clone.querySelector('#pdfBtn')?.remove();          // drop the button
-      clone.querySelector('#accordion-spacer')?.remove();/* drop spacer */
-
-      /*  e) create PDF */
+      clone.querySelector('#pdfBtn')?.remove();          // drop button
+      clone.querySelector('#accordion-spacer')?.remove();// drop spacer
+  
+      /* 5 | INLINE‑force every element’s colour to pure black */
+      clone.querySelectorAll('*').forEach(el => {
+        el.style.color = '#000';
+      });
+  
+      /* 6 | generate PDF: honour page‑break rules */
       const opt = {
         margin:      10,
         filename:    '195VBR-guidebook.pdf',
@@ -117,8 +122,8 @@ document.addEventListener('DOMContentLoaded', () => {
         jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
       html2pdf().set(opt).from(clone).save().then(() => {
-
-        /*  f) restore UI */
+  
+        /* 7 | restore UI */
         document.body.classList.remove('print-mode');
         document.querySelectorAll('section').forEach(sec => sec.classList.add('collapsed'));
         openSections.forEach(sec => sec.classList.remove('collapsed'));
