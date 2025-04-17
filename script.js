@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   /* -----------------------------------------------------------
-     1.  Show variation spans based on URL parameters
+     1.  Reveal spans requested via URL parameters
   ----------------------------------------------------------- */
   const params = new URLSearchParams(window.location.search);
   [
@@ -9,21 +9,20 @@ document.addEventListener('DOMContentLoaded', () => {
     'room1','room2','room3','room4','room5','room6',
     'rooma','roomb','wholehome','sharedb','sharedk'
   ].forEach(key=>{
-    if(params.has(key)){
+    if (params.has(key)){
       document.querySelectorAll('.variation-'+key)
-              .forEach(el=>{ el.style.display='inline'; });
+              .forEach(el => { el.style.display = 'inline'; });
     }
   });
 
   /* -----------------------------------------------------------
-     2.  Create one reusable bottom spacer
+     2.  One reusable bottom spacer to prevent “jump”
   ----------------------------------------------------------- */
   const spacer = document.createElement('div');
   spacer.id = 'accordion-spacer';
   spacer.style.height = '0px';
   document.body.appendChild(spacer);
 
-  /* remove spacer once user scrolls up */
   window.addEventListener('scroll', () => {
     const buffer = 40;
     const nearBottom = window.scrollY + window.innerHeight
@@ -36,11 +35,11 @@ document.addEventListener('DOMContentLoaded', () => {
   ----------------------------------------------------------- */
   const sections = document.querySelectorAll('main.container section');
 
-  sections.forEach(sec=>{
+  sections.forEach(sec => {
     const header = sec.querySelector('h2');
-    if(!header) return;
+    if (!header) return;
 
-    /* hide section if its heading is filtered out */
+    /* hide whole section if heading was filtered out */
     if (header.offsetParent === null){
       sec.style.display = 'none';
       return;
@@ -48,10 +47,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     header.classList.add('accordion-header');
 
-    /* wrap everything after the header */
+    /* wrap everything after the header into .accordion-content */
     const wrap = document.createElement('div');
     wrap.className = 'accordion-content';
-    while(header.nextSibling){
+    while (header.nextSibling){
       wrap.appendChild(header.nextSibling);
     }
     sec.appendChild(wrap);
@@ -59,56 +58,56 @@ document.addEventListener('DOMContentLoaded', () => {
     /* start closed */
     sec.classList.add('collapsed');
 
-    header.addEventListener('click',()=>{
+    header.addEventListener('click', () => {
 
-      /* remember page height & “at‑bottom” status */
-      const oldHeight   = document.documentElement.scrollHeight;
-      const buffer      = 40;
-      const wasAtBottom = window.scrollY + window.innerHeight >= oldHeight - buffer;
+      /* capture pre‑toggle page height and bottom status */
+      const oldHeight = document.documentElement.scrollHeight;
+      const buffer    = 40;
+      const atBottom  = window.scrollY + window.innerHeight >= oldHeight - buffer;
 
+      /* toggle */
       const isOpen = !sec.classList.contains('collapsed');
-      if(isOpen){
-        sec.classList.add('collapsed');              // close it
-      }else{
-        sections.forEach(s=>s.classList.add('collapsed'));
+      if (isOpen){
+        sec.classList.add('collapsed');              // close this (→ none open)
+      } else {
+        sections.forEach(s => s.classList.add('collapsed'));
         sec.classList.remove('collapsed');           // open this one
       }
 
-      /* add spacer if height shrank while user was at bottom */
-      const newHeight   = document.documentElement.scrollHeight;
-      const diff        = oldHeight - newHeight;
-      if (wasAtBottom && diff > 0){
+      /* if page shrank while user was at bottom → add spacer */
+      const newHeight = document.documentElement.scrollHeight;
+      const diff      = oldHeight - newHeight;
+      if (atBottom && diff > 0){
         spacer.style.height = `${diff + buffer}px`;
-        window.scrollTo({top: newHeight - window.innerHeight, left: 0});
+        window.scrollTo({ top: newHeight - window.innerHeight, left: 0 });
       }
     });
   });
 
   /* -----------------------------------------------------------
-     SAVE‑AS‑PDF BUTTON
+     4.  SAVE‑AS‑PDF BUTTON
   ----------------------------------------------------------- */
   const pdfBtn = document.getElementById('pdfBtn');
   if (pdfBtn){
     pdfBtn.addEventListener('click', () => {
-  
-      /* a) remember which sections are open */
+
+      /*  a) remember which sections are open */
       const openSections = Array.from(document.querySelectorAll('section'))
                                 .filter(sec => !sec.classList.contains('collapsed'));
-  
-      /* b) expand ALL sections so the PDF shows everything */
+
+      /*  b) expand ALL to show everything */
       document.querySelectorAll('section.collapsed')
               .forEach(sec => sec.classList.remove('collapsed'));
-  
-      /* c) signal “print‑mode” so CSS can switch things off */
+
+      /*  c) enter print‑mode (spacer disappears) */
       document.body.classList.add('print-mode');
-  
-      /* d) clone the body for a clean capture */
+
+      /*  d) clone the body for capture */
       const clone = document.body.cloneNode(true);
-  
-      /* remove the PDF button from the clone */
-      clone.querySelector('#pdfBtn')?.remove();
-  
-      /* e) generate PDF (respect page‑break rules) */
+      clone.querySelector('#pdfBtn')?.remove();          // drop the button
+      clone.querySelector('#accordion-spacer')?.remove();/* drop spacer */
+
+      /*  e) create PDF */
       const opt = {
         margin:      10,
         filename:    '195VBR-guidebook.pdf',
@@ -118,8 +117,8 @@ document.addEventListener('DOMContentLoaded', () => {
         jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
       html2pdf().set(opt).from(clone).save().then(() => {
-  
-        /* f) restore UI */
+
+        /*  f) restore UI */
         document.body.classList.remove('print-mode');
         document.querySelectorAll('section').forEach(sec => sec.classList.add('collapsed'));
         openSections.forEach(sec => sec.classList.remove('collapsed'));
