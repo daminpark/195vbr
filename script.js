@@ -124,19 +124,44 @@ document.addEventListener('DOMContentLoaded', () => {
   /* -----------------------------------------------------------
      5.  CHAT POP-UP LOGIC
   ----------------------------------------------------------- */
+/* -----------------------------------------------------------
+     5.  CHAT POP-UP LOGIC (with Toggle and Click-Away)
+  ----------------------------------------------------------- */
   const chatLauncher = document.getElementById('chat-launcher');
   const chatWidget = document.getElementById('chat-widget');
-  const closeChatBtn = document.getElementById('close-chat');
   
-  if (chatLauncher && chatWidget && closeChatBtn) {
-    chatLauncher.addEventListener('click', () => {
-      chatWidget.classList.remove('hidden');
-      chatLauncher.classList.add('hidden');
-    });
+  // Function to open the chat
+  const openChat = () => {
+    chatWidget.classList.remove('hidden');
+    chatLauncher.classList.add('hidden');
+  };
 
-    closeChatBtn.addEventListener('click', () => {
-      chatWidget.classList.add('hidden');
-      chatLauncher.classList.remove('hidden');
+  // Function to close the chat
+  const closeChat = () => {
+    chatWidget.classList.add('hidden');
+    chatLauncher.classList.remove('hidden');
+  };
+
+  // Add listeners to the buttons
+  if (chatLauncher && chatWidget) {
+    const closeChatBtn = document.getElementById('close-chat');
+    
+    chatLauncher.addEventListener('click', openChat);
+    if(closeChatBtn) closeChatBtn.addEventListener('click', closeChat);
+
+    // New: Add listener to the whole document to "click away"
+    document.addEventListener('click', (event) => {
+      // If the chat is already hidden, do nothing
+      if (chatWidget.classList.contains('hidden')) {
+        return;
+      }
+      
+      // Check if the click was outside the chat widget
+      const isClickInsideWidget = chatWidget.contains(event.target);
+      
+      if (!isClickInsideWidget) {
+        closeChat();
+      }
     });
   }
 }); // <-- THIS IS THE CLOSING BRACKET OF THE DOMContentLoaded LISTENER
