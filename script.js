@@ -162,7 +162,7 @@ async function sendMessage() {
     chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
 
     // IMPORTANT: Replace this with the actual URL of your deployed serverless function
-    const serverlessFunctionUrl = 'YOUR_SERVERLESS_FUNCTION_URL'; 
+    const serverlessFunctionUrl = 'https://guidebook-chatbot-backend.vercel.app/api/chatbot'; 
 
     try {
         const response = await fetch(serverlessFunctionUrl, {
