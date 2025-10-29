@@ -228,3 +228,7 @@ body.print-mode::after{ display:none !important; }
 #chat-widget #send-btn:hover {
   background: #0056b3;
 }
+/* Rule to handle showing/hiding icons inside the launcher */
+#chat-launcher .hidden {
+  display: none;
+}
