@@ -112,4 +112,79 @@ document.addEventListener('DOMContentLoaded', () => {
       };
     });
   }
+/* -----------------------------------------------------------
+     4.  PRINT / SAVE‑AS‑PDF (native dialog)
+  ----------------------------------------------------------- */
+  // ... (your existing print button code is here) ...
+
+  /* ========================================================= */
+  /* ===== PASTE THE NEW CHATBOT JAVASCRIPT LOGIC HERE ======= */
+  /* ========================================================= */
+
+  /* -----------------------------------------------------------
+     5.  CHAT POP-UP LOGIC
+  ----------------------------------------------------------- */
+  const chatLauncher = document.getElementById('chat-launcher');
+  const chatWidget = document.getElementById('chat-widget');
+  const closeChatBtn = document.getElementById('close-chat');
+  
+  if (chatLauncher && chatWidget && closeChatBtn) {
+    chatLauncher.addEventListener('click', () => {
+      chatWidget.classList.remove('hidden');
+      chatLauncher.classList.add('hidden');
+    });
+
+    closeChatBtn.addEventListener('click', () => {
+      chatWidget.classList.add('hidden');
+      chatLauncher.classList.remove('hidden');
+    });
+  }
+}); // <-- THIS IS THE CLOSING BRACKET OF THE DOMContentLoaded LISTENER
+
+/* -----------------------------------------------------------
+   6.  SEND MESSAGE FUNCTION (Place this OUTSIDE the DOMContentLoaded listener)
+----------------------------------------------------------- */
+async function sendMessage() {
+    const userInputField = document.querySelector('#chat-widget #user-input');
+    const userInput = userInputField.value;
+    if (!userInput) return;
+
+    // Display user's message in the chat box
+    const chatBox = document.getElementById('chat-box');
+    chatBox.innerHTML += `<p><strong>You:</strong> ${userInput}</p>`;
+    userInputField.value = ''; // Clear the input field
+    chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
+
+    // IMPORTANT: Replace this with the actual URL of your deployed serverless function
+    const serverlessFunctionUrl = 'YOUR_SERVERLESS_FUNCTION_URL'; 
+
+    try {
+        const response = await fetch(serverlessFunctionUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: userInput })
+        });
+
+        if (response.status === 429) {
+            chatBox.innerHTML += `<p><strong>Bot:</strong> You're sending messages too quickly. Please wait a moment.</p>`;
+        } else if (!response.ok) {
+            throw new Error('Network response was not ok.');
+        } else {
+            const data = await response.json();
+            chatBox.innerHTML += `<p><strong>Bot:</strong> ${data.response}</p>`;
+        }
+
+    } catch (error) {
+        console.error('Fetch error:', error);
+        chatBox.innerHTML += `<p><strong>Bot:</strong> Sorry, I'm having trouble connecting. Please try again later.</p>`;
+    }
+    
+    chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom again after response
+}
+
+// Allow sending message with the Enter key
+document.querySelector('#chat-widget #user-input').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        sendMessage();
+    }
 });
