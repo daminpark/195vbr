@@ -40,7 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const header = sec.querySelector('h2');
     if (!header) return;
 
-    /* hide entire section if its heading is filtered out */
     if (header.offsetParent === null){
       sec.style.display = 'none';
       return;
@@ -48,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     header.classList.add('accordion-header');
 
-    /* wrap everything after header */
     const wrap = document.createElement('div');
     wrap.className = 'accordion-content';
     while (header.nextSibling){
@@ -56,21 +54,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     sec.appendChild(wrap);
 
-    /* start collapsed */
     sec.classList.add('collapsed');
 
     header.addEventListener('click', () => {
-
       const oldHeight = document.documentElement.scrollHeight;
       const buffer    = 40;
       const atBottom  = window.scrollY + window.innerHeight >= oldHeight - buffer;
 
       const isOpen = !sec.classList.contains('collapsed');
       if (isOpen){
-        sec.classList.add('collapsed');  /* close it */
+        sec.classList.add('collapsed');
       } else {
         sections.forEach(s => s.classList.add('collapsed'));
-        sec.classList.remove('collapsed'); /* open this one */
+        sec.classList.remove('collapsed');
       }
 
       const newHeight = document.documentElement.scrollHeight;
@@ -89,22 +85,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const printBtn = document.getElementById('printBtn') || document.getElementById('pdfBtn');
   if (printBtn){
     printBtn.addEventListener('click', () => {
-
-      /* remember which sections are open */
       const openSections = Array.from(document.querySelectorAll('section'))
                                 .filter(sec => !sec.classList.contains('collapsed'));
 
-      /* open every section for printing */
       document.querySelectorAll('section.collapsed')
               .forEach(sec => sec.classList.remove('collapsed'));
 
-      /* enter print‑mode so spacer disappears */
       document.body.classList.add('print-mode');
-
-      /* native print dialog – user picks "Save as PDF" */
       window.print();
 
-      /* restore UI after dialog closes */
       window.onafterprint = () => {
         document.body.classList.remove('print-mode');
         document.querySelectorAll('section')
@@ -113,23 +102,9 @@ document.addEventListener('DOMContentLoaded', () => {
       };
     });
   }
-/* -----------------------------------------------------------
-     4.  PRINT / SAVE‑AS‑PDF (native dialog)
-  ----------------------------------------------------------- */
-  // ... (your existing print button code is here) ...
-
-  /* ========================================================= */
-  /* ===== PASTE THE NEW CHATBOT JAVASCRIPT LOGIC HERE ======= */
-  /* ========================================================= */
 
   /* -----------------------------------------------------------
      5.  CHAT POP-UP LOGIC
-  ----------------------------------------------------------- */
-/* -----------------------------------------------------------
-     5.  CHAT POP-UP LOGIC (with Toggle and Click-Away)
-  ----------------------------------------------------------- */
-/* -----------------------------------------------------------
-     5.  CHAT POP-UP LOGIC (Proper Toggle)
   ----------------------------------------------------------- */
   const chatLauncher = document.getElementById('chat-launcher');
   const chatWidget = document.getElementById('chat-widget');
@@ -138,36 +113,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (chatLauncher && chatWidget && chatIcon && closeIcon) {
     chatLauncher.addEventListener('click', () => {
-      // Toggle the visibility of the main chat widget
       chatWidget.classList.toggle('hidden');
-      
-      // Toggle which icon is shown inside the button
       chatIcon.classList.toggle('hidden');
       closeIcon.classList.toggle('hidden');
     });
   }
-  // Allow sending message with the Enter key
-document.querySelector('#chat-widget #user-input').addEventListener('keypress', function (e) {
+
+  /* -----------------------------------------------------------
+     6.  Allow sending message with the Enter key
+  ----------------------------------------------------------- */
+  document.querySelector('#chat-widget #user-input').addEventListener('keypress', function (e) {
     if (e.key === 'Enter') {
         sendMessage();
     }
-}); // <-- THIS IS THE CLOSING BRACKET OF THE DOMContentLoaded LISTENER
+  });
+
+}); // <-- ✅ THIS IS THE MISSING LINE THAT FIXES THE SYNTAX ERROR.
 
 /* -----------------------------------------------------------
-   6.  SEND MESSAGE FUNCTION (Place this OUTSIDE the DOMContentLoaded listener)
+   7.  SEND MESSAGE FUNCTION (This stays outside)
 ----------------------------------------------------------- */
 async function sendMessage() {
     const userInputField = document.querySelector('#chat-widget #user-input');
     const userInput = userInputField.value;
     if (!userInput) return;
 
-    // Display user's message in the chat box
     const chatBox = document.getElementById('chat-box');
     chatBox.innerHTML += `<p><strong>You:</strong> ${userInput}</p>`;
-    userInputField.value = ''; // Clear the input field
-    chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
+    userInputField.value = '';
+    chatBox.scrollTop = chatBox.scrollHeight;
 
-    // IMPORTANT: Replace this with the actual URL of your deployed serverless function
     const serverlessFunctionUrl = 'https://guidebook-chatbot-backend.vercel.app/api/chatbot'; 
 
     try {
@@ -191,7 +166,5 @@ async function sendMessage() {
         chatBox.innerHTML += `<p><strong>Bot:</strong> Sorry, I'm having trouble connecting. Please try again later.</p>`;
     }
     
-    chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom again after response
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
-
-
