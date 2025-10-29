@@ -127,41 +127,22 @@ document.addEventListener('DOMContentLoaded', () => {
 /* -----------------------------------------------------------
      5.  CHAT POP-UP LOGIC (with Toggle and Click-Away)
   ----------------------------------------------------------- */
+/* -----------------------------------------------------------
+     5.  CHAT POP-UP LOGIC (Proper Toggle)
+  ----------------------------------------------------------- */
   const chatLauncher = document.getElementById('chat-launcher');
   const chatWidget = document.getElementById('chat-widget');
-  
-  // Function to open the chat
-  const openChat = () => {
-    chatWidget.classList.remove('hidden');
-    chatLauncher.classList.add('hidden');
-  };
+  const chatIcon = document.getElementById('chat-icon');
+  const closeIcon = document.getElementById('close-icon');
 
-  // Function to close the chat
-  const closeChat = () => {
-    chatWidget.classList.add('hidden');
-    chatLauncher.classList.remove('hidden');
-  };
-
-  // Add listeners to the buttons
-  if (chatLauncher && chatWidget) {
-    const closeChatBtn = document.getElementById('close-chat');
-    
-    chatLauncher.addEventListener('click', openChat);
-    if(closeChatBtn) closeChatBtn.addEventListener('click', closeChat);
-
-    // New: Add listener to the whole document to "click away"
-    document.addEventListener('click', (event) => {
-      // If the chat is already hidden, do nothing
-      if (chatWidget.classList.contains('hidden')) {
-        return;
-      }
+  if (chatLauncher && chatWidget && chatIcon && closeIcon) {
+    chatLauncher.addEventListener('click', () => {
+      // Toggle the visibility of the main chat widget
+      chatWidget.classList.toggle('hidden');
       
-      // Check if the click was outside the chat widget
-      const isClickInsideWidget = chatWidget.contains(event.target);
-      
-      if (!isClickInsideWidget) {
-        closeChat();
-      }
+      // Toggle which icon is shown inside the button
+      chatIcon.classList.toggle('hidden');
+      closeIcon.classList.toggle('hidden');
     });
   }
 }); // <-- THIS IS THE CLOSING BRACKET OF THE DOMContentLoaded LISTENER
