@@ -184,7 +184,9 @@ async function sendMessage() {
             throw new Error('Network response was not ok.');
         } else {
             const data = await response.json();
-            chatBox.innerHTML += `<p><strong>Bot:</strong> ${data.response}</p>`;
+            const htmlResponse = marked.parse(data.response); 
+            // Then, add the converted HTML to the chat box
+            chatBox.innerHTML += `<p><strong>Bot:</strong> ${htmlResponse}</p>`;
         }
 
     } catch (error) {
