@@ -80,6 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.scrollTo({ top: newHeight - window.innerHeight, left: 0 });
       }
     });
+    
   });
 
   /* -----------------------------------------------------------
@@ -145,6 +146,11 @@ document.addEventListener('DOMContentLoaded', () => {
       closeIcon.classList.toggle('hidden');
     });
   }
+  // Allow sending message with the Enter key
+document.querySelector('#chat-widget #user-input').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        sendMessage();
+    }
 }); // <-- THIS IS THE CLOSING BRACKET OF THE DOMContentLoaded LISTENER
 
 /* -----------------------------------------------------------
@@ -188,9 +194,4 @@ async function sendMessage() {
     chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom again after response
 }
 
-// Allow sending message with the Enter key
-document.querySelector('#chat-widget #user-input').addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') {
-        sendMessage();
-    }
-});
+
