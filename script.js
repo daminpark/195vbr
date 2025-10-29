@@ -1,33 +1,4 @@
-async function sendMessage() {
-    const userInput = document.getElementById('user-input').value;
-    if (!userInput) return;
 
-    // Display user's message
-    const chatBox = document.getElementById('chat-box');
-    chatBox.innerHTML += `<p><strong>You:</strong> ${userInput}</p>`;
-
-    // Call your serverless function
-    try {
-        const response = await fetch('YOUR_SERVERLESS_FUNCTION_URL', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: userInput })
-        });
-
-        if (response.status === 429) {
-            chatBox.innerHTML += `<p><strong>Bot:</strong> You are sending messages too quickly. Please wait a moment.</p>`;
-            return;
-        }
-
-        const data = await response.json();
-        chatBox.innerHTML += `<p><strong>Bot:</strong> ${data.response}</p>`;
-
-    } catch (error) {
-        chatBox.innerHTML += `<p><strong>Bot:</strong> Sorry, something went wrong.</p>`;
-    }
-
-    document.getElementById('user-input').value = '';
-}
 
 document.addEventListener('DOMContentLoaded', () => {
 
