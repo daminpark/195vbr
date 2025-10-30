@@ -1,4 +1,5 @@
-"base": {
+{
+  "base": {
     "chatbotContext": [
       "The guesthouse is 195VBR.",
       "Self Check-in: Check-in is 15:00 or later. We use a self check-in system—no need to wait for anyone.",
@@ -33,6 +34,14 @@
     "bathroomSharedB": {
       "chatbotContext": ["The assigned bathroom is Bathroom B, which is shared."],
       "visibleHtmlElements": ["bathroom-rules-shared", "bathroom-info-b"]
+    },
+    "bathroomPrivateA": {
+      "chatbotContext": ["The guest has a private bathroom, Bathroom A."],
+      "visibleHtmlElements": ["bathroom-rules-private", "bathroom-info-a"]
+    },
+    "bathroomPrivateB": {
+      "chatbotContext": ["The guest has a private bathroom, Bathroom B."],
+      "visibleHtmlElements": ["bathroom-rules-private", "bathroom-info-b"]
     },
     "bathroomPrivateC": {
       "chatbotContext": ["The guest has a private en-suite bathroom inside their room."],
@@ -76,7 +85,15 @@
     "56": { "groups": ["house195", "bathroomSharedB", "kitchenShared", "noLaundry", "storageUnderBed", "windowsTiltTurn"], "visibleHtmlElements": ["room-info-6"] },
     "5a": { "groups": ["house195", "privateBathroomA", "kitchenShared", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], "visibleHtmlElements": ["room-info-a"] },
     "5b": { "groups": ["house195", "privateBathroomB", "kitchenShared", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], "visibleHtmlElements": ["room-info-b"] },
-    "193vbr": { "groups": ["house193", "kitchenPrivate", "hasLaundry"], "chatbotContext": ["The guest has booked the entire 193 home. All bathrooms are private."], "visibleHtmlElements": ["room-info-a", "room-info-b", "bathroom-rules-private", "bathroom-info-a", "bathroom-info-b", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"] },
-    "195vbr": { "groups": ["house195", "kitchenPrivate", "hasLaundry"], "chatbotContext": ["The guest has booked the entire 195 home. All bathrooms are private."], "visibleHtmlElements": ["room-info-a", "room-info-b", "bathroom-rules-private", "bathroom-info-a", "bathroom-info-b", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"] }
+    "193vbr": {
+      "groups": ["house193", "kitchenPrivate", "hasLaundry"],
+      "chatbotContext": ["The guest has booked the entire 193 home. All bathrooms are private."],
+      "visibleHtmlElements": ["room-info-a", "room-info-b", "bathroom-rules-private", "bathroom-info-a", "bathroom-info-b", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"]
+    },
+    "195vbr": {
+      "groups": ["house195", "kitchenPrivate", "hasLaundry"],
+      "chatbotContext": ["The guest has booked the entire 195 home. All bathrooms are private."],
+      "visibleHtmlElements": ["room-info-a", "room-info-b", "bathroom-rules-private", "bathroom-info-a", "bathroom-info-b", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"]
+    }
   }
 }
