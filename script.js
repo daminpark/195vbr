@@ -159,16 +159,28 @@ document.querySelector('#chat-widget #user-input').addEventListener('keypress', 
 ----------------------------------------------------------- */
 async function sendMessage() {
     const userInputField = document.querySelector('#chat-widget #user-input');
-    const userInput = userInputField.value;
+    const userInput = userInputField.value.trim(); // Use trim() to remove whitespace
     if (!userInput) return;
 
-    // Display user's message in the chat box
     const chatBox = document.getElementById('chat-box');
-    chatBox.innerHTML += `<p><strong>You:</strong> ${userInput}</p>`;
-    userInputField.value = ''; // Clear the input field
-    chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
 
-    // IMPORTANT: Replace this with the actual URL of your deployed serverless function
+    // --- Helper function to get a formatted timestamp ---
+    const getTimeStamp = () => {
+      return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    };
+
+    // --- 1. Display the user's message ---
+    const userMessageHtml = `
+      <div class="message-bubble user-message">
+        <p>${userInput}</p>
+      </div>
+      <div class="timestamp">${getTimeStamp()}</div>
+    `;
+    chatBox.insertAdjacentHTML('beforeend', userMessageHtml);
+    userInputField.value = ''; // Clear input field
+    chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom
+
+    // --- 2. Call the server and display the bot's response ---
     const serverlessFunctionUrl = 'https://guidebook-chatbot-backend.vercel.app/api/chatbot'; 
 
     try {
@@ -178,23 +190,35 @@ async function sendMessage() {
             body: JSON.stringify({ prompt: userInput })
         });
 
+        let botResponseText;
         if (response.status === 429) {
-            chatBox.innerHTML += `<p><strong>Bot:</strong> You're sending messages too quickly. Please wait a moment.</p>`;
+            botResponseText = "You're sending messages too quickly. Please wait a moment.";
         } else if (!response.ok) {
             throw new Error('Network response was not ok.');
         } else {
             const data = await response.json();
-            const htmlResponse = marked.parse(data.response); 
-            // Then, add the converted HTML to the chat box
-            chatBox.innerHTML += `<p><strong>Bot:</strong> ${htmlResponse}</p>`;
+            // Convert the Markdown response to HTML using marked.js
+            botResponseText = marked.parse(data.response); 
         }
+
+        const botMessageHtml = `
+          <div class="message-bubble bot-message">
+            ${botResponseText}
+          </div>
+          <div class="timestamp">${getTimeStamp()}</div>
+        `;
+        chatBox.insertAdjacentHTML('beforeend', botMessageHtml);
 
     } catch (error) {
         console.error('Fetch error:', error);
-        chatBox.innerHTML += `<p><strong>Bot:</strong> Sorry, I'm having trouble connecting. Please try again later.</p>`;
+        const errorHtml = `
+          <div class="message-bubble bot-message">
+            <p>Sorry, I'm having trouble connecting. Please try again later.</p>
+          </div>
+          <div class="timestamp">${getTimeStamp()}</div>
+        `;
+        chatBox.insertAdjacentHTML('beforeend', errorHtml);
     }
     
-    chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom again after response
+    chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom again after response
 }
-
-
