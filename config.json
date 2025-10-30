@@ -13,9 +13,7 @@
       "When providing links, use Markdown format like [Link Text](URL)."
     ],
     "visibleHtmlElements": [
-      "what-not-to-bring", "address", "domestic-directions", "airport-directions", "getting-around", "codetimes",
-      "check-in-luggage", "heating", "bedroom", "bathroom", "kitchen-rules", "windows", "laundry",
-      "troubleshooting", "tv", "local-guidebook", "video", "contact", "wifi"
+      "kitchen-rules-base" 
     ]
   },
   "groups": {
@@ -69,22 +67,22 @@
     "windowsStandard": { "visibleHtmlElements": ["window-info-standard"] }
   },
   "bookings": {
-    "31": { "groups": ["house193", "bathroomSharedA", "kitchenShared", "noLaundry", "storageUnderBed", "windowsTiltTurn"], "visibleHtmlElements": ["room-info-1"] },
-    "32": { "groups": ["house193", "bathroomSharedA", "kitchenShared", "noLaundry", "storageInBed", "windowsStandard"], "visibleHtmlElements": ["room-info-2"] },
-    "33": { "groups": ["house193", "bathroomPrivateC", "kitchenShared", "noLaundry", "storageUnderBed", "windowsStandard"], "visibleHtmlElements": ["room-info-3"] },
-    "34": { "groups": ["house193", "bathroomSharedB", "kitchenShared", "noLaundry", "storageUnderBed", "windowsTiltTurn"], "visibleHtmlElements": ["room-info-4"] },
-    "35": { "groups": ["house193", "bathroomSharedB", "kitchenShared", "noLaundry", "storageInBed", "windowsStandard"], "visibleHtmlElements": ["room-info-5"] },
-    "36": { "groups": ["house193", "bathroomSharedB", "kitchenShared", "noLaundry", "storageUnderBed", "windowsTiltTurn"], "visibleHtmlElements": ["room-info-6"] },
-    "3a": { "groups": ["house193", "privateBathroomA", "kitchenShared", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], "visibleHtmlElements": ["room-info-a"] },
-    "3b": { "groups": ["house193", "privateBathroomB", "kitchenShared", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], "visibleHtmlElements": ["room-info-b"] },
-    "51": { "groups": ["house195", "bathroomSharedA", "kitchenShared", "noLaundry", "storageUnderBed", "windowsTiltTurn"], "visibleHtmlElements": ["room-info-1"] },
-    "52": { "groups": ["house195", "bathroomSharedA", "kitchenShared", "noLaundry", "storageInBed", "windowsStandard"], "visibleHtmlElements": ["room-info-2"] },
-    "53": { "groups": ["house195", "bathroomPrivateC", "kitchenShared", "noLaundry", "storageUnderBed", "windowsStandard"], "visibleHtmlElements": ["room-info-3"] },
-    "54": { "groups": ["house195", "bathroomSharedB", "kitchenShared", "noLaundry", "storageUnderBed", "windowsTiltTurn"], "visibleHtmlElements": ["room-info-4"] },
-    "55": { "groups": ["house195", "bathroomSharedB", "kitchenShared", "noLaundry", "storageInBed", "windowsStandard"], "visibleHtmlElements": ["room-info-5"] },
-    "56": { "groups": ["house195", "bathroomSharedB", "kitchenShared", "noLaundry", "storageUnderBed", "windowsTiltTurn"], "visibleHtmlElements": ["room-info-6"] },
-    "5a": { "groups": ["house195", "privateBathroomA", "kitchenShared", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], "visibleHtmlElements": ["room-info-a"] },
-    "5b": { "groups": ["house195", "privateBathroomB", "kitchenShared", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], "visibleHtmlElements": ["room-info-b"] },
+    "31": { "groups": ["house193", "bathroomSharedA", "kitchenShared", "noLaundry", "storageUnderBed", "windowsTiltTurn"], "visibleHtmlElements": ["room-info-1"], "chatbotContext": ["The guest is staying in Room 1."]},
+    "32": { "groups": ["house193", "bathroomSharedA", "kitchenShared", "noLaundry", "storageInBed", "windowsStandard"], "visibleHtmlElements": ["room-info-2"], "chatbotContext": ["The guest is staying in Room 2."] },
+    "33": { "groups": ["house193", "bathroomPrivateC", "kitchenShared", "noLaundry", "storageUnderBed", "windowsStandard"], "visibleHtmlElements": ["room-info-3"], "chatbotContext": ["The guest is staying in Room 3."] },
+    "34": { "groups": ["house193", "bathroomSharedB", "kitchenShared", "noLaundry", "storageUnderBed", "windowsTiltTurn"], "visibleHtmlElements": ["room-info-4"], "chatbotContext": ["The guest is staying in Room 4."] },
+    "35": { "groups": ["house193", "bathroomSharedB", "kitchenShared", "noLaundry", "storageInBed", "windowsStandard"], "visibleHtmlElements": ["room-info-5"], "chatbotContext": ["The guest is staying in Room 5."] },
+    "36": { "groups": ["house193", "bathroomSharedB", "kitchenShared", "noLaundry", "storageUnderBed", "windowsTiltTurn"], "visibleHtmlElements": ["room-info-6"], "chatbotContext": ["The guest is staying in Room 6."] },
+    "3a": { "groups": ["house193", "privateBathroomA", "kitchenShared", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], "visibleHtmlElements": ["room-info-a"], "chatbotContext": ["The guest is staying in Rooms 1 and 2."] },
+    "3b": { "groups": ["house193", "privateBathroomB", "kitchenShared", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], "visibleHtmlElements": ["room-info-b"], "chatbotContext": ["The guest is staying in Rooms 4, 5 and 6."] },
+    "51": { "groups": ["house195", "bathroomSharedA", "kitchenShared", "noLaundry", "storageUnderBed", "windowsTiltTurn"], "visibleHtmlElements": ["room-info-1"], "chatbotContext": ["The guest is staying in Room 1."] },
+    "52": { "groups": ["house195", "bathroomSharedA", "kitchenShared", "noLaundry", "storageInBed", "windowsStandard"], "visibleHtmlElements": ["room-info-2"], "chatbotContext": ["The guest is staying in Room 2."] },
+    "53": { "groups": ["house195", "bathroomPrivateC", "kitchenShared", "noLaundry", "storageUnderBed", "windowsStandard"], "visibleHtmlElements": ["room-info-3"], "chatbotContext": ["The guest is staying in Room 3."] },
+    "54": { "groups": ["house195", "bathroomSharedB", "kitchenShared", "noLaundry", "storageUnderBed", "windowsTiltTurn"], "visibleHtmlElements": ["room-info-4"], "chatbotContext": ["The guest is staying in Room 4."] },
+    "55": { "groups": ["house195", "bathroomSharedB", "kitchenShared", "noLaundry", "storageInBed", "windowsStandard"], "visibleHtmlElements": ["room-info-5"], "chatbotContext": ["The guest is staying in Room 5."] },
+    "56": { "groups": ["house195", "bathroomSharedB", "kitchenShared", "noLaundry", "storageUnderBed", "windowsTiltTurn"], "visibleHtmlElements": ["room-info-6"], "chatbotContext": ["The guest is staying in Room 6."] },
+    "5a": { "groups": ["house195", "privateBathroomA", "kitchenShared", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], "visibleHtmlElements": ["room-info-a"], "chatbotContext": ["The guest is staying in Rooms 1 and 2."] },
+    "5b": { "groups": ["house195", "privateBathroomB", "kitchenShared", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], "visibleHtmlElements": ["room-info-b"], "chatbotContext": ["The guest is staying in Rooms 4, 5 and 6."] },
     "193vbr": {
       "groups": ["house193", "kitchenPrivate", "hasLaundry"],
       "chatbotContext": ["The guest has booked the entire 193 home. All bathrooms are private."],
