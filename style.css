@@ -232,7 +232,7 @@ section:not(.collapsed) .accordion-content {
 ----------------------------------------------------------- */
 
 /* By default, hide ALL dynamic content blocks */
-.dynamic-section > div {
+.dynamic-section div {
   display: none;
 }
 
