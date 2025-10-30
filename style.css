@@ -290,3 +290,13 @@ body.print-mode::after{ display:none !important; }
   align-self: flex-start;
   margin-left: 10px;
 }
+
+
+/* -----------------------------------------------------------
+   GUIDEBOOK DYNAMIC CONTENT - HIDE BY DEFAULT
+----------------------------------------------------------- */
+
+/* This is the most important rule. It hides all specific info blocks by default. */
+.guidebook-section > div {
+  display: none;
+}
