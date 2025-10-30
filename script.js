@@ -159,17 +159,17 @@ document.querySelector('#chat-widget #user-input').addEventListener('keypress', 
 ----------------------------------------------------------- */
 async function sendMessage() {
     const userInputField = document.querySelector('#chat-widget #user-input');
-    const userInput = userInputField.value.trim(); // Use trim() to remove whitespace
+    const userInput = userInputField.value.trim();
     if (!userInput) return;
 
     const chatBox = document.getElementById('chat-box');
 
-    // --- Helper function to get a formatted timestamp ---
+    // Helper function to get a formatted timestamp
     const getTimeStamp = () => {
       return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     };
 
-    // --- 1. Display the user's message ---
+    // --- 1. Display the user's message in the correct format ---
     const userMessageHtml = `
       <div class="message-bubble user-message">
         <p>${userInput}</p>
@@ -187,17 +187,16 @@ async function sendMessage() {
         const response = await fetch(serverlessFunctionUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: userInput })
+            body: JSON.stringify({ prompt: userInput }) // We'll update this in Part 2
         });
 
         let botResponseText;
         if (response.status === 429) {
-            botResponseText = "You're sending messages too quickly. Please wait a moment.";
+            botResponseText = "<p>You're sending messages too quickly. Please wait a moment.</p>";
         } else if (!response.ok) {
             throw new Error('Network response was not ok.');
         } else {
             const data = await response.json();
-            // Convert the Markdown response to HTML using marked.js
             botResponseText = marked.parse(data.response); 
         }
 
@@ -220,5 +219,5 @@ async function sendMessage() {
         chatBox.insertAdjacentHTML('beforeend', errorHtml);
     }
     
-    chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom again after response
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
