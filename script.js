@@ -4,99 +4,68 @@ let chatbotContext = '';
 // --- This code runs once the entire page is loaded and ready ---
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    // 1. Fetch the configuration file (the "recipe book")
     const response = await fetch('config.json');
     if (!response.ok) throw new Error('config.json not found');
     const configData = await response.json();
 
-    // 2. Determine the current booking from the URL (e.g., '31' from '/?31')
     const params = new URLSearchParams(window.location.search);
-    const bookingKey = params.keys().next().value || '31'; // Default to '31' if no key is provided
+    const bookingKey = params.keys().next().value || '31';
     
-    // 3. Find the "recipe" (the list of groups) for this booking
     const groupsToShow = configData.bookings[bookingKey];
     if (!groupsToShow) {
       throw new Error(`Booking key "${bookingKey}" not found in config.json`);
     }
 
-    // 4. Add a 'show-[group]' class to the body for each group in the recipe.
-    // The CSS will use these classes to reveal the correct content sections.
     groupsToShow.forEach(group => {
       document.body.classList.add(`show-${group}`);
     });
 
-    // 5. CRITICAL STEP: Build the chatbot's brain by scraping the now-visible content
     buildChatbotContextFromPage();
 
-  } catch (error)
-  {
+  } catch (error) {
     console.error("Error setting up guidebook:", error);
-    // If setup fails, build a fallback context so the chatbot can still answer basic questions
     chatbotContext = "You are a helpful assistant for 195VBR. Please inform the user that there was an error loading the specific guidebook information and that they should refer to the on-page text.";
   }
 
-  // 6. NOW, set up the accordion, which will collapse the visible sections
   setupAccordion();
-
-  // 7. Set up the rest of the UI
   setupPrintButton();
   setupChatToggle();
   setupEnterKeyListener();
+  addInitialBotMessage();
 });
 
-/**
- * Builds the chatbot's "brain" by scraping all text from the main container.
- * This function is called only ONCE after the correct sections are made visible
- * and BEFORE the accordion script collapses them.
- */
 function buildChatbotContextFromPage() {
   const mainContainer = document.querySelector('main.container');
   if (mainContainer) {
-    // .innerText gets the rendered text content, which is perfect for the AI.
     const guidebookText = mainContainer.innerText;
-    
-    // Clean up the scraped text for the AI
     const cleanedText = guidebookText
-      .replace(/(\s\s)\s+/g, '$1') // Collapse multiple spaces/newlines into a maximum of two
-      .replace(/^\s*Save as PDF\s*/, '') // Remove the button text from the start
+      .replace(/(\s\s)\s+/g, '$1')
+      .replace(/^\s*Save as PDF\s*/, '')
       .trim();
 
-    const systemPrompt = "You are a helpful assistant for the 195VBR guesthouse. You must answer the user's question based ONLY on the detailed information provided below from the official guidebook. Do not make up answers or use external knowledge. Be concise and friendly, and use Markdown for formatting links like [Link Text](URL).";
+    const systemPrompt = "You are 'Vicky', a friendly and helpful AI assistant for the 195VBR guesthouse in London. Your primary role is to assist guests. For questions specifically about the guesthouse (e.g., check-in, WiFi, heating), you MUST base your answer ONLY on the detailed guidebook information provided below. For all other questions (e.g., London travel, restaurant recommendations, tourism), you should use your general knowledge to be a helpful local guide. Be concise, friendly, and use Markdown for formatting links like [Link Text](URL).";
     
     chatbotContext = `${systemPrompt}\n\nRELEVANT GUIDEBOOK CONTENT:\n${cleanedText}`;
   }
 }
 
-
-// --- UI SETUP FUNCTIONS (for organization) ---
+// --- UI SETUP FUNCTIONS ---
 
 function setupAccordion() {
   const sections = document.querySelectorAll('main.container section');
   sections.forEach(sec => {
     const header = sec.querySelector('h2');
-    if (!header) return;
-    
-    // Important: Only make a section an accordion if it's actually visible on the page
-    if (window.getComputedStyle(sec).display === 'none') return;
+    if (!header || window.getComputedStyle(sec).display === 'none') return;
     
     header.classList.add('accordion-header');
     const wrap = document.createElement('div');
     wrap.className = 'accordion-content';
-    while (header.nextSibling) {
-      wrap.appendChild(header.nextSibling);
-    }
+    while (header.nextSibling) wrap.appendChild(header.nextSibling);
     sec.appendChild(wrap);
     sec.classList.add('collapsed');
 
     header.addEventListener('click', () => {
-      const isOpen = !sec.classList.contains('collapsed');
-      if (isOpen) {
-        sec.classList.add('collapsed');
-      } else {
-        // Optional: close other accordions when one is opened
-        // sections.forEach(s => { if (s !== sec) s.classList.add('collapsed'); }); 
-        sec.classList.remove('collapsed');
-      }
+      sec.classList.toggle('collapsed');
     });
   });
 }
@@ -105,15 +74,7 @@ function setupPrintButton() {
   const printBtn = document.getElementById('printBtn');
   if (printBtn) {
     printBtn.addEventListener('click', () => {
-      const openSections = Array.from(document.querySelectorAll('section')).filter(sec => !sec.classList.contains('collapsed'));
-      document.querySelectorAll('section.collapsed').forEach(sec => sec.classList.remove('collapsed'));
-      document.body.classList.add('print-mode');
       window.print();
-      window.onafterprint = () => {
-        document.body.classList.remove('print-mode');
-        document.querySelectorAll('section').forEach(sec => sec.classList.add('collapsed'));
-        openSections.forEach(sec => sec.classList.remove('collapsed'));
-      };
     });
   }
 }
@@ -123,7 +84,7 @@ function setupChatToggle() {
   const chatWidget = document.getElementById('chat-widget');
   const chatIcon = document.getElementById('chat-icon');
   const closeIcon = document.getElementById('close-icon');
-  if (chatLauncher && chatWidget && chatIcon && closeIcon) {
+  if (chatLauncher && chatWidget) {
     chatLauncher.addEventListener('click', () => {
       chatWidget.classList.toggle('hidden');
       chatIcon.classList.toggle('hidden');
@@ -135,69 +96,96 @@ function setupChatToggle() {
 function setupEnterKeyListener() {
   const userInputField = document.querySelector('#chat-widget #user-input');
   if (userInputField) {
-    userInputField.addEventListener('keypress', function (e) {
-      if (e.key === 'Enter') { 
-        e.preventDefault(); // Prevents default 'Enter' key behavior
+    userInputField.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) { 
+        e.preventDefault();
         sendMessage(); 
       }
     });
   }
 }
 
+function addInitialBotMessage() {
+    const chatBox = document.getElementById('chat-box');
+    const welcomeMessage = `<div class="message-bubble bot-message"><p>Welcome to 195VBR! I'm Vicky, your AI assistant. Ask me anything about the guesthouse or your London trip.</p></div>`;
+    chatBox.innerHTML = welcomeMessage;
+}
 
 // --- THE CHATBOT LOGIC ---
 
 async function sendMessage() {
-    if (!chatbotContext) {
-      console.error("Chatbot context is not ready yet. Please wait a moment.");
-      // You could display a message in the chat here if you want
-      return;
-    }
-  
-    const userInputField = document.querySelector('#chat-widget #user-input');
+    const userInputField = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
     const userInput = userInputField.value.trim();
-    if (!userInput) return;
+    if (!userInput || sendBtn.disabled) return;
 
     const chatBox = document.getElementById('chat-box');
     const getTimeStamp = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    // Display the user's message
+    // Disable input while processing
+    userInputField.value = '';
+    userInputField.disabled = true;
+    sendBtn.disabled = true;
+
+    // Display user's message
     const userMessageHtml = `<div class="message-bubble user-message"><p>${userInput}</p></div><div class="timestamp">${getTimeStamp()}</div>`;
     chatBox.insertAdjacentHTML('beforeend', userMessageHtml);
-    userInputField.value = '';
     chatBox.scrollTop = chatBox.scrollHeight;
 
-    // The URL for your Vercel serverless function
+    // Display typing indicator and create bot message container
+    const typingIndicatorHtml = `<div class="message-bubble bot-message typing-indicator"><span></span><span></span><span></span></div>`;
+    chatBox.insertAdjacentHTML('beforeend', typingIndicatorHtml);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    
+    const typingIndicator = chatBox.querySelector('.typing-indicator');
+    
     const serverlessFunctionUrl = 'https://guidebook-chatbot-backend.vercel.app/api/chatbot';
 
     try {
         const response = await fetch(serverlessFunctionUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-              prompt: userInput,
-              context: chatbotContext // Use the globally stored, pre-built context
-            })
+            body: JSON.stringify({ prompt: userInput, context: chatbotContext })
         });
 
-        let botResponseText;
-        if (response.status === 429) {
-            botResponseText = "<p>You're sending messages too quickly. Please wait a moment.</p>";
-        } else if (!response.ok) {
-            throw new Error(`Network response was not ok. Status: ${response.status}`);
-        } else {
-            const data = await response.json();
-            botResponseText = marked.parse(data.response); // Convert Markdown text from AI into HTML
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || `Network response was not ok. Status: ${response.status}`);
         }
 
-        const botMessageHtml = `<div class="message-bubble bot-message">${botResponseText}</div><div class="timestamp">${getTimeStamp()}</div>`;
-        chatBox.insertAdjacentHTML('beforeend', botMessageHtml);
+        // Prepare for streaming
+        typingIndicator.remove();
+        const botMessageContainer = document.createElement('div');
+        botMessageContainer.className = 'message-bubble bot-message';
+        chatBox.appendChild(botMessageContainer);
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let fullResponse = '';
+
+        while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            
+            fullResponse += decoder.decode(value, { stream: true });
+            botMessageContainer.innerHTML = marked.parse(fullResponse); // Render markdown in real-time
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+        
+        // Add timestamp after message is complete
+        const timestampHtml = `<div class="timestamp">${getTimeStamp()}</div>`;
+        chatBox.insertAdjacentHTML('beforeend', timestampHtml);
 
     } catch (error) {
         console.error('Fetch error:', error);
+        typingIndicator.remove();
         const errorHtml = `<div class="message-bubble bot-message"><p>Sorry, I'm having trouble connecting. Please try again later.</p></div><div class="timestamp">${getTimeStamp()}</div>`;
         chatBox.insertAdjacentHTML('beforeend', errorHtml);
+    } finally {
+        // Re-enable input
+        userInputField.disabled = false;
+        sendBtn.disabled = false;
+        userInputField.focus();
+        chatBox.scrollTop = chatBox.scrollHeight;
     }
-    
-    chatBox.scrollTop = chatBox.scrollHeight;
 }

@@ -1,18 +1,50 @@
 /* ---------------------------------------------------
-   1. BASE STYLES
+   1. BASE STYLES & VARIABLES
 --------------------------------------------------- */
+:root {
+  --primary-color: #007bff;
+  --primary-color-hover: #0056b3;
+  --text-color-light: #fff;
+  --text-color-dark: #333;
+  --text-color-body: #000;
+  --border-color: #e0e0e0;
+  --background-color-chat: #f9f9f9;
+  --bot-message-bg: #e9e9eb;
+}
+
 html, body {
   margin: 0;
   padding: 0;
   font-family: Arial, sans-serif;
-  background: #fff;
-  color: #333;
+  background: var(--text-color-light);
+  color: var(--text-color-dark);
 }
 
 .container {
   max-width: 800px;
   margin: 0 auto;
   padding: 1em;
+}
+
+/* Links and Videos (moved from inline) */
+a, a:visited { color: #0000EE; text-decoration: underline; }
+a:hover { color: #551A8B; }
+
+.video-container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 Aspect Ratio */
+  margin: 1rem 0;
+  border-radius: 8px;
+}
+.video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
 }
 
 /* ---------------------------------------------------
@@ -29,7 +61,7 @@ html, body {
    3. ACCORDION STYLES
 --------------------------------------------------- */
 section {
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .accordion-header {
@@ -37,7 +69,7 @@ section {
   position: relative;
   user-select: none;
   margin: 0;
-  padding: .65rem 2rem .65rem 0;   /* room for chevron */
+  padding: .65rem 2rem .65rem 0;
 }
 
 .accordion-header::after {
@@ -49,11 +81,11 @@ section {
   height: .6rem;
   border-right: 2px solid currentColor;
   border-bottom: 2px solid currentColor;
-  transform: translateY(-50%) rotate(45deg);      /* ► */
+  transform: translateY(-50%) rotate(45deg);
   transition: transform .25s ease;
 }
 section:not(.collapsed) .accordion-header::after {
-  transform: translateY(-50%) rotate(135deg);     /* ▼ */
+  transform: translateY(-50%) rotate(135deg);
 }
 
 .accordion-content {
@@ -66,18 +98,23 @@ section:not(.collapsed) .accordion-content {
 }
 @keyframes fade { from {opacity:0;} to {opacity:1;} }
 
-/* force pure black inside open panels (on screen) */
 .accordion-content,
-.accordion-content * { color: #000 !important; }
+.accordion-content * { color: var(--text-color-body) !important; }
 
 /* ---------------------------------------------------
    4. PDF / PRINT BUTTON
 --------------------------------------------------- */
 .pdf-button{
-  background:#007bff;color:#fff;border:none;border-radius:4px;
-  padding:.5rem 1rem;font-size:.9rem;cursor:pointer;margin-bottom:1rem;
+  background: var(--primary-color);
+  color: var(--text-color-light);
+  border: none;
+  border-radius: 4px;
+  padding: .5rem 1rem;
+  font-size: .9rem;
+  cursor: pointer;
+  margin-bottom: 1rem;
 }
-.pdf-button:hover{background:#0056b3;}
+.pdf-button:hover{ background: var(--primary-color-hover); }
 
 /* ---------------------------------------------------
    5. CHAT WIDGET & LAUNCHER
@@ -88,7 +125,7 @@ section:not(.collapsed) .accordion-content {
   right: 20px;
   width: 60px;
   height: 60px;
-  background-color: #007bff;
+  background-color: var(--primary-color);
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -98,15 +135,8 @@ section:not(.collapsed) .accordion-content {
   z-index: 1000;
   transition: transform 0.2s ease;
 }
-#chat-launcher:hover {
-  transform: scale(1.1);
-}
-#chat-launcher.hidden {
-  display: none;
-}
-#chat-launcher .hidden {
-  display: none;
-}
+#chat-launcher:hover { transform: scale(1.1); }
+#chat-launcher .hidden { display: none; }
 
 #chat-widget {
   position: fixed;
@@ -116,7 +146,7 @@ section:not(.collapsed) .accordion-content {
   max-width: 90vw;
   height: 500px;
   max-height: 70vh;
-  background-color: #fff;
+  background-color: var(--text-color-light);
   border-radius: 10px;
   box-shadow: 0 5px 15px rgba(0,0,0,0.3);
   z-index: 1000;
@@ -124,13 +154,11 @@ section:not(.collapsed) .accordion-content {
   flex-direction: column;
   overflow: hidden;
 }
-#chat-widget.hidden {
-  display: none;
-}
+#chat-widget.hidden { display: none; }
 
 #chat-header {
-  background-color: #007bff;
-  color: #fff;
+  background-color: var(--primary-color);
+  color: var(--text-color-light);
   padding: 10px 15px;
   display: flex;
   justify-content: space-between;
@@ -140,9 +168,9 @@ section:not(.collapsed) .accordion-content {
 
 #chat-input-container {
   display: flex;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--border-color);
   padding: 10px;
-  background-color: #fff;
+  background-color: var(--text-color-light);
 }
 
 #chat-widget #user-input {
@@ -154,16 +182,14 @@ section:not(.collapsed) .accordion-content {
 }
 
 #chat-widget #send-btn {
-  background: #007bff;
-  color: #fff;
+  background: var(--primary-color);
+  color: var(--text-color-light);
   border: none;
   border-radius: 20px;
   padding: 8px 15px;
   cursor: pointer;
 }
-#chat-widget #send-btn:hover {
-  background: #0056b3;
-}
+#chat-widget #send-btn:hover { background: var(--primary-color-hover); }
 
 /* ---------------------------------------------------
    6. IMPROVED CHAT MESSAGE BUBBLES
@@ -172,23 +198,14 @@ section:not(.collapsed) .accordion-content {
   flex-grow: 1;
   padding: 15px;
   overflow-y: auto;
-  background-color: #f9f9f9;
+  background-color: var(--background-color-chat);
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
-
-#chat-box p {
-  margin: 0;
-  line-height: 1.4;
-}
-#chat-box ul, #chat-box ol {
-  margin: 0.5em 0 0.5em 1.2em;
-  padding: 0;
-}
-#chat-box li {
-  margin-bottom: 0.25em;
-}
+#chat-box p { margin: 0; line-height: 1.4; }
+#chat-box ul, #chat-box ol { margin: 0.5em 0 0.5em 1.2em; padding: 0; }
+#chat-box li { margin-bottom: 0.25em; }
 
 .message-bubble {
   padding: 10px 15px;
@@ -198,15 +215,15 @@ section:not(.collapsed) .accordion-content {
 }
 
 .bot-message {
-  background-color: #e9e9eb;
-  color: #000;
+  background-color: var(--bot-message-bg);
+  color: var(--text-color-body);
   align-self: flex-start;
   border-bottom-left-radius: 4px;
 }
 
 .user-message {
-  background-color: #007bff;
-  color: #fff;
+  background-color: var(--primary-color);
+  color: var(--text-color-light);
   align-self: flex-end;
   border-bottom-right-radius: 4px;
 }
@@ -217,29 +234,32 @@ section:not(.collapsed) .accordion-content {
   margin-top: -8px;
   margin-bottom: 8px;
 }
+.user-message + .timestamp { align-self: flex-end; margin-right: 15px; }
+.bot-message + .timestamp { align-self: flex-start; margin-left: 15px; }
 
-.user-message + .timestamp {
-  align-self: flex-end;
-  margin-right: 15px;
+/* Typing Indicator */
+.typing-indicator span {
+  height: 8px; width: 8px;
+  background-color: #9E9EA1;
+  border-radius: 50%;
+  display: inline-block;
+  animation: bounce 1.4s infinite ease-in-out both;
 }
-.bot-message + .timestamp {
-  align-self: flex-start;
-  margin-left: 15px;
+.typing-indicator span:nth-of-type(1) { animation-delay: -0.32s; }
+.typing-indicator span:nth-of-type(2) { animation-delay: -0.16s; }
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1.0); }
 }
 
 /* -----------------------------------------------------------
    7. GUIDEBOOK DYNAMIC CONTENT (CSS-DRIVEN LOGIC)
 ----------------------------------------------------------- */
-
-/* By default, hide ALL dynamic content blocks */
 .dynamic-section div {
   display: none;
 }
-
-/* Show content blocks based on the class added to the BODY tag */
 body.show-house193 .group-house193 { display: block; }
 body.show-house195 .group-house195 { display: block; }
-
 body.show-room1 .group-room1 { display: block; }
 body.show-room2 .group-room2 { display: block; }
 body.show-room3 .group-room3 { display: block; }
@@ -248,46 +268,32 @@ body.show-room5 .group-room5 { display: block; }
 body.show-room6 .group-room6 { display: block; }
 body.show-rooma .group-rooma { display: block; }
 body.show-roomb .group-roomb { display: block; }
-
 body.show-bathroomA .group-bathroomA { display: block; }
 body.show-bathroomB .group-bathroomB { display: block; }
 body.show-bathroomC .group-bathroomC { display: block; }
 body.show-bathroomShared .group-bathroomShared { display: block; }
 body.show-bathroomPrivate .group-bathroomPrivate { display: block; }
-
 body.show-kitchenShared .group-kitchenShared { display: block; }
 body.show-kitchenPrivate .group-kitchenPrivate { display: block; }
 body.show-kitchenBase .group-kitchenBase { display: block; }
-
 body.show-noLaundry .group-noLaundry { display: block; }
 body.show-hasLaundry .group-hasLaundry { display: block; }
-
 body.show-storageUnderBed .group-storageUnderBed { display: block; }
 body.show-storageInBed .group-storageInBed { display: block; }
-
 body.show-windowsStandard .group-windowsStandard { display: block; }
 body.show-windowsTiltTurn .group-windowsTiltTurn { display: block; }
-
 
 /* ---------------------------------------------------
    8. UTILITIES & PRINT STYLES
 --------------------------------------------------- */
-body::after{
-  content:'';
-  display:block;
-  height:100vh;
-}
+body::after{ content:''; display:block; height:100vh; }
 @media (max-width:600px){ body::after{height:60vh;} }
 
 body.print-mode::after{ display:none !important; }
-
 @media print{
   section.collapsed .accordion-content{ display:block !important; }
   section{ break-inside: avoid; page-break-inside: avoid; }
-  *{ color:#000 !important; }
-  .pdf-button,
-  .accordion-header::after,
-  body::after,
-  #chat-launcher,
-  #chat-widget { display:none !important; }
+  *{ color: var(--text-color-body) !important; }
+  .pdf-button, .accordion-header::after, body::after,
+  #chat-launcher, #chat-widget { display:none !important; }
 }
