@@ -1,193 +1,160 @@
-document.addEventListener('DOMContentLoaded', () => {
+// This global variable will hold the final, assembled context for the chatbot.
+let chatbotContext = '';
 
-  /* -----------------------------------------------------------
-     1.  Reveal spans requested via URL parameters
-  ----------------------------------------------------------- */
-  const params = new URLSearchParams(window.location.search);
-  [
-    '193','195',
-    'room1','room2','room3','room4','room5','room6',
-    'rooma','roomb','wholehome','sharedb','sharedk'
-  ].forEach(key=>{
-    if (params.has(key)){
-      document.querySelectorAll('.variation-'+key)
-              .forEach(el => { el.style.display = 'inline'; });
-    }
-  });
+// This function runs once the entire page is loaded and ready.
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    // 1. Fetch the configuration "brain" file
+    const response = await fetch('config.json');
+    if (!response.ok) throw new Error('config.json not found');
+    const configData = await response.json();
 
-  /* -----------------------------------------------------------
-     2.  One reusable bottom spacer to prevent “jump”
-  ----------------------------------------------------------- */
-  const spacer = document.createElement('div');
-  spacer.id = 'accordion-spacer';
-  spacer.style.height = '0px';
-  document.body.appendChild(spacer);
-
-  window.addEventListener('scroll', () => {
-    const buffer = 40;
-    const nearBottom = window.scrollY + window.innerHeight
-                       >= document.documentElement.scrollHeight - buffer;
-    if (!nearBottom) spacer.style.height = '0px';
-  });
-
-  /* -----------------------------------------------------------
-     3.  Build the accordion
-  ----------------------------------------------------------- */
-  const sections = document.querySelectorAll('main.container section');
-
-  sections.forEach(sec => {
-
-    const header = sec.querySelector('h2');
-    if (!header) return;
-
-    /* hide entire section if its heading is filtered out */
-    if (header.offsetParent === null){
-      sec.style.display = 'none';
-      return;
+    // 2. Determine the current booking from the URL (e.g., '?31')
+    const params = new URLSearchParams(window.location.search);
+    const bookingKey = params.keys().next().value || '31'; // Default to '31' if no key is specified
+    const booking = configData.bookings[bookingKey];
+    
+    if (!booking) {
+      throw new Error(`Booking key "${bookingKey}" not found in config.json`);
     }
 
-    header.classList.add('accordion-header');
+    // 3. Assemble the final configuration by merging base, groups, and specific booking info
+    const finalVisibleElements = new Set(configData.base.visibleHtmlElements);
+    const finalChatbotContext = [...configData.base.chatbotContext];
 
-    /* wrap everything after header */
-    const wrap = document.createElement('div');
-    wrap.className = 'accordion-content';
-    while (header.nextSibling){
-      wrap.appendChild(header.nextSibling);
-    }
-    sec.appendChild(wrap);
-
-    /* start collapsed */
-    sec.classList.add('collapsed');
-
-    header.addEventListener('click', () => {
-
-      const oldHeight = document.documentElement.scrollHeight;
-      const buffer    = 40;
-      const atBottom  = window.scrollY + window.innerHeight >= oldHeight - buffer;
-
-      const isOpen = !sec.classList.contains('collapsed');
-      if (isOpen){
-        sec.classList.add('collapsed');  /* close it */
-      } else {
-        sections.forEach(s => s.classList.add('collapsed'));
-        sec.classList.remove('collapsed'); /* open this one */
-      }
-
-      const newHeight = document.documentElement.scrollHeight;
-      const diff = oldHeight - newHeight;
-      if (atBottom && diff > 0){
-        spacer.style.height = `${diff + buffer}px`;
-        window.scrollTo({ top: newHeight - window.innerHeight, left: 0 });
+    // Add data from the booking's specified groups
+    booking.groups.forEach(groupKey => {
+      const group = configData.groups[groupKey];
+      if (group) {
+        group.visibleHtmlElements.forEach(id => finalVisibleElements.add(id));
+        if (group.chatbotContext) finalChatbotContext.push(...group.chatbotContext);
       }
     });
-    
+
+    // Add data specific to this individual booking
+    if (booking.visibleHtmlElements) {
+        booking.visibleHtmlElements.forEach(id => finalVisibleElements.add(id));
+    }
+    if (booking.chatbotContext) {
+        finalChatbotContext.push(...booking.chatbotContext);
+    }
+
+    // 4. Show the correct HTML elements on the page
+    finalVisibleElements.forEach(id => {
+      const element = document.getElementById(id);
+      if (element) {
+        element.style.display = 'block';
+      }
+    });
+
+    // 5. Store the final assembled context for the chatbot to use later
+    const systemPrompt = "You are a helpful assistant for the 195VBR guesthouse. Answer the user's question based ONLY on the detailed information provided below. Be concise, friendly, and use Markdown for formatting, especially for links like [Link Text](URL).";
+    chatbotContext = `${systemPrompt}\n\nCONTEXT:\n- ${finalChatbotContext.join('\n- ')}`;
+
+  } catch (error) {
+    console.error("Error setting up guidebook:", error);
+    // Optionally, display an error message on the page for the user
+  }
+
+  // Setup the interactive parts of the page now that the content is ready
+  setupAccordion();
+  setupPrintButton();
+  setupChatToggle();
+  setupEnterKeyListener();
+});
+
+// --- UI SETUP FUNCTIONS (for organization) ---
+
+function setupAccordion() {
+  const sections = document.querySelectorAll('main.container section');
+  sections.forEach(sec => {
+    const header = sec.querySelector('h2');
+    if (!header) return;
+    if (header.offsetParent === null) { sec.style.display = 'none'; return; }
+    header.classList.add('accordion-header');
+    const wrap = document.createElement('div');
+    wrap.className = 'accordion-content';
+    while (header.nextSibling) { wrap.appendChild(header.nextSibling); }
+    sec.appendChild(wrap);
+    sec.classList.add('collapsed');
+    header.addEventListener('click', () => {
+      const isOpen = !sec.classList.contains('collapsed');
+      if (isOpen) {
+        sec.classList.add('collapsed');
+      } else {
+        sections.forEach(s => s.classList.add('collapsed'));
+        sec.classList.remove('collapsed');
+      }
+    });
   });
+}
 
-  /* -----------------------------------------------------------
-     4.  PRINT / SAVE‑AS‑PDF (native dialog)
-  ----------------------------------------------------------- */
-  const printBtn = document.getElementById('printBtn') || document.getElementById('pdfBtn');
-  if (printBtn){
+function setupPrintButton() {
+  const printBtn = document.getElementById('printBtn');
+  if (printBtn) {
     printBtn.addEventListener('click', () => {
-
-      /* remember which sections are open */
-      const openSections = Array.from(document.querySelectorAll('section'))
-                                .filter(sec => !sec.classList.contains('collapsed'));
-
-      /* open every section for printing */
-      document.querySelectorAll('section.collapsed')
-              .forEach(sec => sec.classList.remove('collapsed'));
-
-      /* enter print‑mode so spacer disappears */
+      const openSections = Array.from(document.querySelectorAll('section')).filter(sec => !sec.classList.contains('collapsed'));
+      document.querySelectorAll('section.collapsed').forEach(sec => sec.classList.remove('collapsed'));
       document.body.classList.add('print-mode');
-
-      /* native print dialog – user picks "Save as PDF" */
       window.print();
-
-      /* restore UI after dialog closes */
       window.onafterprint = () => {
         document.body.classList.remove('print-mode');
-        document.querySelectorAll('section')
-                .forEach(sec => sec.classList.add('collapsed'));
+        document.querySelectorAll('section').forEach(sec => sec.classList.add('collapsed'));
         openSections.forEach(sec => sec.classList.remove('collapsed'));
       };
     });
   }
-/* -----------------------------------------------------------
-     4.  PRINT / SAVE‑AS‑PDF (native dialog)
-  ----------------------------------------------------------- */
-  // ... (your existing print button code is here) ...
+}
 
-  /* ========================================================= */
-  /* ===== PASTE THE NEW CHATBOT JAVASCRIPT LOGIC HERE ======= */
-  /* ========================================================= */
-
-  /* -----------------------------------------------------------
-     5.  CHAT POP-UP LOGIC
-  ----------------------------------------------------------- */
-/* -----------------------------------------------------------
-     5.  CHAT POP-UP LOGIC (with Toggle and Click-Away)
-  ----------------------------------------------------------- */
-/* -----------------------------------------------------------
-     5.  CHAT POP-UP LOGIC (Proper Toggle)
-  ----------------------------------------------------------- */
+function setupChatToggle() {
   const chatLauncher = document.getElementById('chat-launcher');
   const chatWidget = document.getElementById('chat-widget');
   const chatIcon = document.getElementById('chat-icon');
   const closeIcon = document.getElementById('close-icon');
-
   if (chatLauncher && chatWidget && chatIcon && closeIcon) {
     chatLauncher.addEventListener('click', () => {
-      // Toggle the visibility of the main chat widget
       chatWidget.classList.toggle('hidden');
-      
-      // Toggle which icon is shown inside the button
       chatIcon.classList.toggle('hidden');
       closeIcon.classList.toggle('hidden');
     });
   }
-  // Allow sending message with the Enter key
-document.querySelector('#chat-widget #user-input').addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') {
-        sendMessage();
-    }
-  })
-}); // <-- THIS IS THE CLOSING BRACKET OF THE DOMContentLoaded LISTENER
+}
 
-/* -----------------------------------------------------------
-   6.  SEND MESSAGE FUNCTION (Place this OUTSIDE the DOMContentLoaded listener)
------------------------------------------------------------ */
+function setupEnterKeyListener() {
+  document.querySelector('#chat-widget #user-input').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') { sendMessage(); }
+  });
+}
+
+// --- CHATBOT SEND MESSAGE FUNCTION ---
+
 async function sendMessage() {
     const userInputField = document.querySelector('#chat-widget #user-input');
     const userInput = userInputField.value.trim();
     if (!userInput) return;
 
     const chatBox = document.getElementById('chat-box');
+    const getTimeStamp = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    // Helper function to get a formatted timestamp
-    const getTimeStamp = () => {
-      return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    };
-
-    // --- 1. Display the user's message in the correct format ---
+    // Display the user's message
     const userMessageHtml = `
-      <div class="message-bubble user-message">
-        <p>${userInput}</p>
-      </div>
-      <div class="timestamp">${getTimeStamp()}</div>
-    `;
+      <div class="message-bubble user-message"><p>${userInput}</p></div>
+      <div class="timestamp">${getTimeStamp()}</div>`;
     chatBox.insertAdjacentHTML('beforeend', userMessageHtml);
-    userInputField.value = ''; // Clear input field
-    chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom
+    userInputField.value = '';
+    chatBox.scrollTop = chatBox.scrollHeight;
 
-    // --- 2. Call the server and display the bot's response ---
-    const serverlessFunctionUrl = 'https://guidebook-chatbot-backend.vercel.app/api/chatbot'; 
+    // Call the server with the prompt and the pre-assembled context
+    const serverlessFunctionUrl = 'https://guidebook-chatbot-backend.vercel.app/api/chatbot';
 
     try {
         const response = await fetch(serverlessFunctionUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: userInput }) // We'll update this in Part 2
+            body: JSON.stringify({
+              prompt: userInput,
+              context: chatbotContext // Use the globally stored, perfectly assembled context!
+            })
         });
 
         let botResponseText;
@@ -197,25 +164,19 @@ async function sendMessage() {
             throw new Error('Network response was not ok.');
         } else {
             const data = await response.json();
-            botResponseText = marked.parse(data.response); 
+            botResponseText = marked.parse(data.response); // Convert Markdown to HTML
         }
 
         const botMessageHtml = `
-          <div class="message-bubble bot-message">
-            ${botResponseText}
-          </div>
-          <div class="timestamp">${getTimeStamp()}</div>
-        `;
+          <div class="message-bubble bot-message">${botResponseText}</div>
+          <div class="timestamp">${getTimeStamp()}</div>`;
         chatBox.insertAdjacentHTML('beforeend', botMessageHtml);
 
     } catch (error) {
         console.error('Fetch error:', error);
         const errorHtml = `
-          <div class="message-bubble bot-message">
-            <p>Sorry, I'm having trouble connecting. Please try again later.</p>
-          </div>
-          <div class="timestamp">${getTimeStamp()}</div>
-        `;
+          <div class="message-bubble bot-message"><p>Sorry, I'm having trouble connecting. Please try again later.</p></div>
+          <div class="timestamp">${getTimeStamp()}</div>`;
         chatBox.insertAdjacentHTML('beforeend', errorHtml);
     }
     
