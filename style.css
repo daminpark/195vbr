@@ -221,12 +221,45 @@ section:not(.collapsed) .accordion-content {
 }
 
 /* -----------------------------------------------------------
-   7. GUIDEBOOK DYNAMIC CONTENT - HIDE BY DEFAULT
+   7. GUIDEBOOK DYNAMIC CONTENT (CSS-DRIVEN LOGIC)
 ----------------------------------------------------------- */
-/* This rule hides all specific info blocks until the script shows them. */
-.guidebook-section > div {
+
+/* By default, hide ALL dynamic content blocks */
+.dynamic-section > div {
   display: none;
 }
+
+/* Show content blocks based on the class added to the BODY tag */
+body.show-house193 .group-house193 { display: block; }
+body.show-house195 .group-house195 { display: block; }
+
+body.show-room1 .group-room1 { display: block; }
+body.show-room2 .group-room2 { display: block; }
+body.show-room3 .group-room3 { display: block; }
+body.show-room4 .group-room4 { display: block; }
+body.show-room5 .group-room5 { display: block; }
+body.show-room6 .group-room6 { display: block; }
+body.show-rooma .group-rooma { display: block; }
+body.show-roomb .group-roomb { display: block; }
+
+body.show-bathroomA .group-bathroomA { display: block; }
+body.show-bathroomB .group-bathroomB { display: block; }
+body.show-bathroomC .group-bathroomC { display: block; }
+body.show-bathroomShared .group-bathroomShared { display: block; }
+body.show-bathroomPrivate .group-bathroomPrivate { display: block; }
+
+body.show-kitchenShared .group-kitchenShared { display: block; }
+body.show-kitchenPrivate .group-kitchenPrivate { display: block; }
+body.show-kitchenBase .group-kitchenBase { display: block; }
+
+body.show-noLaundry .group-noLaundry { display: block; }
+body.show-hasLaundry .group-hasLaundry { display: block; }
+
+body.show-storageUnderBed .group-storageUnderBed { display: block; }
+body.show-storageInBed .group-storageInBed { display: block; }
+
+body.show-windowsStandard .group-windowsStandard { display: block; }
+body.show-windowsTiltTurn .group-windowsTiltTurn { display: block; }
 
 /* ---------------------------------------------------
    8. UTILITIES & PRINT STYLES

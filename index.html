@@ -11,7 +11,7 @@
     a, a:visited { color: #0000EE; text-decoration: underline; }
     a:hover { color: #551A8B; }
 
-    /* New styles for responsive video embeds */
+    /* Styles for responsive video embeds */
     .video-container {
       position: relative;
       overflow: hidden;
@@ -42,7 +42,7 @@
     <h1>195VBR Guidebook</h1>
     <button id="printBtn" class="pdf-button">Save as PDF</button>
 
-    <!-- ========= UNIVERSAL SECTIONS (Always Visible) ========= -->
+    <!-- ========= UNIVERSAL SECTIONS (Always visible) ========= -->
     <section id="video">
       <h2>🎬 Instructional Video Playlist</h2>
       <p>This playlist contains all the instructional videos from this guide in one convenient location.</p>
@@ -59,13 +59,6 @@
         <li><strong>Adapters:</strong> Rooms have universal adapters on each side of the bed.</li>
         <li><strong>Extra Blankets:</strong> All beds include an electric under-blanket.</li>
       </ul>
-    </section>
-
-    <!-- ========= DYNAMIC SECTIONS (Controlled by config.json) ========= -->
-    <section id="address" class="guidebook-section">
-      <h2>🏘️ Address</h2>
-      <div id="address-193"><p>193 Vauxhall Bridge Road<br>Pimlico, London<br>SW1V 1ER</p></div>
-      <div id="address-195"><p>195 Vauxhall Bridge Road<br>Pimlico, London<br>SW1V 1ER</p></div>
     </section>
 
     <section id="domestic-directions">
@@ -107,13 +100,7 @@
       <p>This video shows the full process, from entering the front door to finding the luggage cupboard:</p>
       <div class="video-container"><iframe src="https://www.youtube.com/embed/rlUbHfWcN0s" title="Luggage drop-off process" allowfullscreen></iframe></div>
     </section>
-    
-    <section id="wifi" class="guidebook-section">
-      <h2>🛜 Wifi</h2>
-      <div id="wifi-193"><p>Network Name (SSID): <strong>193</strong><br>Password: <strong>12345671</strong><br><a href="WIFI:T:WPA;S:193;P:12345671;;">Click here to connect (mobile)</a></p></div>
-      <div id="wifi-195"><p>Network Name (SSID): <strong>195</strong><br>Password: <strong>09876543</strong><br><a href="WIFI:T:WPA;S:195;P:09876543;;">Click here to connect (mobile)</a></p></div>
-    </section>
-    
+
     <section id="heating">
       <h2>🌡️ Heating and Cooling</h2>
       <p>The heating is on an automatic schedule (07:00-10:00 and 17:00-22:30). You can boost the temperature directly from the valve (TRV) on your radiator.</p>
@@ -121,34 +108,47 @@
       <p><strong>Cooling:</strong> We do not have air conditioning. For a cooler room, we recommend keeping the window and curtains closed during sunny days and opening them in the evening to let in the cool air.</p>
     </section>
 
-    <section id="bedroom" class="guidebook-section">
+    <!-- ========= DYNAMIC SECTIONS (Controlled by config.json and CSS) ========= -->
+    <section class="dynamic-section">
+      <h2>🏘️ Address</h2>
+      <div class="group-house193"><p>193 Vauxhall Bridge Road<br>Pimlico, London<br>SW1V 1ER</p></div>
+      <div class="group-house195"><p>195 Vauxhall Bridge Road<br>Pimlico, London<br>SW1V 1ER</p></div>
+    </section>
+    
+    <section class="dynamic-section">
+        <h2>🛜 Wifi</h2>
+        <div class="group-house193"><p>Network Name (SSID): <strong>193</strong><br>Password: <strong>12345671</strong><br><a href="WIFI:T:WPA;S:193;P:12345671;;">Click here to connect (mobile devices only)</a></p></div>
+        <div class="group-house195"><p>Network Name (SSID): <strong>195</strong><br>Password: <strong>09876543</strong><br><a href="WIFI:T:WPA;S:195;P:09876543;;">Click here to connect (mobile devices only)</a></p></div>
+    </section>
+
+    <section class="dynamic-section">
       <h2>🛏️ Bedroom</h2>
-      <div id="room-info-1"><p>Your room number is: 1.</p></div>
-      <div id="room-info-2"><p>Your room number is: 2.</p></div>
-      <div id="room-info-3"><p>Your room number is: 3.</p></div>
-      <div id="room-info-4"><p>Your room number is: 4.</p></div>
-      <div id="room-info-5"><p>Your room number is: 5.</p></div>
-      <div id="room-info-6"><p>Your room number is: 6.</p></div>
-      <div id="room-info-a"><p>You have booked Rooms 1 & 2.</p></div>
-      <div id="room-info-b"><p>You have booked Rooms 4, 5 & 6.</p></div>
+      <div class="group-room1"><p>Your room number is: 1.</p></div>
+      <div class="group-room2"><p>Your room number is: 2.</p></div>
+      <div class="group-room3"><p>Your room number is: 3.</p></div>
+      <div class="group-room4"><p>Your room number is: 4.</p></div>
+      <div class="group-room5"><p>Your room number is: 5.</p></div>
+      <div class="group-room6"><p>Your room number is: 6.</p></div>
+      <div class="group-rooma"><p>You have booked Rooms 1 & 2.</p></div>
+      <div class="group-roomb"><p>You have booked Rooms 4, 5 & 6.</p></div>
       
-      <div id="storage-under-bed">
+      <div class="group-storageUnderBed">
         <p>You can create more space by storing luggage under the bed, as shown in this video:</p>
         <div class="video-container"><iframe src="https://www.youtube.com/embed/3Ejpyf4MYTI" title="Luggage storage under bed" allowfullscreen></iframe></div>
       </div>
-      <div id="storage-in-bed">
+      <div class="group-storageInBed">
         <p>This bed frame has a lift-up mattress with significant storage space inside, as shown in this video:</p>
         <div class="video-container"><iframe src="https://www.youtube.com/embed/VoFABSMLII8" title="Luggage storage inside bed" allowfullscreen></iframe></div>
       </div>
     </section>
 
-    <section id="bathroom" class="guidebook-section">
+    <section class="dynamic-section">
       <h2>🛁 Bathroom</h2>
-      <div id="bathroom-info-a"><p>Your assigned bathroom is labelled 'A'.</p></div>
-      <div id="bathroom-info-b"><p>Your assigned bathroom is labelled 'B'.</p></div>
-      <div id="bathroom-info-c"><p>Your private bathroom is the en-suite inside your room.</p></div>
+      <div class="group-bathroomA"><p>Your assigned bathroom is labelled 'A'.</p></div>
+      <div class="group-bathroomB"><p>Your assigned bathroom is labelled 'B'.</p></div>
+      <div class="group-bathroomC"><p>Your private bathroom is the en-suite inside your room.</p></div>
       
-      <div id="bathroom-rules-shared">
+      <div class="group-bathroomShared">
         <p>This is a shared bathroom. Please be considerate of other guests:</p>
         <ul>
           <li><strong>Use Your Assigned Compartment:</strong> Store your toiletries in your numbered space. Items left elsewhere may be discarded.</li>
@@ -156,21 +156,21 @@
           <li><strong>Be Mindful of Time:</strong> Limit use to ~15 minutes, especially during peak morning hours.</li>
         </ul>
       </div>
-      <div id="bathroom-rules-private"><p>This bathroom is private for your exclusive use.</p></div>
+      <div class="group-bathroomPrivate"><p>This bathroom is private for your exclusive use.</p></div>
     </section>
 
-    <section id="kitchen-rules" class="guidebook-section">
+    <section class="dynamic-section">
       <h2>🍳 Kitchen</h2>
-      <div id="kitchen-rules-shared">
+      <div class="group-kitchenShared">
         <p>The shared kitchen is located in the basement, through the door marked 'K'. Please:</p>
         <ul>
           <li><strong>Use Assigned Storage:</strong> Each room has a numbered space in the fridge and cabinets.</li>
           <li><strong>Clean As You Go:</strong> Place used dishes in the dishwasher. Staff will run it when full.</li>
         </ul>
       </div>
-      <div id="kitchen-rules-private"><p>The kitchen is private for your group's exclusive use.</p></div>
+      <div class="group-kitchenPrivate"><p>The kitchen is private for your group's exclusive use.</p></div>
       
-      <div id="kitchen-rules-base">
+      <div class="group-kitchenBase">
         <p><strong>Shared Supplies:</strong> Help yourself to complimentary tea and coffee, as well as basic condiments and spices.</p>
         <p><strong>Rubbish:</strong> The large metal bin is for recycling. General waste goes in the black bin.</p>
         <p>Here are video guides for the appliances:</p>
@@ -181,27 +181,28 @@
       </div>
     </section>
 
-    <section id="windows" class="guidebook-section">
+    <section class="dynamic-section">
       <h2>🪟 Windows</h2>
-      <div id="window-info-standard"><p>The window can be opened by pressing the button on the handle and turning it upwards.</p></div>
-      <div id="window-info-tilt-turn">
+      <div class="group-windowsStandard"><p>The window can be opened by pressing the button on the handle and turning it upwards.</p></div>
+      <div class="group-windowsTiltTurn">
         <p>These are "tilt and turn" windows. This video demonstrates how to open them for ventilation (tilt) or fully (turn):</p>
         <div class="video-container"><iframe src="https://www.youtube.com/embed/uqOEIZtq_wI" title="How to use tilt-and-turn windows" allowfullscreen></iframe></div>
       </div>
     </section>
 
-    <section id="laundry" class="guidebook-section">
+    <section class="dynamic-section">
       <h2>🧺 Laundry</h2>
-      <div id="laundry-no-access">
+      <div class="group-noLaundry">
         <p>There are no guest-accessible washing machines on-site. A highly-rated local launderette is <a href="https://maps.app.goo.gl/uYuoqcrG3xC3Q2Nz8" target="_blank" rel="noopener">True Colours Launderette</a>.</p>
         <p>Towels are not changed daily. For fresh towels (max. once every 2 days), please leave used ones outside your door by 11:00am.</p>
       </div>
-      <div id="laundry-has-access">
+      <div class="group-hasLaundry">
         <p>The washing machine is available for your use. It is located in the basement. This video provides access and usage instructions:</p>
         <div class="video-container"><iframe src="https://www.youtube.com/embed/hLV62ekup-E" title="How to use washing machine" allowfullscreen></iframe></div>
       </div>
     </section>
-    
+
+    <!-- ========= UNIVERSAL STATIC SECTIONS (Continued) ========= -->
     <section id="troubleshooting">
         <h2>🛠️ Troubleshooting & Repairs</h2>
         <p>If your digital door lock runs out of batteries, it's a quick fix. This video shows the simple replacement process:</p>
@@ -224,66 +225,18 @@
       <p>We’ve compiled some nearby recommendations:</p>
       <h3>Food</h3>
       <ul>
-        <li>
-          <a href="https://www.google.com/maps/search/?api=1&query=Regency+Cafe+London" target="_blank" rel="noopener">
-            Regency Cafe
-          </a> – traditional full English breakfast
-        </li>
-        <li>
-          <a href="https://www.google.com/maps/search/?api=1&query=Jugged+Hare+London" target="_blank" rel="noopener">
-            Jugged Hare
-          </a> – great pub across the road
-        </li>
-        <li>
-          <a href="https://www.google.com/maps/search/?api=1&query=Tachbrook+Street+Market+London" target="_blank" rel="noopener">
-            Tachbrook Street Market
-          </a> – local market for lunch on weekdays
-        </li>
-        <li>
-          <a href="https://www.google.com/maps/search/?api=1&query=Kimchimama+London" target="_blank" rel="noopener">
-            Kimchimama
-          </a> – casual Korean food (especially fried chicken)
-        </li>
-        <li>
-          <a href="https://www.google.com/maps/search/?api=1&query=Ben+Venuti+London" target="_blank" rel="noopener">
-            Ben Venuti
-          </a> – amazing Italian cafe around the corner
-        </li>
-        <li>
-          <a href="https://www.google.com/maps/search/?api=1&query=Tozi+London" target="_blank" rel="noopener">
-            Tozi
-          </a> – upscale Italian restaurant nearby
-        </li>
-        <li>
-          <a href="https://www.google.com/maps/search/?api=1&query=A+Wong+70+Wilton+Road+London" target="_blank" rel="noopener">
-            A. Wong
-          </a> – Michelin-starred Chinese restaurant behind the house
-        </li>
-        <li>
-          <a href="https://www.google.com/maps/search/?api=1&query=Little+Waitrose+London" target="_blank" rel="noopener">
-            Little Waitrose
-          </a> – closest upmarket supermarket
-        </li>
-        <li>
-          <a href="https://www.google.com/maps/search/?api=1&query=Sainsbury%27s+Victoria+Station" target="_blank" rel="noopener">
-            Sainsbury's
-          </a> – big supermarket
-        </li>
-        <li>
-          <a href="https://www.google.com/maps/search/?api=1&query=Rippon+Cheese+London" target="_blank" rel="noopener">
-            Rippon Cheese
-          </a> – famous cheese store nearby
-        </li>
-        <li>
-          <a href="https://www.google.com/maps/search/?api=1&query=Dishoom+London" target="_blank" rel="noopener">
-            Dishoom
-          </a> – famous Indian food (further away, book in advance)
-        </li>
-        <li>
-          <a href="https://www.google.com/maps/search/?api=1&query=Gold+Mine+London" target="_blank" rel="noopener">
-            Gold Mine
-          </a> – great Peking duck (further away)
-        </li>
+        <li><a href="https://www.google.com/maps/search/?api=1&query=Regency+Cafe+London" target="_blank" rel="noopener">Regency Cafe</a> – A classic London spot for a traditional full English breakfast.</li>
+        <li><a href="https://www.google.com/maps/search/?api=1&query=Jugged+Hare+London" target="_blank" rel="noopener">Jugged Hare</a> – A great pub just across the road.</li>
+        <li><a href="https://www.google.com/maps/search/?api=1&query=Tachbrook+Street+Market+London" target="_blank" rel="noopener">Tachbrook Street Market</a> – A local market for lunch on weekdays.</li>
+        <li><a href="https://www.google.com/maps/search/?api=1&query=Kimchimama+London" target="_blank" rel="noopener">Kimchimama</a> – Casual Korean food (especially fried chicken).</li>
+        <li><a href="https://www.google.com/maps/search/?api=1&query=Ben+Venuti+London" target="_blank" rel="noopener">Ben Venuti</a> – An amazing Italian cafe around the corner.</li>
+        <li><a href="https://www.google.com/maps/search/?api=1&query=Tozi+London" target="_blank" rel="noopener">Tozi</a> – An upscale Italian restaurant nearby.</li>
+        <li><a href="https://www.google.com/maps/search/?api=1&query=A+Wong+70+Wilton+Road+London" target="_blank" rel="noopener">A. Wong</a> – Michelin-starred Chinese restaurant behind the house.</li>
+        <li><a href="https://www.google.com/maps/search/?api=1&query=Little+Waitrose+London" target="_blank" rel="noopener">Little Waitrose</a> – The closest upmarket supermarket.</li>
+        <li><a href="https://www.google.com/maps/search/?api=1&query=Sainsbury%27s+Victoria+Station" target="_blank" rel="noopener">Sainsbury's</a> – A big supermarket inside Victoria Station.</li>
+        <li><a href="https://www.google.com/maps/search/?api=1&query=Rippon+Cheese+London" target="_blank" rel="noopener">Rippon Cheese</a> – A famous cheese store nearby.</li>
+        <li><a href="https://www.google.com/maps/search/?api=1&query=Dishoom+London" target="_blank" rel="noopener">Dishoom</a> – Famous Indian food (further away, book in advance).</li>
+        <li><a href="https://www.google.com/maps/search/?api=1&query=Gold+Mine+London" target="_blank" rel="noopener">Gold Mine</a> – Great Peking duck (further away).</li>
       </ul>
       <h3>Sights</h3>
       <ul>
