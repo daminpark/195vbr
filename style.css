@@ -136,7 +136,22 @@ section:not(.collapsed) .accordion-content {
   transition: transform 0.2s ease;
 }
 #chat-launcher:hover { transform: scale(1.1); }
-#chat-launcher .hidden { display: none; }
+/* style.css (REPLACE the old #chat-launcher .hidden rule with this) */
+
+/* 1. By default, hide the close icon */
+#close-icon {
+  display: none;
+}
+
+/* 2. When the launcher has the .is-open class, HIDE the chat icon */
+#chat-launcher.is-open #chat-icon {
+  display: none;
+}
+
+/* 3. When the launcher has the .is-open class, SHOW the close icon */
+#chat-launcher.is-open #close-icon {
+  display: block; /* Use block instead of flex/inline to be certain it appears */
+}
 
 #chat-widget {
   position: fixed;
