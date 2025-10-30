@@ -1,13 +1,12 @@
-{
-  "base": {
+"base": {
     "chatbotContext": [
       "The guesthouse is 195VBR.",
-      "Check-in is from 3 PM (15:00). It is a self check-in system.",
-      "Early luggage drop-off is from 11:00 in cupboard V.",
-      "Luggage can be stored after check-out until 14:00 in cupboard V.",
-      "WiFi for 193 is SSID: 193, Pass: 12345671. WiFi for 195 is SSID: 195, Pass: 09876543. Both networks are available everywhere.",
-      "Heating is on an automatic schedule and can be boosted via the radiator valve. Heating turns off if a window is open.",
-      "There is no air conditioning.",
+      "Self Check-in: Check-in is 15:00 or later. We use a self check-in system—no need to wait for anyone.",
+      "Early Luggage Drop-off: You can leave bags from 11:00, your front door code/Cupboard V code is automatically active from 11:00. Store them downstairs in cupboard V. You don't need to message if you are planning on leaving your bags from 11:00. Please message us earliest a day before your check-in if you need a drop-off earlier than 11:00 (subject to availability).",
+      "Storing bags after check-out: You can leave bags until 14:00 after check-out, your front door code/Cupboard V code is automatically active until 14:00. Store them downstairs in cupboard V. You don't need to message if you are planning on leaving your bags until 14:00. Please message us earliest a day before your check-in if you need store your luggage later than 14:00 (subject to availability).",
+      "WiFi for 193 is SSID: 193, Pass: 12345671. WiFi for 195 is SSID: 195, Pass: 09876543. Both networks are available everywhere. Click-to-connect links are in the guidebook.",
+      "Heating is on an automatic schedule (07:00-10:00 and 17:00-22:30). You can boost the temperature directly from the valve (TRV) on your radiator. The heating will automatically turn off in a room if a window is left open.",
+      "There is no air conditioning. For a cooler room, we recommend keeping the window and curtains closed during sunny days and opening them in the evening.",
       "The contact for emergencies is WhatsApp +44 7443 618207.",
       "Each bedroom has a Smart TV with streaming services.",
       "When providing links, use Markdown format like [Link Text](URL)."
