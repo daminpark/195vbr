@@ -129,6 +129,12 @@ function setupEnterKeyListener() {
 // --- CHATBOT SEND MESSAGE FUNCTION ---
 
 async function sendMessage() {
+    // ✅ ADD THIS CHECK: If the config hasn't loaded yet, do nothing.
+    if (!chatbotContext) {
+        console.error("Chatbot context is not ready yet. Please wait a moment.");
+        return; // Stop the function from running
+    }
+  
     const userInputField = document.querySelector('#chat-widget #user-input');
     const userInput = userInputField.value.trim();
     if (!userInput) return;
