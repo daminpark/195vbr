@@ -7,16 +7,13 @@
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
   <style>
-    /* General styles for links */
     a, a:visited { color: #0000EE; text-decoration: underline; }
     a:hover { color: #551A8B; }
-
-    /* Styles for responsive video embeds */
     .video-container {
       position: relative;
       overflow: hidden;
       width: 100%;
-      padding-top: 56.25%; /* 16:9 Aspect Ratio */
+      padding-top: 56.25%;
       margin: 1rem 0;
       border-radius: 8px;
     }
@@ -24,8 +21,6 @@
       position: absolute;
       top: 0;
       left: 0;
-      bottom: 0;
-      right: 0;
       width: 100%;
       height: 100%;
       border: none;
@@ -42,7 +37,6 @@
     <h1>195VBR Guidebook</h1>
     <button id="printBtn" class="pdf-button">Save as PDF</button>
 
-    <!-- ========= UNIVERSAL SECTIONS (Always visible) ========= -->
     <section id="video">
       <h2>🎬 Instructional Video Playlist</h2>
       <p>This playlist contains all the instructional videos from this guide in one convenient location.</p>
@@ -59,6 +53,12 @@
         <li><strong>Adapters:</strong> Rooms have universal adapters on each side of the bed.</li>
         <li><strong>Extra Blankets:</strong> All beds include an electric under-blanket.</li>
       </ul>
+    </section>
+
+    <section class="dynamic-section">
+      <h2>🏘️ Address</h2>
+      <div class="group-house193"><p>193 Vauxhall Bridge Road<br>Pimlico, London<br>SW1V 1ER</p></div>
+      <div class="group-house195"><p>195 Vauxhall Bridge Road<br>Pimlico, London<br>SW1V 1ER</p></div>
     </section>
 
     <section id="domestic-directions">
@@ -100,25 +100,18 @@
       <p>This video shows the full process, from entering the front door to finding the luggage cupboard:</p>
       <div class="video-container"><iframe src="https://www.youtube.com/embed/rlUbHfWcN0s" title="Luggage drop-off process" allowfullscreen></iframe></div>
     </section>
-
+    
+    <section class="dynamic-section">
+      <h2>🛜 Wifi</h2>
+      <div class="group-house193"><p>Network Name (SSID): <strong>193</strong><br>Password: <strong>12345671</strong><br><a href="WIFI:T:WPA;S:193;P:12345671;;">Click here to connect (mobile devices only)</a></p></div>
+      <div class="group-house195"><p>Network Name (SSID): <strong>195</strong><br>Password: <strong>09876543</strong><br><a href="WIFI:T:WPA;S:195;P:09876543;;">Click here to connect (mobile devices only)</a></p></div>
+    </section>
+    
     <section id="heating">
       <h2>🌡️ Heating and Cooling</h2>
       <p>The heating is on an automatic schedule (07:00-10:00 and 17:00-22:30). You can boost the temperature directly from the valve (TRV) on your radiator.</p>
       <p><strong>Important:</strong> The heating will automatically turn off in a room if a window is left open.</p>
       <p><strong>Cooling:</strong> We do not have air conditioning. For a cooler room, we recommend keeping the window and curtains closed during sunny days and opening them in the evening to let in the cool air.</p>
-    </section>
-
-    <!-- ========= DYNAMIC SECTIONS (Controlled by config.json and CSS) ========= -->
-    <section class="dynamic-section">
-      <h2>🏘️ Address</h2>
-      <div class="group-house193"><p>193 Vauxhall Bridge Road<br>Pimlico, London<br>SW1V 1ER</p></div>
-      <div class="group-house195"><p>195 Vauxhall Bridge Road<br>Pimlico, London<br>SW1V 1ER</p></div>
-    </section>
-    
-    <section class="dynamic-section">
-        <h2>🛜 Wifi</h2>
-        <div class="group-house193"><p>Network Name (SSID): <strong>193</strong><br>Password: <strong>12345671</strong><br><a href="WIFI:T:WPA;S:193;P:12345671;;">Click here to connect (mobile devices only)</a></p></div>
-        <div class="group-house195"><p>Network Name (SSID): <strong>195</strong><br>Password: <strong>09876543</strong><br><a href="WIFI:T:WPA;S:195;P:09876543;;">Click here to connect (mobile devices only)</a></p></div>
     </section>
 
     <section class="dynamic-section">
@@ -201,8 +194,7 @@
         <div class="video-container"><iframe src="https://www.youtube.com/embed/hLV62ekup-E" title="How to use washing machine" allowfullscreen></iframe></div>
       </div>
     </section>
-
-    <!-- ========= UNIVERSAL STATIC SECTIONS (Continued) ========= -->
+    
     <section id="troubleshooting">
         <h2>🛠️ Troubleshooting & Repairs</h2>
         <p>If your digital door lock runs out of batteries, it's a quick fix. This video shows the simple replacement process:</p>
@@ -249,7 +241,6 @@
 
   </main>
 
-  <!-- SCRIPT TAGS & CHATBOT WIDGET -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="script.js"></script>
 

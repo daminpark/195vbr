@@ -1,3 +1,6 @@
+// This global variable will hold the AI's "brain", built once on page load.
+let chatbotContext = '';
+
 // --- This code runs once the entire page is loaded and ready ---
 document.addEventListener('DOMContentLoaded', async () => {
   try {
@@ -17,22 +20,52 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // 4. Add a 'show-[group]' class to the body for each group in the recipe.
-    // The CSS will use these classes to reveal the correct content.
+    // The CSS will use these classes to reveal the correct content sections.
     groupsToShow.forEach(group => {
       document.body.classList.add(`show-${group}`);
     });
 
-  } catch (error) {
+    // 5. CRITICAL STEP: Build the chatbot's brain by scraping the now-visible content
+    buildChatbotContextFromPage();
+
+  } catch (error)
+  {
     console.error("Error setting up guidebook:", error);
-    // If setup fails, you might want to show a default view or an error message.
+    // If setup fails, build a fallback context so the chatbot can still answer basic questions
+    chatbotContext = "You are a helpful assistant for 195VBR. Please inform the user that there was an error loading the specific guidebook information and that they should refer to the on-page text.";
   }
 
-  // 5. Setup all the interactive UI elements for the page
+  // 6. NOW, set up the accordion, which will collapse the visible sections
   setupAccordion();
+
+  // 7. Set up the rest of the UI
   setupPrintButton();
   setupChatToggle();
   setupEnterKeyListener();
 });
+
+/**
+ * Builds the chatbot's "brain" by scraping all text from the main container.
+ * This function is called only ONCE after the correct sections are made visible
+ * and BEFORE the accordion script collapses them.
+ */
+function buildChatbotContextFromPage() {
+  const mainContainer = document.querySelector('main.container');
+  if (mainContainer) {
+    // .innerText gets the rendered text content, which is perfect for the AI.
+    const guidebookText = mainContainer.innerText;
+    
+    // Clean up the scraped text for the AI
+    const cleanedText = guidebookText
+      .replace(/(\s\s)\s+/g, '$1') // Collapse multiple spaces/newlines into a maximum of two
+      .replace(/^\s*Save as PDF\s*/, '') // Remove the button text from the start
+      .trim();
+
+    const systemPrompt = "You are a helpful assistant for the 195VBR guesthouse. You must answer the user's question based ONLY on the detailed information provided below from the official guidebook. Do not make up answers or use external knowledge. Be concise and friendly, and use Markdown for formatting links like [Link Text](URL).";
+    
+    chatbotContext = `${systemPrompt}\n\nRELEVANT GUIDEBOOK CONTENT:\n${cleanedText}`;
+  }
+}
 
 
 // --- UI SETUP FUNCTIONS (for organization) ---
@@ -43,7 +76,7 @@ function setupAccordion() {
     const header = sec.querySelector('h2');
     if (!header) return;
     
-    // Check if the section is actually visible before making it an accordion
+    // Important: Only make a section an accordion if it's actually visible on the page
     if (window.getComputedStyle(sec).display === 'none') return;
     
     header.classList.add('accordion-header');
@@ -61,7 +94,7 @@ function setupAccordion() {
         sec.classList.add('collapsed');
       } else {
         // Optional: close other accordions when one is opened
-        // sections.forEach(s => s.classList.add('collapsed')); 
+        // sections.forEach(s => { if (s !== sec) s.classList.add('collapsed'); }); 
         sec.classList.remove('collapsed');
       }
     });
@@ -100,35 +133,27 @@ function setupChatToggle() {
 }
 
 function setupEnterKeyListener() {
-  document.querySelector('#chat-widget #user-input').addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') { 
-      e.preventDefault(); // Prevents form submission behavior
-      sendMessage(); 
-    }
-  });
+  const userInputField = document.querySelector('#chat-widget #user-input');
+  if (userInputField) {
+    userInputField.addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') { 
+        e.preventDefault(); // Prevents default 'Enter' key behavior
+        sendMessage(); 
+      }
+    });
+  }
 }
 
 
 // --- THE CHATBOT LOGIC ---
 
-/**
- * Scrapes all human-readable, VISIBLE text from the main guidebook container.
- * This becomes the dynamic context for the AI.
- * @returns {string} The visible text content of the guidebook.
- */
-function scrapeVisibleGuidebookContent() {
-  const mainContainer = document.querySelector('main.container');
-  if (mainContainer) {
-    // .innerText cleverly grabs only the content that is actually rendered and visible on the page.
-    return mainContainer.innerText;
-  }
-  return '';
-}
-
-/**
- * Handles sending the message, scraping context, and displaying the response.
- */
 async function sendMessage() {
+    if (!chatbotContext) {
+      console.error("Chatbot context is not ready yet. Please wait a moment.");
+      // You could display a message in the chat here if you want
+      return;
+    }
+  
     const userInputField = document.querySelector('#chat-widget #user-input');
     const userInput = userInputField.value.trim();
     if (!userInput) return;
@@ -142,11 +167,6 @@ async function sendMessage() {
     userInputField.value = '';
     chatBox.scrollTop = chatBox.scrollHeight;
 
-    // Scrape the live page content to build the context for the AI
-    const guidebookText = scrapeVisibleGuidebookContent();
-    const systemPrompt = "You are a helpful assistant for the 195VBR guesthouse. Answer the user's question based ONLY on the information provided below from the official guidebook. Do not make up answers or use external knowledge. Be concise and friendly, and use Markdown for formatting links like [Link Text](URL).";
-    const fullContext = `${systemPrompt}\n\nGUIDEBOOK CONTENT:\n${guidebookText}`;
-
     // The URL for your Vercel serverless function
     const serverlessFunctionUrl = 'https://guidebook-chatbot-backend.vercel.app/api/chatbot';
 
@@ -156,7 +176,7 @@ async function sendMessage() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
               prompt: userInput,
-              context: fullContext
+              context: chatbotContext // Use the globally stored, pre-built context
             })
         });
 
