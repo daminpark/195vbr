@@ -232,3 +232,61 @@ body.print-mode::after{ display:none !important; }
 #chat-launcher .hidden {
   display: none;
 }
+
+/* ---------------------------------------------------
+   IMPROVED CHAT MESSAGE STYLES
+--------------------------------------------------- */
+
+/* 1. Make the chat-box a flex container for alignment */
+#chat-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* Adds space between messages */
+}
+
+/* 2. Remove default margins from paragraphs inside bubbles */
+#chat-box p {
+  margin: 0;
+}
+
+/* 3. Base style for all message bubbles */
+.message-bubble {
+  padding: 10px 15px;
+  border-radius: 18px;
+  max-width: 80%;
+  width: fit-content;
+  line-height: 1.4;
+}
+
+/* 4. Specific style for the bot's messages */
+.bot-message {
+  background-color: #e9e9eb; /* Light grey */
+  color: #000;
+  align-self: flex-start; /* Aligns to the left */
+  border-bottom-left-radius: 4px; /* Gives it a "tail" */
+}
+
+/* 5. Specific style for the user's messages */
+.user-message {
+  background-color: #007bff; /* Blue */
+  color: #fff;
+  align-self: flex-end; /* Aligns to the right */
+  border-bottom-right-radius: 4px; /* Gives it a "tail" */
+}
+
+/* 6. Style for the timestamp */
+.timestamp {
+  font-size: 0.75rem;
+  color: #666;
+  margin-top: 4px;
+}
+
+/* 7. Align the timestamp based on who sent the message */
+.user-message + .timestamp {
+  align-self: flex-end;
+  margin-right: 10px;
+}
+.bot-message + .timestamp {
+  align-self: flex-start;
+  margin-left: 10px;
+}
