@@ -6,311 +6,222 @@
   <title>195VBR Guidebook</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
-  <!-- ADDED STYLE FOR BLUE LINKS -->
   <style>
-    a, a:visited {
-      color: #0000EE; /* A standard blue color for links */
-      text-decoration: underline; /* Optional: adds an underline to make it clear it's a link */
+    /* General styles for links */
+    a, a:visited { color: #0000EE; text-decoration: underline; }
+    a:hover { color: #551A8B; }
+
+    /* New styles for responsive video embeds */
+    .video-container {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      padding-top: 56.25%; /* 16:9 Aspect Ratio */
+      margin: 1rem 0;
+      border-radius: 8px;
     }
-    a:hover {
-      color: #551A8B; /* Optional: changes color on hover */
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
     }
   </style>
-
-
 </head>
 <body>
 
-  <!-- Simple header (logo optional) -->
   <header class="site-header">
     <img src="logo.png" alt="195VBR Logo" class="logo" />
   </header>
 
-  <!-- Main Content -->
   <main class="container">
     <h1>195VBR Guidebook</h1>
+    <button id="printBtn" class="pdf-button">Save as PDF</button>
 
-    <button id="printBtn" class="pdf-button">Save as PDF</button>
-    
-    <!-- ============ ALL ORIGINAL SECTIONS ============ -->
-
-
-    <!-- VIDEO INSTRUCTIONS -->
+    <!-- ========= UNIVERSAL SECTIONS (Always Visible) ========= -->
     <section id="video">
-      <h2>🎬 Video instructions</h2>
-      <p>This video playlist will show you a video of how to do things that are unclear! Please watch first as it explains better than I can through text!</p>
-      <a href="https://www.youtube.com/playlist?list=PL7olRlH5yDt7U7VvWmEJD9Iof0FMlqKCM" target="_blank" rel="noopener noreferrer">
-        Link to YouTube Playlist
-      </a>
+      <h2>🎬 Instructional Video Playlist</h2>
+      <p>This playlist contains all the instructional videos from this guide in one convenient location.</p>
+      <a href="https://www.youtube.com/playlist?list=PL7olRlH5yDt4Zk92CIS9fRnkYmC9gkcDh" target="_blank" rel="noopener noreferrer">Link to Full YouTube Playlist</a>
     </section>
 
-    <!-- WHAT NOT TO BRING -->
     <section id="what-not-to-bring">
       <h2>🚫 What not to bring</h2>
-      <p>We provide a variety of amenities, so you can pack light! Here are some things you <em>don’t</em> need to bring:</p>
+      <p>We provide a variety of amenities so you can pack light! Here are some things you <em>don’t</em> need to bring:</p>
       <ul>
-        <li><strong>Towels & Linens:</strong> Fresh bath towels and bed linens are provided.</li>
-        <li><strong>Toiletries:</strong> Shampoo, conditioner, body wash and hand soap are available.</li>
+        <li><strong>Towels & Linens:</strong> Fresh bath towels and bed linens are provided.</li>
+        <li><strong>Toiletries:</strong> Shampoo, conditioner, body wash, and hand soap are available.</li>
         <li><strong>Hair Dryers:</strong> Each bedroom has a hairdryer.</li>
         <li><strong>Adapters:</strong> Rooms have universal adapters on each side of the bed.</li>
-        <li><strong>Extra Blankets:</strong> All beds include an electric under‑blanket.</li>
+        <li><strong>Extra Blankets:</strong> All beds include an electric under-blanket.</li>
       </ul>
     </section>
 
-    <!-- … copy / paste every remaining <section> exactly as in your original file … -->
-
-    <!-- ADDRESS -->
-    <section id="domestic-directions">
+    <!-- ========= DYNAMIC SECTIONS (Controlled by config.json) ========= -->
+    <section id="address" class="guidebook-section">
       <h2>🏘️ Address</h2>
-        <p>193-195 Vauxhall Bridge Road<br>
-        Pimlico<br>
-        London<br>
-        SW1V 1ER</p>
+      <div id="address-193"><p>193 Vauxhall Bridge Road<br>Pimlico, London<br>SW1V 1ER</p></div>
+      <div id="address-195"><p>195 Vauxhall Bridge Road<br>Pimlico, London<br>SW1V 1ER</p></div>
     </section>
 
-    
-    <!-- DOMESTIC DIRECTIONS -->
     <section id="domestic-directions">
       <h2>🚶 Domestic directions</h2>
-      <p><strong>By Train/Tube:</strong> We are ~7 minutes from <strong>London Victoria Station</strong>, a major hub for Underground, rail, and coaches. Exit Victoria toward Victoria Street/Vauxhall Bridge Road, turn left onto Vauxhall Bridge Road, and walk ~5–7 minutes. The house will be on your left.</p>
-      <p><strong>By Coach:</strong> If arriving at Victoria Coach Station, it’s ~10 minutes on foot. Head east on Elizabeth Street toward Buckingham Palace Road, then go toward Victoria Station and onto Vauxhall Bridge Road.</p>
-      <p><strong>By Car/Taxi:</strong> We do not have on-site parking. You may need a public parking garage (check <a href="https://en.parkopedia.com/" target="_blank" rel="noopener">Parkopedia</a>). Taxis/rideshares can use the postcode to find us.</p>
+      <p><strong>By Train/Tube:</strong> We are ~7 minutes from <strong>London Victoria Station</strong>. Exit towards Victoria Street/Vauxhall Bridge Road, turn left, and walk ~5–7 minutes. The house will be on your left.</p>
+      <p><strong>By Coach:</strong> From Victoria Coach Station, it’s a ~10 minute walk. Head east on Elizabeth Street, then towards Victoria Station and onto Vauxhall Bridge Road.</p>
+      <p><strong>By Car/Taxi:</strong> We do not have on-site parking. Please check <a href="https://en.parkopedia.com/" target="_blank" rel="noopener">Parkopedia</a> for public garages. Taxis and rideshares can use the postcode to find us.</p>
     </section>
 
-    <!-- AIRPORT DIRECTIONS -->
     <section id="airport-directions">
       <h2>✈️ Airport directions</h2>
-      <p>Book buses at <a href="https://www.nationalexpress.com" target="_blank" rel="noopener">nationalexpress.com</a>, and trains at <a href="https://www.thetrainline.com" target="_blank" rel="noopener">trainline.com</a>. If traveling with 2+ people, a rideshare (Uber/Bolt) may be cheaper.</p>
-
-      <p><strong>Gatwick (LGW):</strong><br>
-      Take a train directly to Victoria (~30 minutes, ~£15). You can tap in/out with contactless. Consider Southern Rail instead of Gatwick Express (only ~5 minutes slower, much cheaper). Note: from the South Terminal, leave extra time to reach the North Terminal (15 more minutes).</p>
-
-      <p><strong>Stansted (STN):</strong><br>
-      Train to Tottenham Hale, then Victoria line to Victoria. You cannot use contactless from Stansted, so buy a ticket.</p>
-
-      <p><strong>Luton (LTN):</strong><br>
-      Train from Luton Airport Parkway to London St. Pancras (~40 minutes), then Victoria line to Victoria (~15 minutes). Coaches also run direct to Victoria Coach Station (~1h15m).</p>
-
-      <p><strong>Heathrow (LHR):</strong><br>
-      Piccadilly line (dark blue) from Heathrow, change at Hammersmith for District line (green) to Victoria (~50 minutes total).</p>
+      <p>Book buses at <a href="https://www.nationalexpress.com" target="_blank" rel="noopener">National Express</a> and trains at <a href="https://www.thetrainline.com" target="_blank" rel="noopener">The Trainline</a>. For 2+ people, a rideshare (Uber/Bolt) may be cheaper.</p>
+      <p><strong>Gatwick (LGW):</strong> Take a Southern Rail train directly to Victoria (~35 mins). It's cheaper and only slightly slower than the Gatwick Express. You can tap in/out with a contactless card.</p>
+      <p><strong>Heathrow (LHR):</strong> Take the Piccadilly line (dark blue) and change at Hammersmith for a District line (green) train to Victoria (~50 mins total).</p>
+      <p><strong>Stansted (STN):</strong> Take the train to Tottenham Hale, then switch to the Victoria line (light blue) to Victoria Station. You cannot use contactless from Stansted, so be sure to buy a ticket.</p>
+      <p><strong>Luton (LTN):</strong> Take the train from Luton Airport Parkway to London St. Pancras (~40 mins), then the Victoria line to Victoria (~15 mins).</p>
     </section>
 
-    <!-- GETTING AROUND -->
     <section id="getting-around">
       <h2>🚇 Getting around</h2>
-      <p>Public transport in London is excellent. Victoria Station is ~7 minutes away (Underground, trains, buses). The <strong>24 bus</strong> near the house doubles as a scenic route through central London!</p>
-      <p>Use a contactless card to pay for Tube/bus (fares cap daily). London is walkable and has bike hires. You can also take a <strong>Thames river bus</strong> from Westminster (~£10, contactless accepted).</p>
+      <p>Public transport is excellent. Victoria Station is ~7 minutes away. The <strong>24 bus</strong> stop near the house offers a scenic route through central London.</p>
+      <p>Use a contactless card for Tube/bus fares (they cap daily). London is very walkable, and you can also take a <strong>Thames river bus</strong> from Westminster Pier.</p>
     </section>
 
-    <!-- CODE INFO -->
     <section id="codetimes">
       <h2>*️⃣ Lock info</h2>
-      <p><strong>How to unlock:</strong> Press your palm to the black screen to reveal numbers. See the video link for instructions.</p>
-      <p><strong>Front door code/Cupboard V code (luggage storage):</strong> Valid from 11:00 on check-in day until 14:00 on check-out day (unless arranged otherwise). If your code is extended, your code remains the same.</p>
-      <p><strong>Bedroom/Bathroom/Kitchen code:</strong> Valid from 15:00 on check-in day until 11:00 on check-out day.</p>
-      <p><strong>Locking door:</strong> If your door is not auto-locking, you can lock the door easily by pressing your palm to the door. This means if you lock the door from the outside and close the door, it will be locked to those outside. See the video link for instructions.</p>
+      <p><strong>How to unlock:</strong> Press your palm to the black screen to activate the keypad. See the video playlist for a demonstration.</p>
+      <p><strong>Front door & Luggage (Cupboard V):</strong> Your code is valid from 11:00 on check-in day until 14:00 on check-out day.</p>
+      <p><strong>Bedroom/Bathroom/Kitchen:</strong> Your code is valid from 15:00 on check-in day until 11:00 on check-out day.</p>
+      <p><strong>Locking from inside:</strong> This video shows how to lock your bedroom door from the inside for privacy.</p>
+      <div class="video-container"><iframe src="https://www.youtube.com/embed/7orX7Wh_g1U" title="How to lock door from inside" allowfullscreen></iframe></div>
     </section>
 
-    <!-- CHECK-IN & LUGGAGE DROP-OFF -->
     <section id="check-in-luggage">
-      <h2>🧳 Check-in &amp; luggage drop-off</h2>
-      <p><strong>Self Check-in:</strong> Check-in is 15:00 or later. We use a self check-in system—no need to wait for anyone.</p>
-      <p><strong>Early Luggage Drop-off:</strong> You can leave bags from 11:00, your front door code/Cupboard V code is automatically active from 11:00. Store them downstairs in cupboard V. You don't need to message if you are planning on leaving your bags from 11:00. Please message us earliest a day before your check-in if you need a drop-off earlier than 11:00 (subject to availability).</p>
-      <p><strong>Storing bags after check-out:</strong> You can leave bags until 14:00 after check-out, your front door code/Cupboard V code is automatically active until 14:00. Store them downstairs in cupboard V. You don't need to message if you are planning on leaving your bags until 14:00. Please message us earliest a day before your check-in if you need store your luggage later than 14:00 (subject to availability).</p>
+      <h2>🧳 Check-in & Luggage Drop-off</h2>
+      <p><strong>Self Check-in:</strong> From 15:00 onwards. No need to meet anyone.</p>
+      <p><strong>Early Luggage Drop-off:</strong> From 11:00, you can use your front door code to access Cupboard V downstairs. No need to message us in advance.</p>
+      <p><strong>Luggage Storage After Check-out:</strong> Until 14:00, you can store bags in Cupboard V. Your code will remain active.</p>
+      <p>This video shows the full process, from entering the front door to finding the luggage cupboard:</p>
+      <div class="video-container"><iframe src="https://www.youtube.com/embed/rlUbHfWcN0s" title="Luggage drop-off process" allowfullscreen></iframe></div>
     </section>
-
-    <!-- EARLY CHECK-IN -->
-    <section id="early-check-in">
-      <h2>⏰ Early check-in</h2>
-      <p>If you arrive early, use our luggage drop-off (see above). Enjoy the city and return after 15:00 when your room is ready.</p>
-      <p>Check-in is 15:00. The earliest your code will work for the bedroom is around 12:00. You can try going in after this time, but if you see the room isn’t ready, please do not enter or leave your things. Cleaners may discard them, thinking they belong to previous guests. Also, please don’t store items in the bathroom/kitchen before 15:00, as cleaners empty these areas between 11:00–15:00.</p>
-    </section>
-
-    <!-- WIFI -->
-    <section id="wifi">
+    
+    <section id="wifi" class="guidebook-section">
       <h2>🛜 Wifi</h2>
-      <p>SSID: 193</p>
-      <p>Password: 12345671</p>
-      <p>SSID: 195</p>
-      <p>Password: 09876543</p>
+      <div id="wifi-193"><p>Network Name (SSID): <strong>193</strong><br>Password: <strong>12345671</strong><br><a href="WIFI:T:WPA;S:193;P:12345671;;">Click here to connect (mobile)</a></p></div>
+      <div id="wifi-195"><p>Network Name (SSID): <strong>195</strong><br>Password: <strong>09876543</strong><br><a href="WIFI:T:WPA;S:195;P:09876543;;">Click here to connect (mobile)</a></p></div>
     </section>
-
-    <!-- HEATING -->
+    
     <section id="heating">
       <h2>🌡️ Heating and Cooling</h2>
-      <p>A tablet on the wall controls the heating. If any window is open, heating turns off (including bathrooms/kitchens).</p>
-      <p>We do not have any air conditioning for active cooling. If you would like to have a cool room during the day, we recommend you leave the window and curtains closed, and open them in the evening when the sun is gone and the air is cooler, and turn the air circulator on with full rotation.</p>
+      <p>The heating is on an automatic schedule (07:00-10:00 and 17:00-22:30). You can boost the temperature directly from the valve (TRV) on your radiator.</p>
+      <p><strong>Important:</strong> The heating will automatically turn off in a room if a window is left open.</p>
+      <p><strong>Cooling:</strong> We do not have air conditioning. For a cooler room, we recommend keeping the window and curtains closed during sunny days and opening them in the evening to let in the cool air.</p>
     </section>
 
-    
-    <!-- ROOM VARIATIONS -->
-    
-    <!-- ROOM 1 -->
-    <span class="variation variation-room1">
-      <section class="room">
-        <h2>🛏️ Bedroom</h2>
-        <p>Your room number is: 1</p>
-      </section>
-    </span>
-    
-    <!-- ROOM 2 -->
-    <span class="variation variation-room2">
-      <section class="room">
-        <h2>🛏️ Bedroom</h2>
-        <p>Your room number is: 2</p>
-      </section>
-    </span>
-    
-    <!-- ROOM 3 -->
-    <span class="variation variation-room3">
-      <section class="room">
-        <h2>🛏️ Bedroom</h2>
-        <p>Your room number is: 3</p>
-      </section>
-    </span>
-    
-    <!-- ROOM 4 -->
-    <span class="variation variation-room4">
-      <section class="room">
-        <h2>🛏️ Bedroom</h2>
-        <p>Your room number is: 4</p>
-      </section>
-    </span>
-    
-    <!-- ROOM 5 -->
-    <span class="variation variation-room5">
-      <section class="room">
-        <h2>🛏️ Bedroom</h2>
-        <p>Your room number is: 5</p>
-      </section>
-    </span>
-    
-    <!-- ROOM 6 -->
-    <span class="variation variation-room6">
-      <section class="room">
-        <h2>🛏️ Bedroom</h2>
-        <p>Your room number is: 6</p>
-      </section>
-    </span>
-    
-    <!-- ROOM A (1 & 2) -->
-    <span class="variation variation-rooma">
-      <section class="room">
-        <h2>🛏️ Bedroom</h2>
-        <p>Your room number is: 1 and 2</p>
-      </section>
-    </span>
-    
-    <!-- ROOM B (4, 5 & 6) -->
-    <span class="variation variation-roomb">
-      <section class="room">
-        <h2>🛏️ Bedroom</h2>
-        <p>Your room number is: 4, 5 and 6</p>
-      </section>
-    </span>
-
-    <span class="variation variation-sharedb">
-      <!-- BATHROOM RULES -->
-      <section id="bathroom">
-        <h2>🛁 Bathroom</h2>
-        <span class="variation variation-room1">
-          <p>Assigned bathroom is labelled A (shared with room 2).</p>
-        </span>
-        <span class="variation variation-room2">
-          <p>Assigned bathroom is labelled A (shared with room 1).</p>
-        </span>
-        <span class="variation variation-room4">
-          <p>Assigned bathroom is labelled B (shared with rooms 5 &amp; 6).</p>
-        </span>
-        <span class="variation variation-room5">
-          <p>Assigned bathroom is labelled B (shared with rooms 4 &amp; 6).</p>
-        </span>
-        <span class="variation variation-room6">
-          <p>Assigned bathroom is labelled B (shared with rooms 4 &amp; 5).</p>
-        </span>
-        <span class="variation variation-rooma">
-          <p>Private bathroom is labelled A.</p>
-        </span>
-        <span class="variation variation-roomb">
-          <p>Private bathroom is labelled B.</p>
-        </span>
-        <span class="variation variation-sharedb">
-          <p>This is a shared bathroom. Please:</p>
-          <ul>
-            <li><strong>Use Your Compartment:</strong> Anything left outside it or after check-out may be discarded.</li>
-            <li><strong>Clean Up:</strong> Leave the bathroom tidy for the next person.</li>
-            <li><strong>Time Limit:</strong> Limit use to ~15 minutes, especially mornings.</li>
-            <li><strong>Occupancy Sensor:</strong> The tablet shows if it’s occupied.</li>
-          </ul>
-        </span>
-      </section>
-    </span>
-
-    <!-- KITCHEN RULES -->
-    <section id="kitchen-rules">
-      <h2>🍳 Kitchen<span class="variation variation-sharedk"> (basement, door marked K)</span></h2>
-      <span class="variation variation-sharedk">
-        <p>You can use the tablet in your room to see if the kitchen is occupied or not.</p>
-        <p>This is a shared kitchen. Please:</p>
-      </span>
-      <ul>
-        <span class="variation variation-sharedk">
-          <li><strong>Personal Storage:</strong> Each room has assigned fridge/cabinet space. Items outside these or left after check-out are discarded.</li>
-          <li><strong>Communal Food:</strong> Fridge doors &amp; dry compartment are shared for leftover dry goods.</li>
-          <li><strong>Clean Up:</strong> Dishes can go in the dishwasher; staff runs it when full. Disinfectant wipes are provided.</li>
-        </span>
-        <li><strong>Shared Supplies:</strong> Complimentary tea/coffee. Basic condiments/spices provided.</li>
-        <li><strong>Rubbish:</strong> The big metal bin is for recycling (check labels). Liquid waste in sink; solid waste in black bin.</li>
-      </ul>
+    <section id="bedroom" class="guidebook-section">
+      <h2>🛏️ Bedroom</h2>
+      <div id="room-info-1"><p>Your room number is: 1.</p></div>
+      <div id="room-info-2"><p>Your room number is: 2.</p></div>
+      <div id="room-info-3"><p>Your room number is: 3.</p></div>
+      <div id="room-info-4"><p>Your room number is: 4.</p></div>
+      <div id="room-info-5"><p>Your room number is: 5.</p></div>
+      <div id="room-info-6"><p>Your room number is: 6.</p></div>
+      <div id="room-info-a"><p>You have booked Rooms 1 & 2.</p></div>
+      <div id="room-info-b"><p>You have booked Rooms 4, 5 & 6.</p></div>
+      
+      <div id="storage-under-bed">
+        <p>You can create more space by storing luggage under the bed, as shown in this video:</p>
+        <div class="video-container"><iframe src="https://www.youtube.com/embed/3Ejpyf4MYTI" title="Luggage storage under bed" allowfullscreen></iframe></div>
+      </div>
+      <div id="storage-in-bed">
+        <p>This bed frame has a lift-up mattress with significant storage space inside, as shown in this video:</p>
+        <div class="video-container"><iframe src="https://www.youtube.com/embed/VoFABSMLII8" title="Luggage storage inside bed" allowfullscreen></iframe></div>
+      </div>
     </section>
 
-    <!-- TABLET -->
-    <section id="tablet">
-      <h2>📱 Tablet</h2>
-      <p>The tablet in your room can be used to:</p>
-          <li><strong>Occupancy:</strong> You can see if the bathroom or the kitchen is occupied from your room.</li>
-          <li><strong>Heating:</strong> You can control the radiator temperature.</li>
-          <li><strong>Control lights:</strong> You are able to control how bright the lights are</li>
+    <section id="bathroom" class="guidebook-section">
+      <h2>🛁 Bathroom</h2>
+      <div id="bathroom-info-a"><p>Your assigned bathroom is labelled 'A'.</p></div>
+      <div id="bathroom-info-b"><p>Your assigned bathroom is labelled 'B'.</p></div>
+      <div id="bathroom-info-c"><p>Your private bathroom is the en-suite inside your room.</p></div>
+      
+      <div id="bathroom-rules-shared">
+        <p>This is a shared bathroom. Please be considerate of other guests:</p>
+        <ul>
+          <li><strong>Use Your Assigned Compartment:</strong> Store your toiletries in your numbered space. Items left elsewhere may be discarded.</li>
+          <li><strong>Keep it Tidy:</strong> Please leave the bathroom clean for the next person.</li>
+          <li><strong>Be Mindful of Time:</strong> Limit use to ~15 minutes, especially during peak morning hours.</li>
+        </ul>
+      </div>
+      <div id="bathroom-rules-private"><p>This bathroom is private for your exclusive use.</p></div>
     </section>
-        
-    <!-- WINDOWS -->
-    <section id="windows">
+
+    <section id="kitchen-rules" class="guidebook-section">
+      <h2>🍳 Kitchen</h2>
+      <div id="kitchen-rules-shared">
+        <p>The shared kitchen is located in the basement, through the door marked 'K'. Please:</p>
+        <ul>
+          <li><strong>Use Assigned Storage:</strong> Each room has a numbered space in the fridge and cabinets.</li>
+          <li><strong>Clean As You Go:</strong> Place used dishes in the dishwasher. Staff will run it when full.</li>
+        </ul>
+      </div>
+      <div id="kitchen-rules-private"><p>The kitchen is private for your group's exclusive use.</p></div>
+      
+      <div id="kitchen-rules-base">
+        <p><strong>Shared Supplies:</strong> Help yourself to complimentary tea and coffee, as well as basic condiments and spices.</p>
+        <p><strong>Rubbish:</strong> The large metal bin is for recycling. General waste goes in the black bin.</p>
+        <p>Here are video guides for the appliances:</p>
+        <ul>
+          <li><strong>Induction Stove:</strong><div class="video-container"><iframe src="https://www.youtube.com/embed/_ZepccyHD_o" title="How to use induction stove" allowfullscreen></iframe></div></li>
+          <li><strong>Microwave:</strong><div class="video-container"><iframe src="https://www.youtube.com/embed/Qs9o7G8MvjI" title="How to use microwave" allowfullscreen></iframe></div></li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="windows" class="guidebook-section">
       <h2>🪟 Windows</h2>
-      <p>The window can be opened by first making sure the window is already closed, and then pressing the button on the handle and turning the handle so it faces up.</p>
+      <div id="window-info-standard"><p>The window can be opened by pressing the button on the handle and turning it upwards.</p></div>
+      <div id="window-info-tilt-turn">
+        <p>These are "tilt and turn" windows. This video demonstrates how to open them for ventilation (tilt) or fully (turn):</p>
+        <div class="video-container"><iframe src="https://www.youtube.com/embed/uqOEIZtq_wI" title="How to use tilt-and-turn windows" allowfullscreen></iframe></div>
+      </div>
     </section>
-        
-    <!-- CONTACT -->
+
+    <section id="laundry" class="guidebook-section">
+      <h2>🧺 Laundry</h2>
+      <div id="laundry-no-access">
+        <p>There are no guest-accessible washing machines on-site. A highly-rated local launderette is <a href="https://maps.app.goo.gl/uYuoqcrG3xC3Q2Nz8" target="_blank" rel="noopener">True Colours Launderette</a>.</p>
+        <p>Towels are not changed daily. For fresh towels (max. once every 2 days), please leave used ones outside your door by 11:00am.</p>
+      </div>
+      <div id="laundry-has-access">
+        <p>The washing machine is available for your use. It is located in the basement. This video provides access and usage instructions:</p>
+        <div class="video-container"><iframe src="https://www.youtube.com/embed/hLV62ekup-E" title="How to use washing machine" allowfullscreen></iframe></div>
+      </div>
+    </section>
+    
+    <section id="troubleshooting">
+        <h2>🛠️ Troubleshooting & Repairs</h2>
+        <p>If your digital door lock runs out of batteries, it's a quick fix. This video shows the simple replacement process:</p>
+        <div class="video-container"><iframe src="https://www.youtube.com/embed/8Zofre6A7ns" title="How to replace door lock batteries" allowfullscreen></iframe></div>
+    </section>
+    
     <section id="contact">
       <h2>☎️ Contact</h2>
-      <p>Please message me through your booking platform. Please read through this guide before messaging, as it is quicker and has most the answers. *ONLY FOR EMERGECNCIES*, WhatsApp call at +44 7443 618207, and if that doesn't work please try +44 7383 298999.</p>
+      <p>For any questions, please check with the AI chatbot first, as it can provide instant answers based on this guide. For other matters, message us through your booking platform.</p>
+      <p><strong>*FOR EMERGENCIES ONLY*</strong>, please WhatsApp call +44 7443 618207. If there is no answer, try +44 7383 298999.</p>
     </section>
     
-    <!-- LAUNDRY -->
-    <section id="laundry">
-      <h2>🧺 Laundry</h2>
-      <span class="variation variation-sharedk">
-        <p>No guest washing machines on-site. A recommended launderette is <a href="https://maps.app.goo.gl/uYuoqcrG3xC3Q2Nz8" target="_blank" rel="noopener">True Colours Launderette</a>.</p>
-        <p>Towels are not changed daily due to limited washing capacity. If you need fresh towels (max once every 2 days), please leave used ones outside your door by 11:00am, and some fresh ones should be placed for you outside the door.</p>
-      </span>
-      <span class="variation variation-wholehome">
-        <p>The washing machine is in the basement, through the kitchen, through room 0, and then through room X, and you'll see it to the left at room Z. Code for door X is 0987. A video in the playlist explains usage.</p>
-      <a href="https://youtu.be/hLV62ekup-E?si=Itl2i1loW04mWYQo" target="_blank" rel="noopener noreferrer">
-        Link to YouTube instructions
-      </a>
-      </span>
-    </section>
-
-    <!-- TV -->
     <section id="tv">
       <h2>📺 TV</h2>
-      <p>Each bedroom has a Smart 4K TV with Disney+, Apple TV+, Amazon Prime Video, BBC iPlayer, etc. If Netflix/Apple TV/Prime logs out or malfunctions, contact us and we can log you in remotely. Please do not log out to use your own accounts.</p>
+      <p>Each bedroom has a Smart 4K TV with Disney+, Apple TV+, Amazon Prime Video, BBC iPlayer, and more. If a service is logged out or malfunctions, please contact us and we can log you in remotely. Please do not log out to use your own accounts.</p>
     </section>
     
-    <!-- LOCAL GUIDEBOOK -->
     <section id="local-guidebook">
-      <h2>📍 Local guidebook</h2>
+      <h2>📍 Local Guidebook</h2>
       <p>We’ve compiled some nearby recommendations:</p>
-      
       <h3>Food</h3>
       <ul>
         <li>
@@ -374,39 +285,31 @@
           </a> – great Peking duck (further away)
         </li>
       </ul>
-
       <h3>Sights</h3>
       <ul>
-        <li>Wicked and Hamilton – two great musicals on our doorstep</li>
-        <li>St James's Park – beautiful royal park</li>
-        <li>Walk to Big Ben, cross Westminster Bridge, then walk along the South Bank to Tower Bridge (take a boat back!)</li>
+        <li>Wicked and Hamilton – Two of the world's best musicals are right on our doorstep.</li>
+        <li>St James's Park – A beautiful royal park, perfect for a stroll.</li>
+        <li>A great walk: Start at Big Ben, cross Westminster Bridge, and walk along the scenic South Bank to Tower Bridge. You can even take a boat back!</li>
       </ul>
-      <p>We look forward to hosting you and hope you are having a pleasant journey here.</p>
+      <p>We look forward to hosting you!</p>
     </section>
+
   </main>
 
-  <!-- ========================================================= -->
-  <!-- ===== ADD THE MARKED.JS LIBRARY SCRIPT TAG HERE ======= -->
-  <!-- ========================================================= -->
+  <!-- SCRIPT TAGS & CHATBOT WIDGET -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
-  <!-- Your script.js file must be loaded AFTER the marked.js library -->
   <script src="script.js"></script>
 
-  <!-- CHATBOT WIDGET HTML -->
   <div id="chat-launcher" class="hidden"> 
-    <!-- Chat Icon -->
     <svg id="chat-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
-    <!-- Close Icon (initially hidden) -->
     <svg id="close-icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
   </div>
 
-  <div id="chat-widget"> <!-- Starts open -->
+  <div id="chat-widget">
     <div id="chat-header">
       <span>AI Assistant</span>
     </div>
     <div id="chat-box">
-      <!-- Initial bot message with new styling -->
       <div class="message-bubble bot-message">
         <p>Hello! Ask me anything about the guesthouse or London.</p>
       </div>
@@ -419,4 +322,3 @@
 
 </body>
 </html>
-
