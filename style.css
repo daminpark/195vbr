@@ -23,7 +23,11 @@ body {
   color: var(--text-color-dark);
 }
 
-body.nav-open, body.chat-open {
+/* More aggressive scroll lock for modals */
+html.nav-open,
+body.nav-open,
+html.chat-open,
+body.chat-open {
   overflow: hidden;
 }
 
@@ -74,7 +78,7 @@ a:hover { color: #551A8B; }
   transition: transform 0.3s ease-in, opacity 0.3s ease-in, visibility 0s linear 0.3s;
 }
 
-body.chat-open #chat-widget {
+html.chat-open #chat-widget {
   transform: translateY(0);
   opacity: 1;
   visibility: visible;
@@ -115,17 +119,18 @@ body.chat-open #chat-widget {
 
   /* Polished "Inset Card" style for the mobile chat modal */
   #chat-widget {
-    inset: 10px 10px 0 10px; /* 10px margin on top/sides, 0 on bottom */
-    width: auto;
-    height: auto;
-    max-height: calc(100vh - 20px);
-    border-radius: 15px 15px 0 0; /* Rounded top corners */
-    transform: translateY(100%); /* Hidden state is off-screen */
-    opacity: 1; 
+    /* Use inset for symmetrical margins on top and sides, flush with bottom */
+    inset: 10px 10px 0 10px;
+    width: auto; /* Let inset define the width */
+    height: auto; /* Let inset and content define the height */
+    max-height: calc(100vh - 10px); /* Respect top margin */
+    border-radius: 15px 15px 0 0;
+    transform: translateY(100%);
+    opacity: 1;
   }
   
-  body.chat-open #chat-widget {
-    transform: translateY(0); /* Slides up into view */
+  html.chat-open #chat-widget {
+    transform: translateY(0);
   }
 }
 
