@@ -1,5 +1,4 @@
 let chatbotContext = '';
-// Holds the AI conversation history for the current session.
 let chatHistory = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -7,6 +6,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupChatToggle();
   setupEnterKeyListener();
   addInitialBotMessage();
+  setupMobileMenu(); // NEW: Initialize the hamburger menu
 });
 
 async function buildGuidebook() {
@@ -29,7 +29,8 @@ async function buildGuidebook() {
     const tocContainer = document.getElementById('table-of-contents');
     const guidebookContainer = document.getElementById('guidebook-container');
 
-    let fullHtml = '<h1>195VBR Guidebook</h1>';
+    // The desktop header is now part of the main content generation
+    let fullHtml = `<header class="site-header"><img src="logo.png" alt="195VBR Guesthouse Logo" class="logo" /></header><h1>195VBR Guidebook</h1>`;
     let tocHtml = '<ul>';
     
     const sectionOrder = [
@@ -59,6 +60,30 @@ async function buildGuidebook() {
     document.getElementById('guidebook-container').innerHTML = `<p>Error: Could not load guidebook. ${error.message}</p>`;
     chatbotContext = "You are a helpful assistant for 195VBR. Please inform the user that there was an error loading the specific guidebook information and that they should refer to the on-page text.";
   }
+}
+
+// NEW: Function to handle mobile menu logic
+function setupMobileMenu() {
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const nav = document.getElementById('table-of-contents');
+    const overlay = document.getElementById('nav-overlay');
+    const body = document.body;
+
+    const toggleMenu = () => {
+        nav.classList.toggle('nav-open');
+        overlay.classList.toggle('nav-open');
+        body.classList.toggle('nav-open');
+    };
+
+    hamburgerBtn.addEventListener('click', toggleMenu);
+    overlay.addEventListener('click', toggleMenu);
+
+    // Also close the menu when a link inside it is clicked
+    nav.addEventListener('click', (e) => {
+        if (e.target.tagName === 'A') {
+            toggleMenu();
+        }
+    });
 }
 
 function buildDynamicContent(keys, fragments) {
@@ -143,8 +168,6 @@ function buildChatbotContextFromPage() {
   }
 }
 
-// --- CHATBOT UI & LOGIC ---
-
 function setupChatToggle() {
   const chatLauncher = document.getElementById('chat-launcher');
   const chatWidget = document.getElementById('chat-widget');
@@ -188,29 +211,22 @@ async function sendMessage() {
     if (!userInput || sendBtn.disabled) return;
     const chatBox = document.getElementById('chat-box');
     const getTimeStamp = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    
-    // Add user message to UI and history
     const userMessageHtml = `<div class="message-bubble user-message"><p>${userInput}</p></div><div class="timestamp">${getTimeStamp()}</div>`;
     chatBox.insertAdjacentHTML('beforeend', userMessageHtml);
     chatHistory.push({ role: 'user', content: userInput });
-
     userInputField.value = '';
     userInputField.disabled = true;
     sendBtn.disabled = true;
     chatBox.scrollTop = chatBox.scrollHeight;
-
-    // Display typing indicator
     const typingIndicatorHtml = `<div class="message-bubble bot-message typing-indicator"><span></span><span></span><span></span></div>`;
     chatBox.insertAdjacentHTML('beforeend', typingIndicatorHtml);
     chatBox.scrollTop = chatBox.scrollHeight;
     const typingIndicator = chatBox.querySelector('.typing-indicator');
-    
     const serverlessFunctionUrl = 'https://guidebook-chatbot-backend.vercel.app/api/chatbot';
     try {
         const response = await fetch(serverlessFunctionUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            // Send the entire history, not just the last prompt
             body: JSON.stringify({ history: chatHistory, context: chatbotContext })
         });
         if (!response.ok) {
@@ -221,7 +237,6 @@ async function sendMessage() {
         const botMessageContainer = document.createElement('div');
         botMessageContainer.className = 'message-bubble bot-message';
         chatBox.appendChild(botMessageContainer);
-
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let fullResponse = '';
@@ -232,10 +247,7 @@ async function sendMessage() {
             botMessageContainer.innerHTML = marked.parse(fullResponse);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
-        
-        // Add the full AI response to history
         chatHistory.push({ role: 'model', content: fullResponse });
-
         const timestampHtml = `<div class="timestamp">${getTimeStamp()}</div>`;
         chatBox.insertAdjacentHTML('beforeend', timestampHtml);
     } catch (error) {
