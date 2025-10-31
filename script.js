@@ -25,11 +25,14 @@ async function buildGuidebook() {
     const guidebookContainer = document.getElementById('guidebook-container');
     let fullHtml = `<header class="site-header"><img src="logo.png" alt="195VBR Guesthouse Logo" class="logo" /></header><h1>195VBR Guidebook</h1>`;
     let tocHtml = '<ul>';
+    
+    // Updated the section order to include 'ironing'
     const sectionOrder = [
       'video', 'what-not-to-bring', 'Address', 'domestic-directions', 'airport-directions', 
       'getting-around', 'codetimes', 'check-in-luggage', 'Wifi', 'heating', 'Bedroom', 
-      'Bathroom', 'Kitchen', 'Windows', 'Laundry', 'troubleshooting', 'tv', 'contact', 'local-guidebook'
+      'Bathroom', 'Kitchen', 'Windows', 'Laundry', 'ironing', 'troubleshooting', 'tv', 'contact', 'local-guidebook'
     ];
+
     sectionOrder.forEach(key => {
       if (allContent[key]) {
         const section = allContent[key];
@@ -38,6 +41,7 @@ async function buildGuidebook() {
         tocHtml += `<li><a href="#${sectionId}">${section.emoji} ${section.title}</a></li>`;
       }
     });
+
     tocHtml += '</ul>';
     guidebookContainer.innerHTML = fullHtml;
     tocContainer.innerHTML = tocHtml;
@@ -63,8 +67,6 @@ function setupMobileMenu() {
     overlay.addEventListener('click', toggleMenu);
     nav.addEventListener('click', (e) => { if (e.target.tagName === 'A') { toggleMenu(); } });
 }
-
-// --- CHATBOT UI & LOGIC (Simplified and Robust) ---
 
 function setupChatToggle() {
   const htmlEl = document.documentElement;
@@ -110,7 +112,63 @@ function buildDynamicContent(keys, fragments) {
   return content;
 }
 
-function getStaticContent() { return { 'video': { title: 'Instructional Video Playlist', emoji: '🎬', html: `<p>This playlist contains all the instructional videos from this guide in one convenient location.</p><a href="https://www.youtube.com/playlist?list=PL7olRlH5yDt4Zk92CIS9fRnkYmC9gkcDh" target="_blank" rel="noopener noreferrer">Link to Full YouTube Playlist</a>` }, 'what-not-to-bring': { title: 'What not to bring', emoji: '🚫', html: `<p>We provide a variety of amenities so you can pack light! Here are some things you <em>don’t</em> need to bring:</p><ul><li><strong>Towels & Linens:</strong> Fresh bath towels and bed linens are provided.</li><li><strong>Toiletries:</strong> Shampoo, conditioner, body wash, and hand soap are available.</li><li><strong>Hair Dryers:</strong> Each bedroom has a hairdryer.</li><li><strong>Adapters:</strong> Rooms have universal adapters on each side of the bed.</li><li><strong>Extra Blankets:</strong> All beds include an electric under-blanket.</li></ul>` }, 'domestic-directions': { title: 'Domestic directions', emoji: '🚶', html: `<p><strong>By Train/Tube:</strong> We are ~7 minutes from <strong>London Victoria Station</strong>. Exit towards Victoria Street/Vauxhall Bridge Road, turn left, and walk ~5–7 minutes. The house will be on your left.</p><p><strong>By Coach:</strong> From Victoria Coach Station, it’s a ~10 minute walk.</p><p><strong>By Car/Taxi:</strong> We do not have on-site parking. Please check <a href="https://en.parkopedia.com/" target="_blank" rel="noopener noreferrer">Parkopedia</a> for public garages.</p>` }, 'airport-directions': { title: 'Airport directions', emoji: '✈️', html: `<p>Book buses at <a href="https://www.nationalexpress.com" target="_blank" rel="noopener noreferrer">National Express</a> and trains at <a href="https://www.thetrainline.com" target="_blank" rel="noopener noreferrer">The Trainline</a>.</p><p><strong>Gatwick (LGW):</strong> Take a Southern Rail train directly to Victoria (~35 mins). It's cheaper and only slightly slower than the Gatwick Express.</p><p><strong>Heathrow (LHR):</strong> Take the Piccadilly line (dark blue) and change at Hammersmith for a District line (green) train to Victoria (~50 mins total).</p><p><strong>Stansted (STN):</strong> Take the train to Tottenham Hale, then switch to the Victoria line (light blue) to Victoria Station. You cannot use contactless from Stansted.</p><p><strong>Luton (LTN):</strong> Take the train from Luton Airport Parkway to London St. Pancras (~40 mins), then the Victoria line to Victoria (~15 mins).</p>` }, 'getting-around': { title: 'Getting around', emoji: '🚇', html: `<p>Public transport is excellent. Victoria Station is ~7 minutes away. The <strong>24 bus</strong> stop near the house offers a scenic route through central London.</p><p>Use a contactless card for Tube/bus fares (they cap daily). London is very walkable, and you can also take a <strong>Thames river bus</strong> from Westminster Pier.</p>` }, 'codetimes': { title: 'Lock info', emoji: '*️⃣', html: `<p><strong>How to unlock:</strong> Press your palm to the black screen to activate the keypad. See the video playlist for a demonstration.</p><p><strong>Front door & Luggage (Cupboard V):</strong> Your code is valid from 11:00 on check-in day until 14:00 on check-out day.</p><p><strong>Bedroom/Bathroom/Kitchen:</strong> Your code is valid from 15:00 on check-in day until 11:00 on check-out day.</p><p><strong>Locking from inside:</strong> This video shows how to lock your bedroom door from the inside for privacy.</p><div class="video-container"><iframe src="https://www.youtube.com/embed/7orX7Wh_g1U" title="How to lock door from inside" allowfullscreen></iframe></div>` }, 'check-in-luggage': { title: 'Check-in & Luggage', emoji: '🧳', html: `<p><strong>Self Check-in:</strong> From 15:00 onwards.</p><p><strong>Early Luggage Drop-off:</strong> From 11:00, you can use your front door code to access Cupboard V downstairs.</p><p><strong>Luggage Storage After Check-out:</strong> Until 14:00, you can store bags in Cupboard V.</p><p>This video shows the full process:</p><div class="video-container"><iframe src="https://www.youtube.com/embed/rlUbHfWcN0s" title="Luggage drop-off process" allowfullscreen></iframe></div>` }, 'heating': { title: 'Heating and Cooling', emoji: '🌡️', html: `<p>The central heating is on an automatic schedule:</p><ul><li><strong>Morning (07:00 – 10:00):</strong> Rises to <strong>20.0°C</strong>.</li><li><strong>Daytime (10:00 – 17:00):</strong> Enters a cool, energy-saving mode at <strong>18.0°C</strong>.</li><li><strong>Evening (17:00 – 22:30):</strong> Warms to a comfortable <strong>21.0°C</strong>.</li><li><strong>Overnight:</strong> Lowers to <strong>17.0°C</strong>.</li></ul><p>You can boost the temperature at any time using the valve (TRV) on your radiator.</p><p><strong>Cooling:</strong> We do not have air conditioning. We recommend keeping the window and curtains closed during sunny days and opening them in the evening.</p>` }, 'troubleshooting': { title: 'Troubleshooting', emoji: '🛠️', html: `<p>If your digital door lock runs out of batteries, this video shows the simple replacement process:</p><div class="video-container"><iframe src="https://www.youtube.com/embed/8Zofre6A7ns" title="How to replace door lock batteries" allowfullscreen></iframe></div>` }, 'contact': { title: 'Contact', emoji: '☎️', html: `<p>For any questions, please check with our AI assistant, Victoria, first. For other matters, message us through your booking platform.</p><p><strong>*FOR EMERGENCIES ONLY*</strong>, please WhatsApp call +44 7443 618207. If there is no answer, try +44 7383 298999.</p>` }, 'tv': { title: 'TV', emoji: '📺', html: `<p>Each bedroom has a Smart 4K TV with Disney+, Apple TV+, Amazon Prime Video, BBC iPlayer, and more. If a service is logged out or malfunctions, please contact us and we can log you in remotely.</p>` }, 'local-guidebook': { title: 'Local Guidebook', emoji: '📍', html: `<h3>Food</h3><ul><li><a href="https://www.google.com/maps/search/?api=1&query=Regency+Cafe+London" target="_blank">Regency Cafe</a> – Classic English breakfast.</li><li><a href="https://www.google.com/maps/search/?api=1&query=Jugged+Hare+London" target="_blank">Jugged Hare</a> – Great pub across the road.</li><li><a href="https://www.google.com/maps/search/?api=1&query=Tachbrook+Street+Market+London" target="_blank">Tachbrook Street Market</a> – Weekday lunch market.</li><li><a href="https://www.google.com/maps/search/?api=1&query=A+Wong+70+Wilton+Road+London" target="_blank">A. Wong</a> – Michelin-starred Chinese food.</li><li><a href="https://www.google.com/maps/search/?api=1&query=Sainsbury%27s+Victoria+Station" target="_blank">Sainsbury's</a> – Large supermarket in Victoria Station.</li></ul><h3>Sights</h3><ul><li>Wicked and Hamilton – Two of the world's best musicals are right on our doorstep.</li><li>St James's Park – A beautiful royal park, perfect for a stroll.</li><li>A great walk: Start at Big Ben, cross Westminster Bridge, and walk along the scenic South Bank to Tower Bridge.</li></ul>` } }; }
+function getStaticContent() {
+  // Added the new 'ironing' section here
+  return {
+    'video': {
+      title: 'Instructional Video Playlist', emoji: '🎬',
+      html: `<p>This playlist contains all the instructional videos from this guide in one convenient location.</p><a href="https://www.youtube.com/playlist?list=PL7olRlH5yDt4Zk92CIS9fRnkYmC9gkcDh" target="_blank" rel="noopener noreferrer">Link to Full YouTube Playlist</a>`
+    },
+    'what-not-to-bring': {
+      title: 'What not to bring', emoji: '🚫',
+      html: `<p>We provide a variety of amenities so you can pack light! Here are some things you <em>don’t</em> need to bring:</p><ul><li><strong>Towels & Linens:</strong> Fresh bath towels and bed linens are provided.</li><li><strong>Toiletries:</strong> Shampoo, conditioner, body wash, and hand soap are available.</li><li><strong>Hair Dryers:</strong> Each bedroom has a hairdryer.</li><li><strong>Adapters:</strong> Rooms have universal adapters on each side of the bed.</li><li><strong>Extra Blankets:</strong> All beds include an electric under-blanket.</li></ul>`
+    },
+    'domestic-directions': {
+      title: 'Domestic directions', emoji: '🚶',
+      html: `<p><strong>By Train/Tube:</strong> We are ~7 minutes from <strong>London Victoria Station</strong>. Exit towards Victoria Street/Vauxhall Bridge Road, turn left, and walk ~5–7 minutes. The house will be on your left.</p><p><strong>By Coach:</strong> From Victoria Coach Station, it’s a ~10 minute walk.</p><p><strong>By Car/Taxi:</strong> We do not have on-site parking. Please check <a href="https://en.parkopedia.com/" target="_blank" rel="noopener noreferrer">Parkopedia</a> for public garages.</p>`
+    },
+    'airport-directions': {
+        title: 'Airport directions', emoji: '✈️',
+        html: `<p>Book buses at <a href="https://www.nationalexpress.com" target="_blank" rel="noopener noreferrer">National Express</a> and trains at <a href="https://www.thetrainline.com" target="_blank" rel="noopener noreferrer">The Trainline</a>.</p><p><strong>Gatwick (LGW):</strong> Take a Southern Rail train directly to Victoria (~35 mins). It's cheaper and only slightly slower than the Gatwick Express.</p><p><strong>Heathrow (LHR):</strong> Take the Piccadilly line (dark blue) and change at Hammersmith for a District line (green) train to Victoria (~50 mins total).</p><p><strong>Stansted (STN):</strong> Take the train to Tottenham Hale, then switch to the Victoria line (light blue) to Victoria Station. You cannot use contactless from Stansted.</p><p><strong>Luton (LTN):</strong> Take the train from Luton Airport Parkway to London St. Pancras (~40 mins), then the Victoria line to Victoria (~15 mins).</p>`
+    },
+    'getting-around': {
+        title: 'Getting around', emoji: '🚇',
+        html: `<p>Public transport is excellent. Victoria Station is ~7 minutes away. The <strong>24 bus</strong> stop near the house offers a scenic route through central London.</p><p>Use a contactless card for Tube/bus fares (they cap daily). London is very walkable, and you can also take a <strong>Thames river bus</strong> from Westminster Pier.</p>`
+    },
+    'codetimes': {
+        title: 'Lock info', emoji: '*️⃣',
+        html: `<p><strong>How to unlock:</strong> Press your palm to the black screen to activate the keypad. See the video playlist for a demonstration.</p><p><strong>Front door & Luggage (Cupboard V):</strong> Your code is valid from 11:00 on check-in day until 14:00 on check-out day.</p><p><strong>Bedroom/Bathroom/Kitchen:</strong> Your code is valid from 15:00 on check-in day until 11:00 on check-out day.</p><p><strong>Locking from inside:</strong> This video shows how to lock your bedroom door from the inside for privacy.</p><div class="video-container"><iframe src="https://www.youtube.com/embed/7orX7Wh_g1U" title="How to lock door from inside" allowfullscreen></iframe></div>`
+    },
+    'check-in-luggage': {
+        title: 'Check-in & Luggage', emoji: '🧳',
+        html: `<p><strong>Self Check-in:</strong> From 15:00 onwards.</p><p><strong>Early Luggage Drop-off:</strong> From 11:00, you can use your front door code to access Cupboard V downstairs.</p><p><strong>Luggage Storage After Check-out:</strong> Until 14:00, you can store bags in Cupboard V.</p><p>This video shows the full process:</p><div class="video-container"><iframe src="https://www.youtube.com/embed/rlUbHfWcN0s" title="Luggage drop-off process" allowfullscreen></iframe></div>`
+    },
+     'heating': {
+        title: 'Heating and Cooling', emoji: '🌡️',
+        html: `<p>The central heating is on an automatic schedule:</p><ul><li><strong>Morning (07:00 – 10:00):</strong> Rises to <strong>20.0°C</strong>.</li><li><strong>Daytime (10:00 – 17:00):</strong> Enters a cool, energy-saving mode at <strong>18.0°C</strong>.</li><li><strong>Evening (17:00 – 22:30):</strong> Warms to a comfortable <strong>21.0°C</strong>.</li><li><strong>Overnight:</strong> Lowers to <strong>17.0°C</strong>.</li></ul><p>You can boost the temperature at any time using the valve (TRV) on your radiator.</p><p><strong>Cooling:</strong> We do not have air conditioning. We recommend keeping the window and curtains closed during sunny days and opening them in the evening.</p>`
+    },
+    'ironing': {
+        title: 'Iron & Ironing Mat', emoji: '👕',
+        html: `<p>An iron and a portable ironing mat can be found in the kitchen. The mat can be placed on a table or other firm surface for use. Please return both items to the kitchen when you are finished.</p>`
+    },
+    'troubleshooting': {
+        title: 'Troubleshooting', emoji: '🛠️',
+        html: `<p>If your digital door lock runs out of batteries, this video shows the simple replacement process:</p><div class="video-container"><iframe src="https://www.youtube.com/embed/8Zofre6A7ns" title="How to replace door lock batteries" allowfullscreen></iframe></div>`
+    },
+    'contact': {
+        title: 'Contact', emoji: '☎️',
+        html: `<p>For any questions, please check with our AI assistant, Victoria, first. For other matters, message us through your booking platform.</p><p><strong>*FOR EMERGENCIES ONLY*</strong>, please WhatsApp call +44 7443 618207. If there is no answer, try +44 7383 298999.</p>`
+    },
+    'tv': {
+        title: 'TV', emoji: '📺',
+        html: `<p>Each bedroom has a Smart 4K TV with Disney+, Apple TV+, Amazon Prime Video, BBC iPlayer, and more. If a service is logged out or malfunctions, please contact us and we can log you in remotely.</p>`
+    },
+    'local-guidebook': {
+        title: 'Local Guidebook', emoji: '📍',
+        html: `<h3>Food</h3><ul><li><a href="https://www.google.com/maps/search/?api=1&query=Regency+Cafe+London" target="_blank">Regency Cafe</a> – Classic English breakfast.</li><li><a href="https://www.google.com/maps/search/?api=1&query=Jugged+Hare+London" target="_blank">Jugged Hare</a> – Great pub across the road.</li><li><a href="https://www.google.com/maps/search/?api=1&query=Tachbrook+Street+Market+London" target="_blank">Tachbrook Street Market</a> – Weekday lunch market.</li><li><a href="https://www.google.com/maps/search/?api=1&query=A+Wong+70+Wilton+Road+London" target="_blank">A. Wong</a> – Michelin-starred Chinese food.</li><li><a href="https://www.google.com/maps/search/?api=1&query=Sainsbury%27s+Victoria+Station" target="_blank">Sainsbury's</a> – Large supermarket in Victoria Station.</li></ul><h3>Sights</h3><ul><li>Wicked and Hamilton – Two of the world's best musicals are right on our doorstep.</li><li>St James's Park – A beautiful royal park, perfect for a stroll.</li><li>A great walk: Start at Big Ben, cross Westminster Bridge, and walk along the scenic South Bank to Tower Bridge.</li></ul>`
+    }
+  };
+}
 
 function buildChatbotContextFromPage() {
   const mainContainer = document.querySelector('main.container');
