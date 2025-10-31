@@ -15,9 +15,18 @@ async function buildGuidebook() {
     if (!response.ok) throw new Error('config.json not found');
     const config = await response.json();
     const params = new URLSearchParams(window.location.search);
-    const bookingKey = params.keys().next().value || '31';
+    const bookingKey = params.keys().next().value; // Default removed
+
+    // Handle missing booking code
+    if (!bookingKey) {
+      document.getElementById('table-of-contents').style.display = 'none';
+      document.getElementById('chat-launcher').style.display = 'none';
+      throw new Error("No booking code provided. Please use the link from your booking confirmation email, which includes your unique code (e.g., manual.195vbr.com/?31).");
+    }
+
     const requiredKeys = config.bookings[bookingKey];
     if (!requiredKeys) throw new Error(`Booking key "${bookingKey}" not found.`);
+    
     const staticContent = getStaticContent();
     const dynamicContent = buildDynamicContent(requiredKeys, config.contentFragments);
     const allContent = { ...staticContent, ...dynamicContent };
@@ -26,7 +35,6 @@ async function buildGuidebook() {
     let fullHtml = `<header class="site-header"><img src="logo.png" alt="195VBR Guesthouse Logo" class="logo" /></header><h1>195VBR Guidebook</h1>`;
     let tocHtml = '<ul>';
     
-    // Updated the section order to include new dynamic sections
     const sectionOrder = [
       'video', 'what-not-to-bring', 'Address', 'domestic-directions', 'airport-directions', 
       'getting-around', 'codetimes', 'Check-in & Luggage', 'Wifi', 'heating', 'Bedroom', 
@@ -34,11 +42,9 @@ async function buildGuidebook() {
     ];
 
     sectionOrder.forEach(key => {
-      // Find the key in allContent that matches the sectionOrder key, case-insensitively
       const sectionObjectKey = Object.keys(allContent).find(k => k.toLowerCase() === key.toLowerCase());
       if (sectionObjectKey && allContent[sectionObjectKey]) {
         const section = allContent[sectionObjectKey];
-        // Use the section's actual title for the ID to ensure consistency
         const sectionId = section.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
         fullHtml += `<section id="${sectionId}"><h2>${section.emoji} ${section.title}</h2>${section.html}</section>`;
         tocHtml += `<li><a href="#${sectionId}">${section.emoji} ${section.title}</a></li>`;
@@ -51,7 +57,10 @@ async function buildGuidebook() {
     buildChatbotContextFromPage();
   } catch (error) {
     console.error("Error building guidebook:", error);
-    document.getElementById('guidebook-container').innerHTML = `<p>Error: Could not load guidebook. ${error.message}</p>`;
+    document.getElementById('guidebook-container').innerHTML = `
+      <header class="site-header"><img src="logo.png" alt="195VBR Guesthouse Logo" class="logo" /></header>
+      <h1>Guidebook Error</h1>
+      <p style="color: red; font-weight: bold;">Could not load the guidebook: ${error.message}</p>`;
     chatbotContext = "You are a helpful assistant for 195VBR. Please inform the user that there was an error loading the specific guidebook information and that they should refer to the on-page text.";
   }
 }
@@ -126,11 +135,10 @@ function buildDynamicContent(keys, fragments) {
 }
 
 function getStaticContent() {
-  // Added the new 'ironing' section and updated local guide
   return {
     'video': {
       title: 'Instructional Video Playlist', emoji: '🎬',
-      html: `<p>This playlist contains all the instructional videos from this guide in one convenient location.</p><a href="https://www.youtube.com/playlist?list=PL7olRlH5yDt4Zk92CIS9fRnkYmC9gkcDh" target="_blank" rel="noopener noreferrer">Link to Full YouTube Playlist</a>`
+      html: `<p>This playlist contains all the instructional videos from this guide in one convenient location.</p><a href="https://www.youtube.com/playlist?list=PL7olRlH5yDt4Zk_2CIS9fRnkYmC9gkcDh" target="_blank" rel="noopener noreferrer">Link to Full YouTube Playlist</a>`
     },
     'what-not-to-bring': {
       title: 'What not to bring', emoji: '🚫',
