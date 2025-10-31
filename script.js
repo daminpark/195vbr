@@ -1,15 +1,91 @@
+// --- AUTH: Global variable to hold the guest's access level ---
+let guestAccessLevel = null; 
+
 let chatbotContext = '';
 let chatHistory = [];
 
+// --- AUTH: A new main function to orchestrate the loading sequence ---
 document.addEventListener('DOMContentLoaded', async () => {
-  await buildGuidebook();
-  setupChatToggle();
-  setupEnterKeyListener();
-  addInitialBotMessage();
-  setupMobileMenu();
+  const params = new URLSearchParams(window.location.search);
+  const opaqueBookingKey = params.get('booking'); // e.g., "31-6556"
+
+  if (!opaqueBookingKey) {
+    displayErrorPage('missing'); // Show error if the ?booking= param is missing
+    return;
+  }
+  
+  const validationResult = await validateAccess(opaqueBookingKey);
+
+  if (validationResult.success) {
+    guestAccessLevel = validationResult.access; // Store the access level
+    await buildGuidebook(opaqueBookingKey); // Pass the key to buildGuidebook
+    setupChatToggle();
+    setupEnterKeyListener();
+    addInitialBotMessage();
+    setupMobileMenu();
+  } else {
+    displayErrorPage('denied', validationResult.error); // Show access denied error
+  }
 });
 
-async function buildGuidebook() {
+// --- AUTH: New function to display different error states ---
+function displayErrorPage(type, message = '') {
+  const guidebookContainer = document.getElementById('guidebook-container');
+  const tocContainer = document.getElementById('table-of-contents');
+  document.getElementById('chat-launcher').style.display = 'none';
+  tocContainer.innerHTML = '';
+
+  let errorHtml;
+  if (type === 'missing') {
+    errorHtml = `
+      <header class="site-header"><img src="logo.png" alt="195VBR Guesthouse Logo" class="logo" /></header>
+      <h1>Booking Not Found</h1>
+      <section id="error-message">
+        <h2><span style="color: #d9534f;">&#9888;</span> Invalid Access Link</h2>
+        <p>Your link is missing a booking code. Please use the exact link provided to you.</p>
+      </section>`;
+  } else { // 'denied'
+    errorHtml = `
+      <header class="site-header"><img src="logo.png" alt="195VBR Guesthouse Logo" class="logo" /></header>
+      <h1>Access Denied</h1>
+      <section id="error-message">
+        <h2><span style="color: #d9534f;">&#9888;</span> Validation Failed</h2>
+        <p>${message}</p>
+        <p>Please ensure you are using the correct, most recent link. If you continue to have trouble, please contact us through your booking platform.</p>
+      </section>`;
+  }
+  guidebookContainer.innerHTML = errorHtml;
+}
+
+
+// --- AUTH: New function to call our backend validation API ---
+async function validateAccess(opaqueBookingKey) {
+  const guidebookContainer = document.getElementById('guidebook-container');
+  guidebookContainer.innerHTML = `<h1>Validating Access...</h1><p>Please wait a moment.</p>`;
+
+  // --- THIS IS THE CORRECTED URL FOR TESTING ---
+  // It points to the preview deployment of your backend's feature branch.
+  const validationUrl = `https://guidebook-chatbot-backend-git-ical-auth-pierre-parks-projects.vercel.app/api/validate-booking?booking=${opaqueBookingKey}`;
+
+  try {
+    const response = await fetch(validationUrl);
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Unknown validation error.');
+    }
+
+    console.log('Access validation successful:', data);
+    return { success: true, access: data.access };
+
+  } catch (error) {
+    console.error('Validation API call failed:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+// --- AUTH: buildGuidebook is now called AFTER validation ---
+async function buildGuidebook(opaqueBookingKey) {
   const guidebookContainer = document.getElementById('guidebook-container');
   const tocContainer = document.getElementById('table-of-contents');
 
@@ -17,31 +93,14 @@ async function buildGuidebook() {
     const response = await fetch('config.json');
     if (!response.ok) throw new Error('config.json not found');
     const config = await response.json();
-    const params = new URLSearchParams(window.location.search);
-    const bookingKey = params.keys().next().value; // Get the key, with no fallback
-
-    // --- NEW: Check if the booking key is missing or invalid ---
-    if (!bookingKey || !config.bookings[bookingKey]) {
-      const errorHtml = `
-        <header class="site-header"><img src="logo.png" alt="195VBR Guesthouse Logo" class="logo" /></header>
-        <h1>Booking Not Found</h1>
-        <section id="error-message">
-          <h2><span style="color: #d9534f;">&#9888;</span> Invalid Access Link</h2>
-          <p>The link you have used does not contain a valid booking code.</p>
-          <p><strong>Please use the exact link provided to you in your booking confirmation message.</strong></p>
-          <p>If you are copying the link manually, please ensure it is complete and correct. If you continue to have trouble, please contact us through your booking platform.</p>
-        </section>
-      `;
-      guidebookContainer.innerHTML = errorHtml;
-      tocContainer.innerHTML = ''; // Clear the table of contents
-      // Hide the chat launcher as it's not needed on an error page
-      document.getElementById('chat-launcher').style.display = 'none';
-      return; // Stop the function from building the rest of the page
-    }
+    
+    // --- AUTH: The booking key is now extracted from the opaque key ---
+    const bookingKey = opaqueBookingKey.split('-')[0];
 
     const bookingConfig = config.bookings[bookingKey];
-    if (!bookingConfig) throw new Error(`Booking key "${bookingKey}" not found.`);
+    if (!bookingConfig) throw new Error(`Booking key "${bookingKey}" not found in config.json.`);
     
+    // (The rest of this function's logic remains the same)
     const requiredKeys = bookingConfig.content;
     const staticContent = getStaticContent();
     const dynamicContent = buildDynamicContent(requiredKeys, config.contentFragments);
@@ -72,17 +131,20 @@ async function buildGuidebook() {
     buildChatbotContextFromPage();
 
     if (bookingConfig.house && bookingConfig.entities) {
-      createDashboardCards(bookingConfig);
+      createDashboardCards(bookingConfig); // This will now conditionally render cards
       displayHomeAssistantStatus(bookingConfig);
       setInterval(() => displayHomeAssistantStatus(bookingConfig), 600000); 
     }
 
   } catch (error) {
     console.error("Error building guidebook:", error);
-    guidebookContainer.innerHTML = `<p>Error: Could not load guidebook configuration. ${error.message}</p>`;
-    chatbotContext = "You are a helpful assistant for 195VBR. Please inform the user that there was an error loading the specific guidebook information and that they should refer to the on-page text.";
+    displayErrorPage('denied', `Could not load guidebook configuration. ${error.message}`);
   }
 }
+
+// (All helper functions like formatCardTitle, weatherIconMap, etc., remain the same)
+// ...
+
 
 function formatCardTitle(key, houseNumber) {
     const title = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
@@ -96,6 +158,8 @@ const weatherIconMap = {
     'sunny': 'sunny', 'windy': 'windy', 'windy-variant': 'windy', 'exceptional': 'warning'
 };
 
+
+// --- AUTH: MODIFIED createDashboardCards function ---
 function createDashboardCards(bookingConfig) {
     const { house, entities } = bookingConfig;
     const dashboard = document.getElementById('ha-dashboard');
@@ -105,21 +169,17 @@ function createDashboardCards(bookingConfig) {
     const entityKeys = Object.keys(entities).sort((a, b) => a === 'weather' ? -1 : b === 'weather' ? 1 : 0);
 
     entityKeys.forEach(key => {
+        // --- THIS IS THE KEY LOGIC ---
+        // Always show the weather card (informational).
+        // Only show other cards (smart home controls) if access is 'full'.
         if (key === 'weather') {
-            // --- MODIFIED HTML STRUCTURE ---
-            // We've replaced the separate 'weather-main' and 'weather-hourly-forecast' divs
-            // with a single 'weather-top-row' container.
             cardsHtml += `
                 <div class="ha-card weather-card" id="ha-card-weather">
-                    <div class="weather-top-row" id="ha-weather-top-row">
-                        <!-- Current weather & hourly forecast will be injected here -->
-                    </div>
-                    <div class="weather-forecast" id="ha-weather-daily">
-                        <!-- Daily forecast will be injected here (this part is unchanged) -->
-                    </div>
+                    <div class="weather-top-row" id="ha-weather-top-row"></div>
+                    <div class="weather-forecast" id="ha-weather-daily"></div>
                 </div>
             `;
-        } else {
+        } else if (guestAccessLevel === 'full') { // <-- THE CONDITIONAL CHECK
             cardsHtml += `
                 <div class="ha-card">
                     <div class="ha-card-title">${formatCardTitle(key, house)}</div>
@@ -128,8 +188,15 @@ function createDashboardCards(bookingConfig) {
             `;
         }
     });
-    dashboard.innerHTML = cardsHtml;
+  
+    // If no cards were generated (e.g., partial access with no weather), hide the dashboard.
+    if (!cardsHtml.trim()) {
+        dashboard.style.display = 'none';
+    } else {
+        dashboard.innerHTML = cardsHtml;
+    }
 }
+
 
 async function fetchHAData(entityId, house, type = 'state') {
   const proxyUrl = 'https://guidebook-chatbot-backend.vercel.app/api/ha-proxy';
