@@ -87,17 +87,16 @@ function createDashboardCards(bookingConfig) {
 
     entityKeys.forEach(key => {
         if (key === 'weather') {
+            // --- MODIFIED HTML STRUCTURE ---
+            // We've replaced the separate 'weather-main' and 'weather-hourly-forecast' divs
+            // with a single 'weather-top-row' container.
             cardsHtml += `
                 <div class="ha-card weather-card" id="ha-card-weather">
-                    <div class="weather-main">
-                        <span class="weather-icon material-symbols-outlined" id="ha-weather-icon">device_thermostat</span>
-                        <div class="weather-temp" id="ha-weather-temp">--°</div>
-                    </div>
-                    <div class="weather-hourly-forecast" id="ha-weather-hourly">
-                        <!-- Hourly forecast will be injected here -->
+                    <div class="weather-top-row" id="ha-weather-top-row">
+                        <!-- Current weather & hourly forecast will be injected here -->
                     </div>
                     <div class="weather-forecast" id="ha-weather-daily">
-                        <!-- Daily forecast will be injected here -->
+                        <!-- Daily forecast will be injected here (this part is unchanged) -->
                     </div>
                 </div>
             `;
@@ -136,32 +135,38 @@ async function displayHomeAssistantStatus(bookingConfig) {
             fetchHAData(entityId, house, 'daily_forecast')
         ]);
 
-        const weatherIconEl = document.getElementById('ha-weather-icon');
-        const weatherTempEl = document.getElementById('ha-weather-temp');
-        if (weatherIconEl && weatherTempEl) {
-            weatherTempEl.innerHTML = `${Math.round(currentState.attributes.temperature)}°`;
-            weatherIconEl.textContent = weatherIconMap[currentState.state] || 'sunny';
-        }
+        // --- NEW LOGIC TO BUILD THE COMBINED TOP ROW ---
+        const topRowContainer = document.getElementById('ha-weather-top-row');
+        if (topRowContainer) {
+            let topRowHtml = '';
 
-        const hourlyContainer = document.getElementById('ha-weather-hourly');
-        if (hourlyContainer) {
-            let hourlyHtml = '';
-            hourlyForecast.slice(1, 6).forEach(hour => {
-                const time = new Date(hour.datetime).toLocaleTimeString('en-US', { hour: 'numeric', hour12: true });
-                hourlyHtml += `
-                    <div class="hourly-item">
-                        <div class="hourly-time">${time}</div>
-                        <span class="hourly-icon material-symbols-outlined">${weatherIconMap[hour.condition] || 'sunny'}</span>
-                        <div class="hourly-temp">${Math.round(hour.temperature)}°</div>
+            // 1. Add the "Current" weather item
+            topRowHtml += `
+                <div class="weather-item current-weather-item">
+                    <div class="weather-item-label">Now</div>
+                    <span class="weather-item-icon material-symbols-outlined">${weatherIconMap[currentState.state] || 'sunny'}</span>
+                    <div class="weather-item-temp">${Math.round(currentState.attributes.temperature)}°</div>
+                </div>
+            `;
+            
+            // 2. Add the next 4 hourly forecast items
+            hourlyForecast.slice(1, 5).forEach(hour => {
+                const time = new Date(hour.datetime).toLocaleTimeString('en-US', { hour: 'numeric', hour12: false });
+                topRowHtml += `
+                    <div class="weather-item">
+                        <div class="weather-item-label">${time}</div>
+                        <span class="weather-item-icon material-symbols-outlined">${weatherIconMap[hour.condition] || 'sunny'}</span>
+                        <div class="weather-item-temp">${Math.round(hour.temperature)}°</div>
                     </div>
                 `;
             });
-            hourlyContainer.innerHTML = hourlyHtml;
+            topRowContainer.innerHTML = topRowHtml;
         }
 
         const dailyContainer = document.getElementById('ha-weather-daily');
         if (dailyContainer) {
             let dailyHtml = '';
+            // Daily forecast logic remains unchanged
             dailyForecast.slice(0, 4).forEach((day, index) => {
                 const dayName = index === 0 ? 'Today' : new Date(day.datetime).toLocaleDateString('en-US', { weekday: 'short' });
                 dailyHtml += `
@@ -180,11 +185,11 @@ async function displayHomeAssistantStatus(bookingConfig) {
 
       } catch (error) {
         console.error('Full weather fetch error:', error);
+        const topRowContainer = document.getElementById('ha-weather-top-row');
         const dailyContainer = document.getElementById('ha-weather-daily');
-        const hourlyContainer = document.getElementById('ha-weather-hourly');
         const errorMessage = '<p style="font-size: 0.8rem; color: gray; text-align: center; width: 100%;">Weather data unavailable.</p>';
         if (dailyContainer) dailyContainer.innerHTML = errorMessage;
-        if (hourlyContainer) hourlyContainer.innerHTML = '';
+        if (topRowContainer) topRowContainer.innerHTML = '';
       }
     } else {
       const statusElement = document.getElementById(`ha-status-${key}`);

@@ -240,25 +240,6 @@ html.chat-open #chat-widget {
   }
 }
 
-.weather-main {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    margin-bottom: 0.5rem;
-}
-
-.weather-icon {
-    font-size: 3rem;
-    font-family: "Material Symbols Outlined"; /* Using Google's icon font */
-    color: #333;
-}
-
-.weather-temp {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #333;
-}
 
 .weather-forecast {
     display: flex;
@@ -293,25 +274,7 @@ html.chat-open #chat-widget {
     color: #6c757d;
 }
 
-/* Styles for the new hourly forecast section */
-.weather-hourly-forecast {
-    display: flex;
-    overflow-x: auto;
-    gap: 1rem;
-    padding: 0.75rem 0;
-    /* Hide scrollbar for a cleaner look */
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none;  /* IE and Edge */
-}
 
-.weather-hourly-forecast::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, and Opera */
-}
-
-.hourly-item {
-    text-align: center;
-    flex-shrink: 0; /* Prevent items from shrinking */
-}
 
 .hourly-time {
     font-size: 0.75rem;
@@ -328,3 +291,57 @@ html.chat-open #chat-widget {
     font-size: 0.9rem;
     font-weight: bold;
 }
+
+/* --- NEW STYLES for the combined weather row --- */
+
+/* This is the main flex container for the top row */
+.weather-top-row {
+    display: flex;
+    justify-content: space-around; /* Evenly spaces all items */
+    align-items: stretch; /* Makes all items equal height */
+    text-align: center;
+    gap: 0.5rem; /* Adds a little space between items */
+    margin-bottom: 1rem;
+}
+
+/* A generic class for all items in the top row */
+.weather-item {
+    display: flex;
+    flex-direction: column;
+    flex: 1; /* Allows items to grow and fill the space */
+}
+
+/* Specific styling for the "Now" item to make it stand out */
+.current-weather-item {
+    font-weight: bold;
+}
+
+/* A generic label for the time/day (e.g., "Now", "21:00") */
+.weather-item-label {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+}
+
+/* A generic icon style for all top-row items */
+.weather-item-icon {
+    font-size: 2.25rem; /* Unified icon size */
+    font-family: "Material Symbols Outlined";
+    margin: 0.25rem 0;
+    flex-grow: 1; /* Allows icon to take up vertical space */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* A generic temperature style for all top-row items */
+.weather-item-temp {
+    font-size: 1.25rem;
+}
+
+/* --- Remove old styles for these selectors --- */
+/* .weather-main { ... }                  <-- DELETE THIS */
+/* .weather-hourly-forecast { ... }       <-- DELETE THIS */
+/* .hourly-item { ... }                   <-- DELETE THIS (and its sub-rules) */
+/* .weather-icon { ... }                  <-- DELETE THIS */
+/* .weather-temp { ... }                  <-- DELETE THIS */
