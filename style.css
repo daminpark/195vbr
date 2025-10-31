@@ -96,12 +96,17 @@ html.chat-open #chat-widget {
 --------------------------------------------------- */
 .mobile-header { display: none; }
 
+/* Tablet Styles */
+@media (max-width: 1024px) {
+  #chat-widget {
+    width: 400px;
+    max-height: 80vh;
+  }
+}
+
+/* Mobile Styles */
 @media (max-width: 768px) {
-  /* THE FIX: Apply scroll lock ONLY on mobile devices when a modal is open */
-  html.nav-open,
-  body.nav-open,
-  html.chat-open,
-  body.chat-open {
+  html.nav-open, body.nav-open, html.chat-open, body.chat-open {
     overflow: hidden;
   }
 

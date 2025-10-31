@@ -71,33 +71,31 @@ function setupChatToggle() {
   const chatLauncher = document.getElementById('chat-launcher');
   const chatWidget = document.getElementById('chat-widget');
   const closeBtn = document.getElementById('chat-close');
-  const htmlEl = document.documentElement; // Get the <html> element
+  const htmlEl = document.documentElement;
 
   const cleanupChatListeners = () => {
-    // This function removes the keyboard listener and resets styles
     if (window.visualViewport && visualViewportResizeHandler) {
       window.visualViewport.removeEventListener('resize', visualViewportResizeHandler);
-      visualViewportResizeHandler = null; // Clear the handler
+      visualViewportResizeHandler = null;
     }
-    chatWidget.style.height = ''; // Reset inline style
+    chatWidget.style.height = '';
   };
 
   const openChat = () => {
     if (htmlEl.classList.contains('chat-open')) return;
     
-    // Add class to <html> for aggressive scroll lock
     htmlEl.classList.add('chat-open');
     history.pushState({ chatOpen: true }, '');
 
-    if (window.visualViewport) {
+    // THE FIX: Only activate keyboard handling on mobile-sized screens
+    if (window.visualViewport && window.innerWidth < 768) {
       const chatBox = document.getElementById('chat-box');
       visualViewportResizeHandler = () => {
-        // Set the height of the widget to the visual viewport's height, minus top margin
         chatWidget.style.height = `${window.visualViewport.height - 10}px`;
         chatBox.scrollTop = chatBox.scrollHeight;
       };
       window.visualViewport.addEventListener('resize', visualViewportResizeHandler);
-      visualViewportResizeHandler(); // Run once
+      visualViewportResizeHandler();
     }
   };
 
