@@ -292,3 +292,39 @@ html.chat-open #chat-widget {
 .forecast-day-temp-low {
     color: #6c757d;
 }
+
+/* Styles for the new hourly forecast section */
+.weather-hourly-forecast {
+    display: flex;
+    overflow-x: auto;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    /* Hide scrollbar for a cleaner look */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* IE and Edge */
+}
+
+.weather-hourly-forecast::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, and Opera */
+}
+
+.hourly-item {
+    text-align: center;
+    flex-shrink: 0; /* Prevent items from shrinking */
+}
+
+.hourly-time {
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
+.hourly-icon {
+    font-size: 1.75rem;
+    font-family: "Material Symbols Outlined";
+    margin: 0.25rem 0;
+}
+
+.hourly-temp {
+    font-size: 0.9rem;
+    font-weight: bold;
+}
