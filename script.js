@@ -10,12 +10,34 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 async function buildGuidebook() {
+  const guidebookContainer = document.getElementById('guidebook-container');
+  const tocContainer = document.getElementById('table-of-contents');
+
   try {
     const response = await fetch('config.json');
     if (!response.ok) throw new Error('config.json not found');
     const config = await response.json();
     const params = new URLSearchParams(window.location.search);
-    const bookingKey = params.keys().next().value || '31';
+    const bookingKey = params.keys().next().value; // Get the key, with no fallback
+
+    // --- NEW: Check if the booking key is missing or invalid ---
+    if (!bookingKey || !config.bookings[bookingKey]) {
+      const errorHtml = `
+        <header class="site-header"><img src="logo.png" alt="195VBR Guesthouse Logo" class="logo" /></header>
+        <h1>Booking Not Found</h1>
+        <section id="error-message">
+          <h2><span style="color: #d9534f;">&#9888;</span> Invalid Access Link</h2>
+          <p>The link you have used does not contain a valid booking code.</p>
+          <p><strong>Please use the exact link provided to you in your booking confirmation message.</strong></p>
+          <p>If you are copying the link manually, please ensure it is complete and correct. If you continue to have trouble, please contact us through your booking platform.</p>
+        </section>
+      `;
+      guidebookContainer.innerHTML = errorHtml;
+      tocContainer.innerHTML = ''; // Clear the table of contents
+      // Hide the chat launcher as it's not needed on an error page
+      document.getElementById('chat-launcher').style.display = 'none';
+      return; // Stop the function from building the rest of the page
+    }
 
     const bookingConfig = config.bookings[bookingKey];
     if (!bookingConfig) throw new Error(`Booking key "${bookingKey}" not found.`);
@@ -24,8 +46,6 @@ async function buildGuidebook() {
     const staticContent = getStaticContent();
     const dynamicContent = buildDynamicContent(requiredKeys, config.contentFragments);
     const allContent = { ...staticContent, ...dynamicContent };
-    const tocContainer = document.getElementById('table-of-contents');
-    const guidebookContainer = document.getElementById('guidebook-container');
     
     let fullHtml = `<header class="site-header"><img src="logo.png" alt="195VBR Guesthouse Logo" class="logo" /></header><h1>195VBR Guidebook</h1><div id="ha-dashboard"></div>`;
     let tocHtml = '<ul>';
@@ -54,13 +74,12 @@ async function buildGuidebook() {
     if (bookingConfig.house && bookingConfig.entities) {
       createDashboardCards(bookingConfig);
       displayHomeAssistantStatus(bookingConfig);
-      // Refresh weather every 10 minutes, occupancy more often if needed
       setInterval(() => displayHomeAssistantStatus(bookingConfig), 600000); 
     }
 
   } catch (error) {
     console.error("Error building guidebook:", error);
-    document.getElementById('guidebook-container').innerHTML = `<p>Error: Could not load guidebook. ${error.message}</p>`;
+    guidebookContainer.innerHTML = `<p>Error: Could not load guidebook configuration. ${error.message}</p>`;
     chatbotContext = "You are a helpful assistant for 195VBR. Please inform the user that there was an error loading the specific guidebook information and that they should refer to the on-page text.";
   }
 }
