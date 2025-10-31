@@ -49,7 +49,21 @@
     "56": { "content": ["house195", "wifi195", "guestLuggage", "room6", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], "house": "195", "entities": { "weather": "weather.forecast_home", "bathroom_b": "binary_sensor.bathroom_b_occupancy", "kitchen": "binary_sensor.kitchen_occupancy", "climate": ["climate.5_6_trv"] }},
     "5a": { "content": ["house195", "wifi195", "guestLuggage", "rooma", "bathroomA", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], "house": "195", "entities": { "weather": "weather.forecast_home", "kitchen": "binary_sensor.kitchen_occupancy", "climate": ["climate.5_1_trv", "climate.5_2_trv"] }},
     "5b": { "content": ["house195", "wifi195", "guestLuggage", "roomb", "bathroomB", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], "house": "195", "entities": { "weather": "weather.forecast_home", "kitchen": "binary_sensor.kitchen_occupancy", "climate": ["climate.5_4_trv", "climate.5_5_trv", "climate.5_6_trv"] }},
-    "193vbr": { "content": ["house193", "wifi193", "wholeHomeLuggage", "wholeHomeBedroomsDetailed", "wholeHomeBathrooms", "kitchenBase", "wholeHomeRubbish", "hasLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], "house": "193", "entities": { "weather": "weather.forecast_home", "bathroom_a": "binary_sensor.bathroom_a_occupancy", "bathroom_b": "binary_sensor.bathroom_b_occupancy", "kitchen": "binary_sensor.kitchen_occupancy", "climate": ["climate.3_1_trv", "climate.3_2_trv", "climate.3_3_trv", "climate.3_c_trv", "climate.3_4_trv", "climate.3_5_trv", "climate.3_6_trv"] }},
-    "195vbr": { "content": ["house195", "wifi195", "wholeHomeLuggage", "wholeHomeBedroomsDetailed", "wholeHomeBathrooms", "kitchenBase", "wholeHomeRubbish", "hasLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], "house": "195", "entities": { "weather": "weather.forecast_home", "bathroom_a": "binary_sensor.bathroom_a_occupancy", "bathroom_b": "binary_sensor.bathroom_b_occupancy", "kitchen": "binary_sensor.kitchen_occupancy", "climate": ["climate.5_1_trv", "climate.5_2_trv", "climate.5_3_trv", "climate.5_c_trv", "climate.5_4_trv", "climate.5_5_trv", "climate.5_6_trv"] }}
+    "193vbr": { 
+      "content": ["house193", "wifi193", "wholeHomeLuggage", "wholeHomeBedroomsDetailed", "wholeHomeBathrooms", "kitchenBase", "wholeHomeRubbish", "hasLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], 
+      "house": "193", 
+      "entities": { 
+        "weather": "weather.forecast_home", 
+        "climate": ["climate.3_1_trv", "climate.3_2_trv", "climate.3_3_trv", "climate.3_c_trv", "climate.3_4_trv", "climate.3_5_trv", "climate.3_6_trv"] 
+      }
+    },
+    "195vbr": { 
+      "content": ["house195", "wifi195", "wholeHomeLuggage", "wholeHomeBedroomsDetailed", "wholeHomeBathrooms", "kitchenBase", "wholeHomeRubbish", "hasLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], 
+      "house": "195", 
+      "entities": { 
+        "weather": "weather.forecast_home", 
+        "climate": ["climate.5_1_trv", "climate.5_2_trv", "climate.5_3_trv", "climate.5_c_trv", "climate.5_4_trv", "climate.5_5_trv", "climate.5_6_trv"] 
+      }
+    }
   }
 }
