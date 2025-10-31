@@ -3,6 +3,7 @@
 const BACKEND_API_BASE_URL = 'https://guidebook-chatbot-backend-git-ical-auth-pierre-parks-projects.vercel.app';
 // For PRODUCTION, this will be changed to: 'https://guidebook-chatbot-backend.vercel.app'
 
+let opaqueBookingKey = null;
 let guestAccessLevel = null;
 let chatbotContext = '';
 let chatHistory = [];
@@ -11,8 +12,7 @@ let currentBookingConfig = {};
 
 document.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
-  const opaqueBookingKey = params.get('booking');
-
+  opaqueBookingKey = params.get('booking');
   if (!opaqueBookingKey) {
     displayErrorPage('missing');
     return;
@@ -164,7 +164,13 @@ async function setTemperature(entityId, newTemp, house) {
         const response = await fetch(proxyUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ house, entity: entityId, type: 'set_temperature', temperature: newTemp })
+            body: JSON.stringify({ 
+                house, 
+                entity: entityId, 
+                type: 'set_temperature', 
+                temperature: newTemp,
+                opaqueBookingKey: opaqueBookingKey // <-- The required authorization key
+            })
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'Failed to set temperature.');
