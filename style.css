@@ -161,7 +161,7 @@ a:hover { color: #551A8B; }
 }
 #chat-close { background: transparent; border: 0; color: var(--text-color-light); font-size: 20px; cursor: pointer; }
 #chat-input-container { display: flex; border-top: 1px solid var(--border-color); padding: 10px; }
-#chat-widget #user-input { flex-grow: 1; border: 1px solid #ccc; border-radius: 20px; padding: 8px 15px; margin-right: 10px; }
+#chat-widget #user-input { flex-grow: 1; border: 1px solid #ccc; border-radius: 20px; padding: 8px 15px; margin-right: 10px; font-size: 16px;}
 #chat-widget #send-btn { background: var(--primary-color); color: var(--text-color-light); border: none; border-radius: 20px; padding: 8px 15px; cursor: pointer; }
 
 /* Message Bubbles */

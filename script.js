@@ -1,4 +1,6 @@
+
 let chatbotContext = '';
+let conversationHistory = '';
 
 document.addEventListener('DOMContentLoaded', async () => {
   await buildGuidebook();
@@ -182,6 +184,8 @@ function addInitialBotMessage() {
     chatBox.innerHTML = welcomeMessage;
 }
 
+// In script.js, replace the entire sendMessage function with this new version
+
 async function sendMessage() {
     const userInputField = document.getElementById('user-input');
     const sendBtn = document.getElementById('send-btn');
@@ -200,11 +204,16 @@ async function sendMessage() {
     chatBox.scrollTop = chatBox.scrollHeight;
     const typingIndicator = chatBox.querySelector('.typing-indicator');
     const serverlessFunctionUrl = 'https://guidebook-chatbot-backend.vercel.app/api/chatbot';
+
+    // Construct the prompt with the conversation history
+    const promptWithHistory = conversationHistory + `\n\nUser: ${userInput}`;
+
     try {
         const response = await fetch(serverlessFunctionUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: userInput, context: chatbotContext })
+            // Send the combined prompt and the static guidebook context
+            body: JSON.stringify({ prompt: promptWithHistory, context: chatbotContext })
         });
         if (!response.ok) {
           const errorData = await response.json();
@@ -224,6 +233,10 @@ async function sendMessage() {
             botMessageContainer.innerHTML = marked.parse(fullResponse);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
+
+        // Update the history with the latest exchange for the next turn
+        conversationHistory += `\n\nUser: ${userInput}\n\nVicky: ${fullResponse}`;
+
         const timestampHtml = `<div class="timestamp">${getTimeStamp()}</div>`;
         chatBox.insertAdjacentHTML('beforeend', timestampHtml);
     } catch (error) {
