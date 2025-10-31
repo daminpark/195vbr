@@ -1,5 +1,7 @@
 let chatbotContext = '';
 let chatHistory = [];
+// This will hold the resize handler function so we can remove it later
+let visualViewportResizeHandler = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
   await buildGuidebook();
@@ -61,11 +63,7 @@ function setupMobileMenu() {
     };
     hamburgerBtn.addEventListener('click', toggleMenu);
     overlay.addEventListener('click', toggleMenu);
-    nav.addEventListener('click', (e) => {
-        if (e.target.tagName === 'A') {
-            toggleMenu();
-        }
-    });
+    nav.addEventListener('click', (e) => { if (e.target.tagName === 'A') { toggleMenu(); } });
 }
 
 // --- CHATBOT UI & LOGIC ---
@@ -77,40 +75,52 @@ function setupChatToggle() {
   const body = document.body;
 
   const openChat = () => {
-    // Only push state if chat is not already open
-    if (!body.classList.contains('chat-open')) {
-      body.classList.add('chat-open');
-      // Push a state to the history to handle the back button
-      history.pushState({ chatOpen: true }, '');
+    if (body.classList.contains('chat-open')) return;
+    body.classList.add('chat-open');
+    history.pushState({ chatOpen: true }, '');
+
+    // Keyboard-aware resizing logic
+    if (window.visualViewport) {
+      const chatBox = document.getElementById('chat-box');
+      visualViewportResizeHandler = () => {
+        // Set the height of the widget to the visual viewport's height
+        chatWidget.style.height = `${window.visualViewport.height}px`;
+        // Ensure the latest message is visible
+        chatBox.scrollTop = chatBox.scrollHeight;
+      };
+      window.visualViewport.addEventListener('resize', visualViewportResizeHandler);
+      // Run once immediately to set initial size
+      visualViewportResizeHandler();
     }
   };
 
   const closeChat = () => {
-    if (body.classList.contains('chat-open')) {
-      body.classList.remove('chat-open');
-      // If the current history state is our chat state, go back
-      if (history.state && history.state.chatOpen) {
-        history.back();
-      }
+    if (!body.classList.contains('chat-open')) return;
+    body.classList.remove('chat-open');
+
+    // Clean up keyboard listener and inline styles
+    if (window.visualViewport && visualViewportResizeHandler) {
+      window.visualViewport.removeEventListener('resize', visualViewportResizeHandler);
+      chatWidget.style.height = ''; // Reset height so CSS can take over
+    }
+
+    if (history.state && history.state.chatOpen) {
+      history.back();
     }
   };
   
-  // The launcher opens the chat
   chatLauncher.addEventListener('click', openChat);
-  
-  // The X button closes the chat
   closeBtn.addEventListener('click', closeChat);
-  
-  // This handles the browser's back button
   window.addEventListener('popstate', () => {
-    // If the popstate event fires, we know the user hit 'back'.
-    // If the chat-open class is still on the body, it means we need to close our chat modal.
     if (body.classList.contains('chat-open')) {
-        body.classList.remove('chat-open');
+      body.classList.remove('chat-open');
+       if (window.visualViewport && visualViewportResizeHandler) {
+          window.visualViewport.removeEventListener('resize', visualViewportResizeHandler);
+          chatWidget.style.height = '';
+       }
     }
   });
 }
-
 
 function buildDynamicContent(keys, fragments) {
   const content = {};
@@ -118,10 +128,7 @@ function buildDynamicContent(keys, fragments) {
     const fragment = fragments[key];
     if (fragment) {
       if (!content[fragment.title]) {
-        const emoji = {
-            "Address": "🏘️", "Wifi": "🛜", "Bedroom": "🛏️", "Bathroom": "🛁", 
-            "Kitchen": "🍳", "Windows": "🪟", "Laundry": "🧺"
-        }[fragment.title] || 'ℹ️';
+        const emoji = { "Address": "🏘️", "Wifi": "🛜", "Bedroom": "🛏️", "Bathroom": "🛁", "Kitchen": "🍳", "Windows": "🪟", "Laundry": "🧺" }[fragment.title] || 'ℹ️';
         content[fragment.title] = { title: fragment.title, emoji: emoji, html: '' };
       }
       content[fragment.title].html += fragment.html;
