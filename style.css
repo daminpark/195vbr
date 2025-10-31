@@ -23,60 +23,70 @@ body {
   color: var(--text-color-dark);
 }
 
-/* NEW: Prevents scrolling of the main page when the mobile nav is open */
-body.nav-open {
+/* Prevent background scroll when a modal (nav or chat) is open */
+body.nav-open, body.chat-open {
   overflow: hidden;
 }
 
 .main-wrapper { display: flex; flex-direction: row; }
 .container { max-width: 800px; flex-grow: 1; padding: 1em 2em; }
-section { border-bottom: 1px solid var(--border-color); padding: 1.5rem 0; }
+section { border-bottom: 1px solid var(--border-color); padding: 1.5rem 0; scroll-margin-top: 70px; }
 section:last-of-type { border-bottom: none; }
 h1 { border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
 h2 { margin-top: 0; }
-
 a, a:visited { color: #0000EE; text-decoration: underline; }
 a:hover { color: #551A8B; }
-
 .video-container { position: relative; overflow: hidden; width: 100%; padding-top: 56.25%; margin: 1rem 0; border-radius: 8px; }
 .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
 
 /* ---------------------------------------------------
-   2. SITE HEADER (Desktop)
+   2. SITE HEADER & NAVIGATION (Desktop)
 --------------------------------------------------- */
 .site-header { display: flex; justify-content: center; padding: .5em; border-bottom: 1px solid var(--border-color); }
 .logo { height: 40px; width: auto; }
-
-/* ---------------------------------------------------
-   3. NAVIGATION (Desktop)
---------------------------------------------------- */
-#table-of-contents {
-  width: var(--nav-width-desktop);
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  background: #f8f9fa;
-  border-right: 1px solid var(--border-color);
-  padding: 1rem;
-  overflow-y: auto;
-  flex-shrink: 0;
-}
+#table-of-contents { width: var(--nav-width-desktop); position: sticky; top: 0; height: 100vh; background: #f8f9fa; border-right: 1px solid var(--border-color); padding: 1rem; overflow-y: auto; flex-shrink: 0; }
 #table-of-contents ul { list-style: none; padding: 0; margin: 0; }
 #table-of-contents li a { display: block; padding: 0.5rem; text-decoration: none; color: var(--text-color-dark); border-radius: 4px; }
 #table-of-contents li a:hover { background-color: #e9ecef; }
 
 /* ---------------------------------------------------
-   4. CHAT WIDGET (Unchanged)
+   3. CHAT WIDGET
 --------------------------------------------------- */
 #chat-launcher { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; background-color: var(--primary-color); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.2); z-index: 1000; }
-#close-icon { display: none; }
-#chat-launcher.is-open #chat-icon { display: none; }
-#chat-launcher.is-open #close-icon { display: block; }
-#chat-widget { position: fixed; bottom: 20px; right: 20px; width: 350px; max-width: 90vw; height: 500px; max-height: 70vh; background-color: var(--text-color-light); border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 1000; display: flex; flex-direction: column; overflow: hidden; }
-#chat-widget.hidden { display: none; }
+
+#chat-widget { 
+  position: fixed; 
+  bottom: 20px; 
+  right: 20px; 
+  width: 350px; 
+  max-width: 90vw; 
+  height: 500px; 
+  max-height: 70vh; 
+  background-color: var(--text-color-light); 
+  border-radius: 10px; 
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
+  z-index: 1000; 
+  display: flex; 
+  flex-direction: column; 
+  overflow: hidden;
+  /* Default state is hidden */
+  transform: translateY(20px);
+  opacity: 0;
+  visibility: hidden;
+  transition: transform 0.3s ease-in, opacity 0.3s ease-in, visibility 0s linear 0.3s;
+}
+
+/* Open state for the chat widget on DESKTOP */
+body.chat-open #chat-widget {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
 #chat-header { background-color: var(--primary-color); color: var(--text-color-light); padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
 #chat-close { background: transparent; border: 0; color: var(--text-color-light); font-size: 20px; cursor: pointer; }
-#chat-input-container { display: flex; border-top: 1px solid var(--border-color); padding: 10px; }
+#chat-input-container { display: flex; border-top: 1px solid var(--border-color); padding: 10px; background: #fff; }
 #chat-widget #user-input { flex-grow: 1; border: 1px solid #ccc; border-radius: 20px; padding: 8px 15px; margin-right: 10px; font-size: 16px; }
 #chat-widget #send-btn { background: var(--primary-color); color: var(--text-color-light); border: none; border-radius: 20px; padding: 8px 15px; cursor: pointer; }
 #chat-box { flex-grow: 1; padding: 15px; overflow-y: auto; background-color: var(--background-color-chat); display: flex; flex-direction: column; gap: 12px; }
@@ -88,99 +98,45 @@ a:hover { color: #551A8B; }
 .user-message + .timestamp { align-self: flex-end; margin-right: 15px; }
 .bot-message + .timestamp { align-self: flex-start; margin-left: 15px; }
 
-
 /* ---------------------------------------------------
-   5. RESPONSIVE & MOBILE HEADER STYLES
+   4. RESPONSIVE & MOBILE STYLES
 --------------------------------------------------- */
-.mobile-header { display: none; } /* Hidden by default on desktop */
+.mobile-header { display: none; }
 
 @media (max-width: 768px) {
-  /* Hide desktop-specific elements */
   .site-header { display: none; }
+  .mobile-header { display: flex; justify-content: space-between; align-items: center; background: #fff; border-bottom: 1px solid var(--border-color); padding: 0 1rem; height: var(--mobile-header-height); position: sticky; top: 0; z-index: 999; }
+  .main-wrapper { flex-direction: column; }
+  .container { padding: 1em; }
   
-  /* Show and style the mobile sticky header */
-  .mobile-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #fff;
-    border-bottom: 1px solid var(--border-color);
-    padding: 0 1rem;
-    height: var(--mobile-header-height);
-    position: sticky;
-    top: 0;
-    z-index: 999;
-  }
+  #table-of-contents { position: fixed; top: 0; left: 0; width: 250px; height: 100%; z-index: 1001; transform: translateX(-100%); transition: transform 0.3s ease-in-out; border-right: 1px solid var(--border-color); }
+  #table-of-contents.nav-open { transform: translateX(0); }
+  #nav-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; opacity: 0; visibility: hidden; transition: opacity 0.3s ease-in-out, visibility 0.3s; }
+  #nav-overlay.nav-open { opacity: 1; visibility: visible; }
+  #hamburger-btn { background: none; border: none; cursor: pointer; padding: 10px; display: flex; flex-direction: column; justify-content: space-around; width: 30px; height: 30px; }
+  #hamburger-btn span { display: block; width: 100%; height: 2px; background-color: var(--text-color-dark); }
 
-  body {
-    /* Add padding to the top of the body to prevent content from hiding behind the main content area's header */
-    padding-top: 0;
-  }
-  
-  .main-wrapper {
-    flex-direction: column;
-  }
-
-  .container {
-    padding: 1em;
-  }
-  
-  /* Style the mobile navigation panel (off-canvas) */
-  #table-of-contents {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 250px;
-    height: 100%;
-    z-index: 1001;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease-in-out;
-    border-right: 1px solid var(--border-color);
-  }
-  #table-of-contents.nav-open {
-    transform: translateX(0);
-  }
-
-  /* Style the overlay */
-  #nav-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
+  /* Override desktop chat widget styles for a full-screen mobile modal */
+  #chat-widget {
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.5);
-    z-index: 1000;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease-in-out, visibility 0.3s;
-  }
-  #nav-overlay.nav-open {
-    opacity: 1;
-    visibility: visible;
+    max-height: 100vh;
+    bottom: 0;
+    right: 0;
+    border-radius: 0;
+    /* Mobile hidden state: off-screen at the bottom */
+    transform: translateY(100%);
+    opacity: 1; /* Keep opacity at 1 for slide animation */
   }
   
-  /* Style the hamburger button */
-  #hamburger-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    width: 30px;
-    height: 30px;
-  }
-  #hamburger-btn span {
-    display: block;
-    width: 100%;
-    height: 2px;
-    background-color: var(--text-color-dark);
+  /* Mobile OPEN state: slide up into view */
+  body.chat-open #chat-widget {
+    transform: translateY(0);
   }
 }
 
 /* ---------------------------------------------------
-   6. PRINT STYLES
+   5. PRINT STYLES
 --------------------------------------------------- */
 @media print {
   body { color: #000 !important; }
