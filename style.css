@@ -345,3 +345,81 @@ html.chat-open #chat-widget {
 /* .hourly-item { ... }                   <-- DELETE THIS (and its sub-rules) */
 /* .weather-icon { ... }                  <-- DELETE THIS */
 /* .weather-temp { ... }                  <-- DELETE THIS */
+
+/* ---------------------------------------------------
+   7. HOME ASSISTANT CLIMATE CONTROLS
+--------------------------------------------------- */
+.climate-card {
+  flex-basis: 100%; /* Take full width on small screens */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.climate-entity {
+  display: grid;
+  grid-template-areas:
+    "icon name name"
+    "icon temp-display temp-display"
+    "controls controls controls";
+  grid-template-columns: 40px 1fr auto;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+.climate-card .climate-entity:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+.climate-icon {
+  grid-area: icon;
+  font-size: 36px;
+  font-family: "Material Symbols Outlined";
+  justify-self: center;
+  color: var(--primary-color);
+}
+
+.climate-name {
+  grid-area: name;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.climate-temp-display {
+  grid-area: temp-display;
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.climate-controls {
+  grid-area: controls;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.climate-controls button {
+  background-color: #e9ecef;
+  border: 1px solid var(--border-color);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.climate-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.climate-set-temp {
+  font-size: 1.5rem;
+  font-weight: bold;
+  min-width: 60px;
+  text-align: center;
+}

@@ -159,7 +159,6 @@ const weatherIconMap = {
 };
 
 
-// --- AUTH: MODIFIED createDashboardCards function ---
 function createDashboardCards(bookingConfig) {
     const { house, entities } = bookingConfig;
     const dashboard = document.getElementById('ha-dashboard');
@@ -169,32 +168,104 @@ function createDashboardCards(bookingConfig) {
     const entityKeys = Object.keys(entities).sort((a, b) => a === 'weather' ? -1 : b === 'weather' ? 1 : 0);
 
     entityKeys.forEach(key => {
-        // --- THIS IS THE KEY LOGIC ---
-        // Always show the weather card (informational).
-        // Only show other cards (smart home controls) if access is 'full'.
         if (key === 'weather') {
             cardsHtml += `
                 <div class="ha-card weather-card" id="ha-card-weather">
-                    <div class="weather-top-row" id="ha-weather-top-row"></div>
+                    <div class="weather-top-row" id="ha-weather-top-row">Loading Weather...</div>
                     <div class="weather-forecast" id="ha-weather-daily"></div>
-                </div>
-            `;
-        } else if (guestAccessLevel === 'full') { // <-- THE CONDITIONAL CHECK
+                </div>`;
+        } else if (key === 'climate' && guestAccessLevel === 'full') {
+            // --- NEW: Create a container card for all climate entities ---
+            const climateEntities = entities[key]; // This is an array of entity IDs
+            let climateHtml = '';
+            climateEntities.forEach(entityId => {
+                const entityName = entityId.replace('climate.', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                climateHtml += `
+                    <div class="climate-entity" id="climate-${entityId}">
+                        <span class="climate-icon material-symbols-outlined">thermostat</span>
+                        <div class="climate-name">${entityName}</div>
+                        <div class="climate-temp-display">Current: --° | Mode: --</div>
+                        <div class="climate-controls">
+                            <button class="temp-down" data-entity="${entityId}">-</button>
+                            <div class="climate-set-temp">--°</div>
+                            <button class="temp-up" data-entity="${entityId}">+</button>
+                        </div>
+                    </div>`;
+            });
+            cardsHtml += `<div class="ha-card climate-card">${climateHtml}</div>`;
+        } else if (guestAccessLevel === 'full') { // Occupancy sensors
             cardsHtml += `
                 <div class="ha-card">
                     <div class="ha-card-title">${formatCardTitle(key, house)}</div>
                     <div class="ha-card-status" id="ha-status-${key}">Loading...</div>
-                </div>
-            `;
+                </div>`;
         }
     });
   
-    // If no cards were generated (e.g., partial access with no weather), hide the dashboard.
     if (!cardsHtml.trim()) {
         dashboard.style.display = 'none';
     } else {
         dashboard.innerHTML = cardsHtml;
     }
+
+    // --- NEW: Add event listeners for the new buttons ---
+    document.querySelectorAll('.temp-down, .temp-up').forEach(button => {
+        button.addEventListener('click', handleTemperatureChange);
+    });
+}
+
+// --- ADD this NEW helper function ---
+async function setTemperature(entityId, newTemp, house) {
+    const proxyUrl = 'https://guidebook-chatbot-backend-git-ical-auth-pierre-parks-projects.vercel.app/api/ha-proxy';
+    try {
+        const response = await fetch(proxyUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                house: house,
+                entity: entityId,
+                type: 'set_temperature',
+                temperature: newTemp
+            })
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error || 'Failed to set temperature.');
+        }
+        console.log('Successfully set temperature:', data);
+        // Optionally, re-fetch status immediately to update UI faster
+        displayHomeAssistantStatus(window.currentBookingConfig); 
+    } catch (error) {
+        console.error('Error setting temperature:', error);
+        // You could show an error message to the user here
+    }
+}
+
+// --- ADD this NEW event handler ---
+function handleTemperatureChange(event) {
+    const button = event.currentTarget;
+    const entityId = button.dataset.entity;
+    const container = document.getElementById(`climate-${entityId}`);
+    const setTempEl = container.querySelector('.climate-set-temp');
+    
+    let currentSetTemp = parseFloat(setTempEl.textContent);
+    if (isNaN(currentSetTemp)) return; // Don't do anything if temp isn't loaded yet
+
+    let newTemp;
+    if (button.classList.contains('temp-up')) {
+        newTemp = Math.min(currentSetTemp + 0.5, 25);
+    } else {
+        newTemp = Math.max(currentSetTemp - 0.5, 7);
+    }
+    
+    // Disable buttons to prevent rapid clicks
+    container.querySelectorAll('button').forEach(b => b.disabled = true);
+    
+    setTempEl.textContent = `${newTemp.toFixed(1)}°`; // Update UI immediately
+    
+    // Find the house associated with this booking
+    const house = window.currentBookingConfig.house;
+    setTemperature(entityId, newTemp, house);
 }
 
 
@@ -209,33 +280,31 @@ async function fetchHAData(entityId, house, type = 'state') {
 }
 
 async function displayHomeAssistantStatus(bookingConfig) {
+  // Store config globally so event handlers can access it
+  window.currentBookingConfig = bookingConfig; 
+  
   const { house, entities } = bookingConfig;
   if (!house || !entities) return;
 
-  for (const [key, entityId] of Object.entries(entities)) {
+  for (const [key, entityValue] of Object.entries(entities)) {
     if (key === 'weather') {
       try {
+        // This is a GET request, so we pass params in the URL
         const [currentState, hourlyForecast, dailyForecast] = await Promise.all([
-            fetchHAData(entityId, house, 'state'),
-            fetchHAData(entityId, house, 'hourly_forecast'),
-            fetchHAData(entityId, house, 'daily_forecast')
+            fetchHAData(entityValue, house, 'state'),
+            fetchHAData(entityValue, house, 'hourly_forecast'),
+            fetchHAData(entityValue, house, 'daily_forecast')
         ]);
 
-        // --- NEW LOGIC TO BUILD THE COMBINED TOP ROW ---
         const topRowContainer = document.getElementById('ha-weather-top-row');
         if (topRowContainer) {
-            let topRowHtml = '';
-
-            // 1. Add the "Current" weather item
-            topRowHtml += `
+            let topRowHtml = `
                 <div class="weather-item current-weather-item">
                     <div class="weather-item-label">Now</div>
                     <span class="weather-item-icon material-symbols-outlined">${weatherIconMap[currentState.state] || 'sunny'}</span>
                     <div class="weather-item-temp">${Math.round(currentState.attributes.temperature)}°</div>
                 </div>
             `;
-            
-            // 2. Add the next 4 hourly forecast items
             hourlyForecast.slice(1, 5).forEach(hour => {
                 const time = new Date(hour.datetime).toLocaleTimeString('en-US', { hour: 'numeric', hour12: false });
                 topRowHtml += `
@@ -252,7 +321,6 @@ async function displayHomeAssistantStatus(bookingConfig) {
         const dailyContainer = document.getElementById('ha-weather-daily');
         if (dailyContainer) {
             let dailyHtml = '';
-            // Daily forecast logic remains unchanged
             dailyForecast.slice(0, 4).forEach((day, index) => {
                 const dayName = index === 0 ? 'Today' : new Date(day.datetime).toLocaleDateString('en-US', { weekday: 'short' });
                 dailyHtml += `
@@ -277,24 +345,49 @@ async function displayHomeAssistantStatus(bookingConfig) {
         if (dailyContainer) dailyContainer.innerHTML = errorMessage;
         if (topRowContainer) topRowContainer.innerHTML = '';
       }
-    } else {
-      const statusElement = document.getElementById(`ha-status-${key}`);
-      if (statusElement) {
-        try {
-          const state = await fetchHAData(entityId, house);
-          const statusText = state.state === 'on' ? 'Occupied' : 'Vacant';
-          const statusColor = state.state === 'on' ? '#d9534f' : '#5cb85c';
-          statusElement.textContent = statusText;
-          statusElement.style.color = statusColor;
-        } catch (error) {
-          console.error(`Occupancy fetch error for ${key}:`, error);
-          statusElement.textContent = 'Unavailable';
-          statusElement.style.color = 'gray';
+    } else if (key === 'climate' && guestAccessLevel === 'full') {
+        // NEW: Handle climate entities
+        const climateEntities = entityValue; // This is our array
+        climateEntities.forEach(async (entityId) => {
+            const container = document.getElementById(`climate-${entityId}`);
+            if (container) {
+                try {
+                    const state = await fetchHAData(entityId, house);
+                    const { current_temperature, temperature, hvac_mode } = state.attributes;
+                    
+                    const modeText = hvac_mode.charAt(0).toUpperCase() + hvac_mode.slice(1);
+                    container.querySelector('.climate-temp-display').textContent = `Current: ${current_temperature.toFixed(1)}° | Mode: ${modeText}`;
+                    container.querySelector('.climate-set-temp').textContent = `${temperature.toFixed(1)}°`;
+                    
+                    // Re-enable buttons after fetching state
+                    container.querySelectorAll('button').forEach(b => b.disabled = false);
+
+                } catch (error) {
+                    console.error(`Climate fetch error for ${entityId}:`, error);
+                    container.querySelector('.climate-temp-display').textContent = 'Status unavailable';
+                }
+            }
+        });
+    } else if (guestAccessLevel === 'full') {
+        // Occupancy sensor logic
+        const statusElement = document.getElementById(`ha-status-${key}`);
+        if (statusElement) {
+          try {
+            const state = await fetchHAData(entityValue, house);
+            const statusText = state.state === 'on' ? 'Occupied' : 'Vacant';
+            const statusColor = state.state === 'on' ? '#d9534f' : '#5cb85c';
+            statusElement.textContent = statusText;
+            statusElement.style.color = statusColor;
+          } catch (error) {
+            console.error(`Occupancy fetch error for ${key}:`, error);
+            statusElement.textContent = 'Unavailable';
+            statusElement.style.color = 'gray';
+          }
         }
-      }
     }
   }
 }
+
 
 function setupMobileMenu() {
     const hamburgerBtn = document.getElementById('hamburger-btn');
