@@ -1,6 +1,6 @@
-
 let chatbotContext = '';
-let conversationHistory = '';
+// Holds the AI conversation history for the current session.
+let chatHistory = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
   await buildGuidebook();
@@ -32,7 +32,6 @@ async function buildGuidebook() {
     let fullHtml = '<h1>195VBR Guidebook</h1>';
     let tocHtml = '<ul>';
     
-    // Use a predefined order for sections
     const sectionOrder = [
       'video', 'what-not-to-bring', 'Address', 'domestic-directions', 'airport-directions', 
       'getting-around', 'codetimes', 'check-in-luggage', 'Wifi', 'heating', 'Bedroom', 
@@ -68,7 +67,6 @@ function buildDynamicContent(keys, fragments) {
     const fragment = fragments[key];
     if (fragment) {
       if (!content[fragment.title]) {
-        // Assign emoji based on title for consistency
         const emoji = {
             "Address": "🏘️", "Wifi": "🛜", "Bedroom": "🛏️", "Bathroom": "🛁", 
             "Kitchen": "🍳", "Windows": "🪟", "Laundry": "🧺"
@@ -83,7 +81,6 @@ function buildDynamicContent(keys, fragments) {
 }
 
 function getStaticContent() {
-  // All the content that is NOT booking-dependent is defined here
   return {
     'video': {
       title: 'Instructional Video Playlist', emoji: '🎬',
@@ -146,7 +143,7 @@ function buildChatbotContextFromPage() {
   }
 }
 
-// --- CHATBOT UI FUNCTIONS (no changes needed here) ---
+// --- CHATBOT UI & LOGIC ---
 
 function setupChatToggle() {
   const chatLauncher = document.getElementById('chat-launcher');
@@ -184,8 +181,6 @@ function addInitialBotMessage() {
     chatBox.innerHTML = welcomeMessage;
 }
 
-// In script.js, replace the entire sendMessage function with this new version
-
 async function sendMessage() {
     const userInputField = document.getElementById('user-input');
     const sendBtn = document.getElementById('send-btn');
@@ -193,27 +188,30 @@ async function sendMessage() {
     if (!userInput || sendBtn.disabled) return;
     const chatBox = document.getElementById('chat-box');
     const getTimeStamp = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    // Add user message to UI and history
+    const userMessageHtml = `<div class="message-bubble user-message"><p>${userInput}</p></div><div class="timestamp">${getTimeStamp()}</div>`;
+    chatBox.insertAdjacentHTML('beforeend', userMessageHtml);
+    chatHistory.push({ role: 'user', content: userInput });
+
     userInputField.value = '';
     userInputField.disabled = true;
     sendBtn.disabled = true;
-    const userMessageHtml = `<div class="message-bubble user-message"><p>${userInput}</p></div><div class="timestamp">${getTimeStamp()}</div>`;
-    chatBox.insertAdjacentHTML('beforeend', userMessageHtml);
     chatBox.scrollTop = chatBox.scrollHeight;
+
+    // Display typing indicator
     const typingIndicatorHtml = `<div class="message-bubble bot-message typing-indicator"><span></span><span></span><span></span></div>`;
     chatBox.insertAdjacentHTML('beforeend', typingIndicatorHtml);
     chatBox.scrollTop = chatBox.scrollHeight;
     const typingIndicator = chatBox.querySelector('.typing-indicator');
+    
     const serverlessFunctionUrl = 'https://guidebook-chatbot-backend.vercel.app/api/chatbot';
-
-    // Construct the prompt with the conversation history
-    const promptWithHistory = conversationHistory + `\n\nUser: ${userInput}`;
-
     try {
         const response = await fetch(serverlessFunctionUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            // Send the combined prompt and the static guidebook context
-            body: JSON.stringify({ prompt: promptWithHistory, context: chatbotContext })
+            // Send the entire history, not just the last prompt
+            body: JSON.stringify({ history: chatHistory, context: chatbotContext })
         });
         if (!response.ok) {
           const errorData = await response.json();
@@ -223,6 +221,7 @@ async function sendMessage() {
         const botMessageContainer = document.createElement('div');
         botMessageContainer.className = 'message-bubble bot-message';
         chatBox.appendChild(botMessageContainer);
+
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let fullResponse = '';
@@ -233,9 +232,9 @@ async function sendMessage() {
             botMessageContainer.innerHTML = marked.parse(fullResponse);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
-
-        // Update the history with the latest exchange for the next turn
-        conversationHistory += `\n\nUser: ${userInput}\n\nVicky: ${fullResponse}`;
+        
+        // Add the full AI response to history
+        chatHistory.push({ role: 'model', content: fullResponse });
 
         const timestampHtml = `<div class="timestamp">${getTimeStamp()}</div>`;
         chatBox.insertAdjacentHTML('beforeend', timestampHtml);
