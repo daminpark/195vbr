@@ -27,7 +27,6 @@ async function buildGuidebook() {
     const tocContainer = document.getElementById('table-of-contents');
     const guidebookContainer = document.getElementById('guidebook-container');
     
-    // Add placeholders for the dashboard and the main header
     let fullHtml = `<header class="site-header"><img src="logo.png" alt="195VBR Guesthouse Logo" class="logo" /></header><h1>195VBR Guidebook</h1><div id="ha-dashboard"></div>`;
     let tocHtml = '<ul>';
     
@@ -52,7 +51,6 @@ async function buildGuidebook() {
     tocContainer.innerHTML = tocHtml;
     buildChatbotContextFromPage();
 
-    // NEW WORKFLOW: Create dashboard cards, then populate and update them.
     if (bookingConfig.house && bookingConfig.entities) {
       createDashboardCards(bookingConfig);
       displayHomeAssistantStatus(bookingConfig);
@@ -66,63 +64,116 @@ async function buildGuidebook() {
   }
 }
 
-// Helper function to create pretty titles for the dashboard cards
 function formatCardTitle(key, houseNumber) {
-    const title = key.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()); // Capitalize each word
+    const title = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     return `House ${houseNumber} ${title}`;
 }
 
-// NEW: Creates the physical HTML structure for the dashboard cards
+// Map HA weather conditions to Material Symbols icon names
+const weatherIconMap = {
+    'clear-night': 'clear_night', 'cloudy': 'cloudy', 'fog': 'foggy', 'hail': 'weather_hail',
+    'lightning': 'thunderstorm', 'lightning-rainy': 'thunderstorm', 'partlycloudy': 'partly_cloudy_day',
+    'pouring': 'rainy', 'rainy': 'rainy', 'snowy': 'weather_snowy', 'snowy-rainy': 'weather_snowy',
+    'sunny': 'sunny', 'windy': 'windy', 'windy-variant': 'windy', 'exceptional': 'warning'
+};
+
 function createDashboardCards(bookingConfig) {
     const { house, entities } = bookingConfig;
     const dashboard = document.getElementById('ha-dashboard');
     if (!dashboard) return;
 
     let cardsHtml = '';
-    for (const key in entities) {
-        cardsHtml += `
-            <div class="ha-card">
-                <div class="ha-card-title">${formatCardTitle(key, house)}</div>
-                <div class="ha-card-status" id="ha-status-${key}">Loading...</div>
-            </div>
-        `;
-    }
+    // Ensure weather card is always first if it exists
+    const entityKeys = Object.keys(entities).sort((a, b) => a === 'weather' ? -1 : b === 'weather' ? 1 : 0);
+
+    entityKeys.forEach(key => {
+        if (key === 'weather') {
+            cardsHtml += `
+                <div class="ha-card weather-card" id="ha-card-weather">
+                    <div class="weather-main">
+                        <span class="weather-icon material-symbols-outlined" id="ha-weather-icon">device_thermostat</span>
+                        <div class="weather-temp" id="ha-weather-temp">--°</div>
+                    </div>
+                    <div class="weather-forecast" id="ha-weather-forecast">
+                        <!-- Daily forecast will be injected here by the script -->
+                    </div>
+                </div>
+            `;
+        } else {
+            cardsHtml += `
+                <div class="ha-card">
+                    <div class="ha-card-title">${formatCardTitle(key, house)}</div>
+                    <div class="ha-card-status" id="ha-status-${key}">Loading...</div>
+                </div>
+            `;
+        }
+    });
     dashboard.innerHTML = cardsHtml;
 }
 
-
-// SECURE: Fetches a single entity state by calling our serverless proxy.
-async function fetchHAState(entityId, house) {
+async function fetchHAState(entityId, house, getFullState = false) {
   const proxyUrl = 'https://guidebook-chatbot-backend.vercel.app/api/ha-proxy';
   const response = await fetch(`${proxyUrl}?house=${house}&entity=${entityId}`);
-  if (!response.ok) {
-    throw new Error(`Proxy API responded with status: ${response.status}`);
-  }
+  if (!response.ok) throw new Error(`Proxy API responded with status: ${response.status}`);
   const data = await response.json();
-  return data.state;
+  return getFullState ? data : data.state;
 }
 
-// UPDATED: This function now only UPDATES the cards, it doesn't create them.
 async function displayHomeAssistantStatus(bookingConfig) {
   const { house, entities } = bookingConfig;
   if (!house || !entities) return;
 
   for (const [key, entityId] of Object.entries(entities)) {
-    const statusElement = document.getElementById(`ha-status-${key}`);
+    if (key === 'weather') {
+        const weatherIconEl = document.getElementById('ha-weather-icon');
+        const weatherTempEl = document.getElementById('ha-weather-temp');
+        const forecastContainer = document.getElementById('ha-weather-forecast');
 
-    if (statusElement) {
-      try {
-        const state = await fetchHAState(entityId, house);
-        const statusText = state === 'on' ? 'Occupied' : 'Vacant';
-        const statusColor = state === 'on' ? '#d9534f' : '#5cb85c';
+        if (weatherIconEl && weatherTempEl && forecastContainer) {
+            try {
+                const state = await fetchHAState(entityId, house, true);
+                
+                weatherTempEl.innerHTML = `${Math.round(state.attributes.temperature)}°`;
+                weatherIconEl.textContent = weatherIconMap[state.state] || 'sunny';
 
-        statusElement.textContent = statusText;
-        statusElement.style.color = statusColor;
-      } catch (error) {
-        console.error(error);
-        statusElement.textContent = 'Unavailable';
-        statusElement.style.color = 'gray';
-      }
+                let forecastHtml = '';
+                // Display today and the next 3 days
+                state.attributes.forecast.slice(0, 4).forEach((day, index) => {
+                    const dayName = index === 0 ? 'Today' : new Date(day.datetime).toLocaleDateString('en-US', { weekday: 'short' });
+                    forecastHtml += `
+                        <div class="forecast-day">
+                            <div class="forecast-day-name">${dayName}</div>
+                            <span class="forecast-day-icon material-symbols-outlined">${weatherIconMap[day.condition] || 'sunny'}</span>
+                            <div class="forecast-day-temp">
+                                ${Math.round(day.temperature)}°
+                                <span class="forecast-day-temp-low">${Math.round(day.templow)}°</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                forecastContainer.innerHTML = forecastHtml;
+
+            } catch (error) {
+                console.error('Weather fetch error:', error);
+                if (forecastContainer) forecastContainer.innerHTML = '<p style="font-size: 0.8rem; color: gray;">Weather data unavailable.</p>';
+            }
+        }
+    } else {
+        const statusElement = document.getElementById(`ha-status-${key}`);
+        if (statusElement) {
+            try {
+                const state = await fetchHAState(entityId, house);
+                const statusText = state === 'on' ? 'Occupied' : 'Vacant';
+                const statusColor = state === 'on' ? '#d9534f' : '#5cb85c';
+
+                statusElement.textContent = statusText;
+                statusElement.style.color = statusColor;
+            } catch (error) {
+                console.error(`Occupancy fetch error for ${key}:`, error);
+                statusElement.textContent = 'Unavailable';
+                statusElement.style.color = 'gray';
+            }
+        }
     }
   }
 }

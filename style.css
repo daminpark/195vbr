@@ -188,3 +188,107 @@ html.chat-open #chat-widget {
   font-weight: bold;
   transition: color 0.3s ease-in-out;
 }
+
+/* ---------------------------------------------------
+   6. HOME ASSISTANT DASHBOARD STYLES
+--------------------------------------------------- */
+#ha-dashboard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 2rem;
+}
+
+.ha-card {
+  flex: 1 1 180px; /* Flex-grow, flex-shrink, basis */
+  background-color: #f8f9fa;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.ha-card-title {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin: 0 0 0.5rem 0;
+  font-weight: bold;
+  text-align: center;
+}
+
+.ha-card-status {
+  font-size: 1.75rem;
+  font-weight: bold;
+  text-align: center;
+  margin-top: auto; /* Pushes status to bottom */
+  transition: color 0.3s ease-in-out;
+}
+
+/* Specific styles for the weather card */
+.weather-card {
+    flex-basis: 100%; /* Make weather card take full width on small screens */
+    min-width: 280px;
+}
+
+@media (min-width: 600px) {
+  .weather-card {
+    flex-basis: 300px;
+  }
+}
+
+.weather-main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.weather-icon {
+    font-size: 3rem;
+    font-family: "Material Symbols Outlined"; /* Using Google's icon font */
+    color: #333;
+}
+
+.weather-temp {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.weather-forecast {
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+    margin-top: 1rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 1rem;
+}
+
+.forecast-day {
+    flex: 1;
+}
+
+.forecast-day-name {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #6c757d;
+}
+
+.forecast-day-icon {
+    font-size: 1.5rem;
+    font-family: "Material Symbols Outlined";
+    margin: 0.25rem 0;
+}
+
+.forecast-day-temp {
+    font-size: 0.85rem;
+}
+
+.forecast-day-temp-low {
+    color: #6c757d;
+}
