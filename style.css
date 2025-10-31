@@ -153,3 +153,38 @@ html.chat-open #chat-widget {
   section { break-inside: avoid; page-break-inside: avoid; }
   a { text-decoration: none; }
 }
+
+/* ---------------------------------------------------
+   6. HOME ASSISTANT DASHBOARD STYLES
+--------------------------------------------------- */
+#ha-dashboard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 2rem;
+}
+
+.ha-card {
+  flex: 1 1 180px; /* Flex-grow, flex-shrink, basis */
+  background-color: #f8f9fa;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.ha-card-title {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin: 0 0 0.5rem 0;
+  font-weight: bold;
+}
+
+.ha-card-status {
+  font-size: 1.75rem;
+  font-weight: bold;
+  transition: color 0.3s ease-in-out;
+}

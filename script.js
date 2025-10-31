@@ -26,7 +26,9 @@ async function buildGuidebook() {
     const allContent = { ...staticContent, ...dynamicContent };
     const tocContainer = document.getElementById('table-of-contents');
     const guidebookContainer = document.getElementById('guidebook-container');
-    let fullHtml = `<header class="site-header"><img src="logo.png" alt="195VBR Guesthouse Logo" class="logo" /></header><h1>195VBR Guidebook</h1>`;
+    
+    // Add placeholders for the dashboard and the main header
+    let fullHtml = `<header class="site-header"><img src="logo.png" alt="195VBR Guesthouse Logo" class="logo" /></header><h1>195VBR Guidebook</h1><div id="ha-dashboard"></div>`;
     let tocHtml = '<ul>';
     
     const sectionOrder = [
@@ -50,11 +52,10 @@ async function buildGuidebook() {
     tocContainer.innerHTML = tocHtml;
     buildChatbotContextFromPage();
 
-    // SECURE: Call the function to fetch HA data using the booking config.
-    // This no longer handles secrets; it just points to the right house and entities.
+    // NEW WORKFLOW: Create dashboard cards, then populate and update them.
     if (bookingConfig.house && bookingConfig.entities) {
+      createDashboardCards(bookingConfig);
       displayHomeAssistantStatus(bookingConfig);
-      // Refresh the status every 30 seconds
       setInterval(() => displayHomeAssistantStatus(bookingConfig), 30000);
     }
 
@@ -65,41 +66,58 @@ async function buildGuidebook() {
   }
 }
 
+// Helper function to create pretty titles for the dashboard cards
+function formatCardTitle(key, houseNumber) {
+    const title = key.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()); // Capitalize each word
+    return `House ${houseNumber} ${title}`;
+}
+
+// NEW: Creates the physical HTML structure for the dashboard cards
+function createDashboardCards(bookingConfig) {
+    const { house, entities } = bookingConfig;
+    const dashboard = document.getElementById('ha-dashboard');
+    if (!dashboard) return;
+
+    let cardsHtml = '';
+    for (const key in entities) {
+        cardsHtml += `
+            <div class="ha-card">
+                <div class="ha-card-title">${formatCardTitle(key, house)}</div>
+                <div class="ha-card-status" id="ha-status-${key}">Loading...</div>
+            </div>
+        `;
+    }
+    dashboard.innerHTML = cardsHtml;
+}
+
+
 // SECURE: Fetches a single entity state by calling our serverless proxy.
-// Notice there are no tokens or private URLs in this function.
 async function fetchHAState(entityId, house) {
-  // This URL points to your Vercel backend project, not directly to Home Assistant.
   const proxyUrl = 'https://guidebook-chatbot-backend.vercel.app/api/ha-proxy';
   const response = await fetch(`${proxyUrl}?house=${house}&entity=${entityId}`);
-  
   if (!response.ok) {
     throw new Error(`Proxy API responded with status: ${response.status}`);
   }
-  
   const data = await response.json();
-  return data.state; // e.g., 'on' or 'off'
+  return data.state;
 }
 
-// SECURE: Updates all occupancy statuses on the page by calling the secure fetch function.
+// UPDATED: This function now only UPDATES the cards, it doesn't create them.
 async function displayHomeAssistantStatus(bookingConfig) {
-  // Get the house number and entity list from the public config.json.
   const { house, entities } = bookingConfig;
   if (!house || !entities) return;
 
   for (const [key, entityId] of Object.entries(entities)) {
-    const elementId = `${key}-status`; // e.g., 'bathroom-status', 'kitchen-status'
-    const statusElement = document.getElementById(elementId);
+    const statusElement = document.getElementById(`ha-status-${key}`);
 
     if (statusElement) {
       try {
-        // Call the secure fetchHAState function with the house number.
         const state = await fetchHAState(entityId, house);
         const statusText = state === 'on' ? 'Occupied' : 'Vacant';
-        const statusColor = state === 'on' ? '#d9534f' : '#5cb85c'; // Red for Occupied, Green for Vacant
+        const statusColor = state === 'on' ? '#d9534f' : '#5cb85c';
 
         statusElement.textContent = statusText;
         statusElement.style.color = statusColor;
-        statusElement.style.fontWeight = 'bold';
       } catch (error) {
         console.error(error);
         statusElement.textContent = 'Unavailable';
@@ -108,6 +126,8 @@ async function displayHomeAssistantStatus(bookingConfig) {
     }
   }
 }
+
+// --- [Rest of the file is unchanged] ---
 
 function setupMobileMenu() {
     const hamburgerBtn = document.getElementById('hamburger-btn');
@@ -160,15 +180,7 @@ function buildDynamicContent(keys, fragments) {
     if (fragment) {
       if (!content[fragment.title]) {
         const emoji = { 
-          "Address": "🏘️", 
-          "Wifi": "🛜", 
-          "Bedroom": "🛏️", 
-          "Bathroom": "🛁", 
-          "Kitchen": "🍳", 
-          "Windows": "🪟", 
-          "Laundry": "🧺",
-          "Check-in & Luggage": "🧳",
-          "Rubbish Disposal": "🗑️"
+          "Address": "🏘️", "Wifi": "🛜", "Bedroom": "🛏️", "Bathroom": "🛁", "Kitchen": "🍳", "Windows": "🪟", "Laundry": "🧺", "Check-in & Luggage": "🧳", "Rubbish Disposal": "🗑️"
         }[fragment.title] || 'ℹ️';
         content[fragment.title] = { title: fragment.title, emoji: emoji, html: '' };
       }
