@@ -13,254 +13,32 @@
     <img src="logo.png" alt="195VBR Guesthouse Logo" class="logo" />
   </header>
 
-  <main class="container">
-    <h1>195VBR Guidebook</h1>
-    <button id="printBtn" class="pdf-button">Save as PDF</button>
+  <div class="main-wrapper">
+    <!-- The Table of Contents navigation will be generated here by script.js -->
+    <nav id="table-of-contents"></nav>
 
-    <section id="video">
-      <h2>🎬 Instructional Video Playlist</h2>
-      <p>This playlist contains all the instructional videos from this guide in one convenient location.</p>
-      <a href="https://www.youtube.com/playlist?list=PL7olRlH5yDt4Zk92CIS9fRnkYmC9gkcDh" target="_blank" rel="noopener noreferrer">Link to Full YouTube Playlist</a>
-    </section>
-
-    <section id="what-not-to-bring">
-      <h2>🚫 What not to bring</h2>
-      <p>We provide a variety of amenities so you can pack light! Here are some things you <em>don’t</em> need to bring:</p>
-      <ul>
-        <li><strong>Towels & Linens:</strong> Fresh bath towels and bed linens are provided.</li>
-        <li><strong>Toiletries:</strong> Shampoo, conditioner, body wash, and hand soap are available.</li>
-        <li><strong>Hair Dryers:</strong> Each bedroom has a hairdryer.</li>
-        <li><strong>Adapters:</strong> Rooms have universal adapters on each side of the bed.</li>
-        <li><strong>Extra Blankets:</strong> All beds include an electric under-blanket.</li>
-      </ul>
-    </section>
-
-    <section class="dynamic-section">
-      <h2>🏘️ Address</h2>
-      <div class="group-house193"><p>193 Vauxhall Bridge Road<br>Pimlico, London<br>SW1V 1ER</p></div>
-      <div class="group-house195"><p>195 Vauxhall Bridge Road<br>Pimlico, London<br>SW1V 1ER</p></div>
-    </section>
-
-    <section id="domestic-directions">
-      <h2>🚶 Domestic directions</h2>
-      <p><strong>By Train/Tube:</strong> We are ~7 minutes from <strong>London Victoria Station</strong>. Exit towards Victoria Street/Vauxhall Bridge Road, turn left, and walk ~5–7 minutes. The house will be on your left.</p>
-      <p><strong>By Coach:</strong> From Victoria Coach Station, it’s a ~10 minute walk. Head east on Elizabeth Street, then towards Victoria Station and onto Vauxhall Bridge Road.</p>
-      <p><strong>By Car/Taxi:</strong> We do not have on-site parking. Please check <a href="https://en.parkopedia.com/" target="_blank" rel="noopener noreferrer">Parkopedia</a> for public garages. Taxis and rideshares can use the postcode to find us.</p>
-    </section>
-
-    <section id="airport-directions">
-      <h2>✈️ Airport directions</h2>
-      <p>Book buses at <a href="https://www.nationalexpress.com" target="_blank" rel="noopener noreferrer">National Express</a> and trains at <a href="https://www.thetrainline.com" target="_blank" rel="noopener noreferrer">The Trainline</a>. For 2+ people, a rideshare (Uber/Bolt) may be cheaper.</p>
-      <p><strong>Gatwick (LGW):</strong> Take a Southern Rail train directly to Victoria (~35 mins). It's cheaper and only slightly slower than the Gatwick Express. You can tap in/out with a contactless card.</p>
-      <p><strong>Heathrow (LHR):</strong> Take the Piccadilly line (dark blue) and change at Hammersmith for a District line (green) train to Victoria (~50 mins total).</p>
-      <p><strong>Stansted (STN):</strong> Take the train to Tottenham Hale, then switch to the Victoria line (light blue) to Victoria Station. You cannot use contactless from Stansted, so be sure to buy a ticket.</p>
-      <p><strong>Luton (LTN):</strong> Take the train from Luton Airport Parkway to London St. Pancras (~40 mins), then the Victoria line to Victoria (~15 mins).</p>
-    </section>
-
-    <section id="getting-around">
-      <h2>🚇 Getting around</h2>
-      <p>Public transport is excellent. Victoria Station is ~7 minutes away. The <strong>24 bus</strong> stop near the house offers a scenic route through central London.</p>
-      <p>Use a contactless card for Tube/bus fares (they cap daily). London is very walkable, and you can also take a <strong>Thames river bus</strong> from Westminster Pier.</p>
-    </section>
-
-    <section id="codetimes">
-      <h2>*️⃣ Lock info</h2>
-      <p><strong>How to unlock:</strong> Press your palm to the black screen to activate the keypad. See the video playlist for a demonstration.</p>
-      <p><strong>Front door & Luggage (Cupboard V):</strong> Your code is valid from 11:00 on check-in day until 14:00 on check-out day.</p>
-      <p><strong>Bedroom/Bathroom/Kitchen:</strong> Your code is valid from 15:00 on check-in day until 11:00 on check-out day.</p>
-      <p><strong>Locking from inside:</strong> This video shows how to lock your bedroom door from the inside for privacy.</p>
-      <div class="video-container"><iframe loading="lazy" src="https://www.youtube.com/embed/7orX7Wh_g1U" title="How to lock door from inside" allowfullscreen></iframe></div>
-    </section>
-
-    <section id="check-in-luggage">
-      <h2>🧳 Check-in & Luggage Drop-off</h2>
-      <p><strong>Self Check-in:</strong> From 15:00 onwards. No need to meet anyone.</p>
-      <p><strong>Early Luggage Drop-off:</strong> From 11:00, you can use your front door code to access Cupboard V downstairs. No need to message us in advance.</p>
-      <p><strong>Luggage Storage After Check-out:</strong> Until 14:00, you can store bags in Cupboard V. Your code will remain active.</p>
-      <p>This video shows the full process, from entering the front door to finding the luggage cupboard:</p>
-      <div class="video-container"><iframe loading="lazy" src="https://www.youtube.com/embed/rlUbHfWcN0s" title="Luggage drop-off process" allowfullscreen></iframe></div>
-    </section>
-    
-    <section class="dynamic-section">
-      <h2>🛜 Wifi</h2>
-      <div class="group-house193"><p>Network Name (SSID): <strong>193</strong><br>Password: <strong>12345671</strong></p></div>
-      <div class="group-house195"><p>Network Name (SSID): <strong>195</strong><br>Password: <strong>09876543</strong></p></div>
-    </section>
-    
-    <section id="heating">
-      <h2>🌡️ Heating and Cooling</h2>
-      <p>The central heating is on an automatic schedule, designed for your comfort:</p>
-      <ul>
-        <li><strong>Evening (17:00 – 22:30):</strong> Warms to a comfortable <strong>21.0°C</strong> for a relaxing evening in.</li>
-        <li><strong>Overnight:</strong> Lowers to <strong>17.0°C</strong>, widely considered the best temperature for a good night's sleep.</li>
-        <li><strong>Morning (07:00 – 10:00):</strong> Rises to <strong>20.0°C</strong> to help you wake up and get your day started.</li>
-        <li><strong>Daytime (10:00 – 17:00):</strong> Enters a cool, energy-saving mode at <strong>18.0°C</strong> as guests are usually out exploring.</li>
-      </ul>
-      <p>You can boost the temperature at any time using the valve (TRV) on your radiator. Please note that the temperature display on the valve is upside down.</p>
-      <p><strong>Important:</strong> To conserve energy, the heating in a room might automatically turn off if a window is detected as being open.</p>
-      <p><strong>Cooling:</strong> We do not have air conditioning. For a cooler room, we recommend keeping the window and curtains closed during sunny days and opening them in the evening to let in the cool air.</p>
-    </section>
-
-    <section class="dynamic-section">
-      <h2>🛏️ Bedroom</h2>
-      <div class="group-room1"><p>Your room number is: 1.</p></div>
-      <div class="group-room2"><p>Your room number is: 2.</p></div>
-      <div class="group-room3"><p>Your room number is: 3.</p></div>
-      <div class="group-room4"><p>Your room number is: 4.</p></div>
-      <div class="group-room5"><p>Your room number is: 5.</p></div>
-      <div class="group-room6"><p>Your room number is: 6.</p></div>
-      <div class="group-rooma"><p>You have booked Rooms 1 & 2.</p></div>
-      <div class="group-roomb"><p>You have booked Rooms 4, 5 & 6.</p></div>
-      
-      <div class="group-storageUnderBed">
-        <p>You can create more space by storing luggage under the bed, as shown in this video:</p>
-        <div class="video-container"><iframe loading="lazy" src="https://www.youtube.com/embed/3Ejpyf4MYTI" title="Luggage storage under bed" allowfullscreen></iframe></div>
-      </div>
-      <div class="group-storageInBed">
-        <p>This bed frame has a lift-up mattress with significant storage space inside, as shown in this video:</p>
-        <div class="video-container"><iframe loading="lazy" src="https://www.youtube.com/embed/VoFABSMLII8" title="Luggage storage inside bed" allowfullscreen></iframe></div>
-      </div>
-    </section>
-
-    <section class="dynamic-section">
-      <h2>🛁 Bathroom</h2>
-      <div class="group-bathroomA"><p>Your assigned bathroom is labelled 'A'.</p></div>
-      <div class="group-bathroomB"><p>Your assigned bathroom is labelled 'B'.</p></div>
-      <div class="group-bathroomC"><p>Your private bathroom is the en-suite inside your room.</p></div>
-      
-      <div class="group-bathroomShared">
-        <p>This is a shared bathroom. Please be considerate of other guests:</p>
-        <ul>
-          <li><strong>Use Your Assigned Compartment:</strong> Store your toiletries in your numbered space. Items left elsewhere may be discarded.</li>
-          <li><strong>Keep it Tidy:</strong> Please leave the bathroom clean for the next person.</li>
-          <li><strong>Be Mindful of Time:</strong> Limit use to ~15 minutes, especially during peak morning hours.</li>
-        </ul>
-      </div>
-      <div class="group-bathroomPrivate"><p>This bathroom is private for your exclusive use.</p></div>
-    </section>
-
-    <section class="dynamic-section">
-      <h2>🍳 Kitchen</h2>
-      <div class="group-kitchenShared">
-        <p>The shared kitchen is located in the basement, through the door marked 'K'. Please:</p>
-        <ul>
-          <li><strong>Use Assigned Storage:</strong> Each room has a numbered space in the fridge and cabinets.</li>
-          <li><strong>Clean As You Go:</strong> Place used dishes in the dishwasher. Staff will run it when full.</li>
-        </ul>
-      </div>
-      <div class="group-kitchenPrivate"><p>The kitchen is private for your group's exclusive use.</p></div>
-      
-
-      <div class="group-kitchenBase">
-        <p><strong>Shared Supplies:</strong> Help yourself to complimentary tea and coffee, as well as basic condiments and spices.</p>
-        <p><strong>Rubbish:</strong> The large metal bin is for recycling. General waste goes in the black bin.</p>
-        <p>Here are video guides for the appliances:</p>
-        <ul>
-          <li><strong>Induction Stove:</strong></li>
-        </ul>
-        <!-- FIX: Moved video container out of the <li> -->
-        <div class="video-container"><iframe loading="lazy" src="https://www.youtube.com/embed/_ZepccyHD_o" title="How to use induction stove" allowfullscreen></iframe></div>
-        
-        <ul>
-          <li><strong>Microwave:</strong></li>
-        </ul>
-        <!-- FIX: Moved video container out of the <li> -->
-        <div class="video-container"><iframe loading="lazy" src="https://www.youtube.com/embed/Qs9o7G8MvjI" title="How to use microwave" allowfullscreen></iframe></div>
-      </div>
-    </section>
-
-    <section class="dynamic-section">
-      <h2>🪟 Windows</h2>
-      <div class="group-windowsStandard"><p>The window can be opened by pressing the button on the handle and turning it upwards.</p></div>
-      <div class="group-windowsTiltTurn">
-        <p>These are "tilt and turn" windows. This video demonstrates how to open them for ventilation (tilt) or fully (turn):</p>
-        <div class="video-container"><iframe loading="lazy" src="https://www.youtube.com/embed/uqOEIZtq_wI" title="How to use tilt-and-turn windows" allowfullscreen></iframe></div>
-      </div>
-    </section>
-
-    <section class="dynamic-section">
-      <h2>🧺 Laundry</h2>
-      <div class="group-noLaundry">
-        <p>There are no guest-accessible washing machines on-site. A highly-rated local launderette is <a href="https://maps.app.goo.gl/uYuoqcrG3xC3Q2Nz8" target="_blank" rel="noopener noreferrer">True Colours Launderette</a>.</p>
-        <p>Towels are not changed daily. For fresh towels (max. once every 2 days), please leave used ones outside your door by 11:00am.</p>
-      </div>
-      <div class="group-hasLaundry">
-        <p>The washing machine is available for your use. It is located in the basement. This video provides access and usage instructions:</p>
-        <div class="video-container"><iframe loading="lazy" src="https://www.youtube.com/embed/hLV62ekup-E" title="How to use washing machine" allowfullscreen></iframe></div>
-      </div>
-    </section>
-    
-    <section id="troubleshooting">
-        <h2>🛠️ Troubleshooting & Repairs</h2>
-        <p>If your digital door lock runs out of batteries, it's a quick fix. This video shows the simple replacement process:</p>
-        <div class="video-container"><iframe loading="lazy" src="https://www.youtube.com/embed/8Zofre6A7ns" title="How to replace door lock batteries" allowfullscreen></iframe></div>
-    </section>
-    
-    <section id="contact">
-      <h2>☎️ Contact</h2>
-      <p>For any questions, please check with our AI assistant, Vicky, first, as it can provide instant answers. For other matters, message us through your booking platform.</p>
-      <p><strong>*FOR EMERGENCIES ONLY*</strong>, please WhatsApp call +44 7443 618207. If there is no answer, try +44 7383 298999.</p>
-    </section>
-    
-    <section id="tv">
-      <h2>📺 TV</h2>
-      <p>Each bedroom has a Smart 4K TV with Disney+, Apple TV+, Amazon Prime Video, BBC iPlayer, and more. If a service is logged out or malfunctions, please contact us and we can log you in remotely. Please do not log out to use your own accounts.</p>
-    </section>
-    
-    <section id="local-guidebook">
-      <h2>📍 Local Guidebook</h2>
-      <p>We’ve compiled some nearby recommendations:</p>
-      <h3>Food</h3>
-      <ul>
-        <li><a href="https://www.google.com/maps/search/?api=1&query=Regency+Cafe+London" target="_blank" rel="noopener noreferrer">Regency Cafe</a> – A classic London spot for a traditional full English breakfast.</li>
-        <li><a href="https://www.google.com/maps/search/?api=1&query=Jugged+Hare+London" target="_blank" rel="noopener noreferrer">Jugged Hare</a> – A great pub just across the road.</li>
-        <li><a href="https://www.google.com/maps/search/?api=1&query=Tachbrook+Street+Market+London" target="_blank" rel="noopener noreferrer">Tachbrook Street Market</a> – A local market for lunch on weekdays.</li>
-        <li><a href="https://www.google.com/maps/search/?api=1&query=Kimchimama+London" target="_blank" rel="noopener noreferrer">Kimchimama</a> – Casual Korean food (especially fried chicken).</li>
-        <li><a href="https://www.google.com/maps/search/?api=1&query=Ben+Venuti+London" target="_blank" rel="noopener noreferrer">Ben Venuti</a> – An amazing Italian cafe around the corner.</li>
-        <li><a href="https://www.google.com/maps/search/?api=1&query=Tozi+London" target="_blank" rel="noopener noreferrer">Tozi</a> – An upscale Italian restaurant nearby.</li>
-        <li><a href="https://www.google.com/maps/search/?api=1&query=A+Wong+70+Wilton+Road+London" target="_blank" rel="noopener noreferrer">A. Wong</a> – Michelin-starred Chinese restaurant behind the house.</li>
-        <li><a href="https://www.google.com/maps/search/?api=1&query=Little+Waitrose+London" target="_blank" rel="noopener noreferrer">Little Waitrose</a> – The closest upmarket supermarket.</li>
-        <li><a href="https://www.google.com/maps/search/?api=1&query=Sainsbury%27s+Victoria+Station" target="_blank" rel="noopener noreferrer">Sainsbury's</a> – A big supermarket inside Victoria Station.</li>
-        <li><a href="https://www.google.com/maps/search/?api=1&query=Rippon+Cheese+London" target="_blank" rel="noopener noreferrer">Rippon Cheese</a> – A famous cheese store nearby.</li>
-        <li><a href="https://www.google.com/maps/search/?api=1&query=Dishoom+London" target="_blank" rel="noopener noreferrer">Dishoom</a> – Famous Indian food (further away, book in advance).</li>
-        <li><a href="https://www.google.com/maps/search/?api=1&query=Gold+Mine+London" target="_blank" rel="noopener noreferrer">Gold Mine</a> – Great Peking duck (further away).</li>
-      </ul>
-      <h3>Sights</h3>
-      <ul>
-        <li>Wicked and Hamilton – Two of the world's best musicals are right on our doorstep.</li>
-        <li>St James's Park – A beautiful royal park, perfect for a stroll.</li>
-        <li>A great walk: Start at Big Ben, cross Westminster Bridge, and walk along the scenic South Bank to Tower Bridge. You can even take a boat back!</li>
-      </ul>
-      <p>We look forward to hosting you!</p>
-    </section>
-
-  </main>
-
-  <script src="script.js"></script>
-
-<!-- index.html (replacement for your existing chat HTML) -->
-
-  <div id="chat-launcher">
-    <!-- The chat icon is visible by default -->
-    <svg id="chat-icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
-    <!-- The close icon is HIDDEN by default -->
-    <svg id="close-icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+    <!-- The main guidebook content will be generated here by script.js -->
+    <main id="guidebook-container" class="container"></main>
   </div>
 
-  <!-- The entire chat widget is HIDDEN by default -->
+
+  <!-- The Chatbot remains the same -->
+  <div id="chat-launcher">
+    <svg id="chat-icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+    <svg id="close-icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+  </div>
   <div id="chat-widget" class="hidden">
     <div id="chat-header">
       <span>Vicky (AI Assistant)</span>
       <button id="chat-close" aria-label="Close chat">×</button>
     </div>
-    <div id="chat-box">
-      <!-- Initial message will be added by script -->
-    </div>
+    <div id="chat-box"></div>
     <div id="chat-input-container">
       <input type="text" id="user-input" placeholder="Ask a question..." />
       <button id="send-btn" onclick="sendMessage()">Send</button>
     </div>
   </div>
-
+  
+  <script src="script.js"></script>
 </body>
 </html>

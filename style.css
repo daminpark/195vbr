@@ -6,13 +6,17 @@
   --primary-color-hover: #0056b3;
   --text-color-light: #fff;
   --text-color-dark: #333;
-  --text-color-body: #000;
   --border-color: #e0e0e0;
   --background-color-chat: #f9f9f9;
   --bot-message-bg: #e9e9eb;
+  --nav-width: 220px;
 }
 
-html, body {
+html {
+  scroll-behavior: smooth;
+}
+
+body {
   margin: 0;
   padding: 0;
   font-family: Arial, sans-serif;
@@ -20,13 +24,36 @@ html, body {
   color: var(--text-color-dark);
 }
 
-.container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 1em;
+.main-wrapper {
+  display: flex;
+  flex-direction: row;
 }
 
-/* Links and Videos (moved from inline) */
+.container {
+  max-width: 800px;
+  flex-grow: 1;
+  padding: 1em 2em;
+}
+
+section {
+  border-bottom: 1px solid var(--border-color);
+  padding: 1.5rem 0;
+}
+section:last-of-type {
+  border-bottom: none;
+}
+
+h1 {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+}
+
+h2 {
+  margin-top: 0;
+}
+
+
+/* Links and Videos */
 a, a:visited { color: #0000EE; text-decoration: underline; }
 a:hover { color: #551A8B; }
 
@@ -48,76 +75,45 @@ a:hover { color: #551A8B; }
 }
 
 /* ---------------------------------------------------
-   2. SITE HEADER & LOGO
+   2. SITE HEADER & NAVIGATION
 --------------------------------------------------- */
 .site-header {
   display: flex;
   justify-content: center;
   padding: .5em;
+  border-bottom: 1px solid var(--border-color);
 }
 .logo { height: 40px; width: auto; }
 
-/* ---------------------------------------------------
-   3. ACCORDION STYLES
---------------------------------------------------- */
-section {
-  border-bottom: 1px solid var(--border-color);
+#table-of-contents {
+  width: var(--nav-width);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  background: #f8f9fa;
+  border-right: 1px solid var(--border-color);
+  padding: 1rem;
+  overflow-y: auto;
+  flex-shrink: 0;
 }
-
-.accordion-header {
-  cursor: pointer;
-  position: relative;
-  user-select: none;
+#table-of-contents ul {
+  list-style: none;
+  padding: 0;
   margin: 0;
-  padding: .65rem 2rem .65rem 0;
 }
-
-.accordion-header::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  right: .5rem;
-  width: .6rem;
-  height: .6rem;
-  border-right: 2px solid currentColor;
-  border-bottom: 2px solid currentColor;
-  transform: translateY(-50%) rotate(45deg);
-  transition: transform .25s ease;
-}
-section:not(.collapsed) .accordion-header::after {
-  transform: translateY(-50%) rotate(135deg);
-}
-
-.accordion-content {
-  display: none;
-  padding: .5rem 0 0 0;
-}
-section:not(.collapsed) .accordion-content {
+#table-of-contents li a {
   display: block;
-  animation: fade .25s ease-in;
-}
-@keyframes fade { from {opacity:0;} to {opacity:1;} }
-
-.accordion-content,
-.accordion-content * { color: var(--text-color-body) !important; }
-
-/* ---------------------------------------------------
-   4. PDF / PRINT BUTTON
---------------------------------------------------- */
-.pdf-button{
-  background: var(--primary-color);
-  color: var(--text-color-light);
-  border: none;
+  padding: 0.5rem;
+  text-decoration: none;
+  color: var(--text-color-dark);
   border-radius: 4px;
-  padding: .5rem 1rem;
-  font-size: .9rem;
-  cursor: pointer;
-  margin-bottom: 1rem;
 }
-.pdf-button:hover{ background: var(--primary-color-hover); }
+#table-of-contents li a:hover {
+  background-color: #e9ecef;
+}
 
 /* ---------------------------------------------------
-   5. CHAT WIDGET & LAUNCHER
+   3. CHAT WIDGET (Largely unchanged)
 --------------------------------------------------- */
 #chat-launcher {
   position: fixed;
@@ -133,26 +129,10 @@ section:not(.collapsed) .accordion-content {
   cursor: pointer;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
   z-index: 1000;
-  transition: transform 0.2s ease;
 }
-#chat-launcher:hover { transform: scale(1.1); }
-/* style.css (REPLACE the old #chat-launcher .hidden rule with this) */
-
-/* 1. By default, hide the close icon */
-#close-icon {
-  display: none;
-}
-
-/* 2. When the launcher has the .is-open class, HIDE the chat icon */
-#chat-launcher.is-open #chat-icon {
-  display: none;
-}
-
-/* 3. When the launcher has the .is-open class, SHOW the close icon */
-#chat-launcher.is-open #close-icon {
-  display: block; /* Use block instead of flex/inline to be certain it appears */
-}
-
+#close-icon { display: none; }
+#chat-launcher.is-open #chat-icon { display: none; }
+#chat-launcher.is-open #close-icon { display: block; }
 #chat-widget {
   position: fixed;
   bottom: 20px;
@@ -170,7 +150,6 @@ section:not(.collapsed) .accordion-content {
   overflow: hidden;
 }
 #chat-widget.hidden { display: none; }
-
 #chat-header {
   background-color: var(--primary-color);
   color: var(--text-color-light);
@@ -180,145 +159,54 @@ section:not(.collapsed) .accordion-content {
   align-items: center;
   font-weight: bold;
 }
-/* style.css */
-#chat-header { position: relative; }
-#chat-close {
-  background: transparent;
-  border: 0;
-  color: var(--text-color-light);
-  font-size: 20px;
-  line-height: 1;
-  cursor: pointer;
-}
-#chat-close:focus { outline: 2px solid rgba(255,255,255,.6); outline-offset: 2px; }
-#chat-input-container {
-  display: flex;
-  border-top: 1px solid var(--border-color);
-  padding: 10px;
-  background-color: var(--text-color-light);
-}
+#chat-close { background: transparent; border: 0; color: var(--text-color-light); font-size: 20px; cursor: pointer; }
+#chat-input-container { display: flex; border-top: 1px solid var(--border-color); padding: 10px; }
+#chat-widget #user-input { flex-grow: 1; border: 1px solid #ccc; border-radius: 20px; padding: 8px 15px; margin-right: 10px; }
+#chat-widget #send-btn { background: var(--primary-color); color: var(--text-color-light); border: none; border-radius: 20px; padding: 8px 15px; cursor: pointer; }
 
-#chat-widget #user-input {
-  flex-grow: 1;
-  border: 1px solid #ccc;
-  border-radius: 20px;
-  padding: 8px 15px;
-  margin-right: 10px;
-}
-
-#chat-widget #send-btn {
-  background: var(--primary-color);
-  color: var(--text-color-light);
-  border: none;
-  border-radius: 20px;
-  padding: 8px 15px;
-  cursor: pointer;
-}
-#chat-widget #send-btn:hover { background: var(--primary-color-hover); }
-
-/* ---------------------------------------------------
-   6. IMPROVED CHAT MESSAGE BUBBLES
---------------------------------------------------- */
-#chat-box {
-  flex-grow: 1;
-  padding: 15px;
-  overflow-y: auto;
-  background-color: var(--background-color-chat);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+/* Message Bubbles */
+#chat-box { flex-grow: 1; padding: 15px; overflow-y: auto; background-color: var(--background-color-chat); display: flex; flex-direction: column; gap: 12px; }
 #chat-box p { margin: 0; line-height: 1.4; }
-#chat-box ul, #chat-box ol { margin: 0.5em 0 0.5em 1.2em; padding: 0; }
-#chat-box li { margin-bottom: 0.25em; }
-
-.message-bubble {
-  padding: 10px 15px;
-  border-radius: 18px;
-  max-width: 80%;
-  width: fit-content;
-}
-
-.bot-message {
-  background-color: var(--bot-message-bg);
-  color: var(--text-color-body);
-  align-self: flex-start;
-  border-bottom-left-radius: 4px;
-}
-
-.user-message {
-  background-color: var(--primary-color);
-  color: var(--text-color-light);
-  align-self: flex-end;
-  border-bottom-right-radius: 4px;
-}
-
-.timestamp {
-  font-size: 0.75rem;
-  color: #666;
-  margin-top: -8px;
-  margin-bottom: 8px;
-}
+.message-bubble { padding: 10px 15px; border-radius: 18px; max-width: 80%; width: fit-content; }
+.bot-message { background-color: var(--bot-message-bg); color: var(--text-color-dark); align-self: flex-start; border-bottom-left-radius: 4px; }
+.user-message { background-color: var(--primary-color); color: var(--text-color-light); align-self: flex-end; border-bottom-right-radius: 4px; }
+.timestamp { font-size: 0.75rem; color: #666; margin-top: -8px; margin-bottom: 8px; }
 .user-message + .timestamp { align-self: flex-end; margin-right: 15px; }
 .bot-message + .timestamp { align-self: flex-start; margin-left: 15px; }
 
-/* Typing Indicator */
-.typing-indicator span {
-  height: 8px; width: 8px;
-  background-color: #9E9EA1;
-  border-radius: 50%;
-  display: inline-block;
-  animation: bounce 1.4s infinite ease-in-out both;
-}
-.typing-indicator span:nth-of-type(1) { animation-delay: -0.32s; }
-.typing-indicator span:nth-of-type(2) { animation-delay: -0.16s; }
-@keyframes bounce {
-  0%, 80%, 100% { transform: scale(0); }
-  40% { transform: scale(1.0); }
-}
-
-/* -----------------------------------------------------------
-   7. GUIDEBOOK DYNAMIC CONTENT (CSS-DRIVEN LOGIC)
------------------------------------------------------------ */
-.dynamic-section div {
-  display: none;
-}
-body.show-house193 .group-house193 { display: block; }
-body.show-house195 .group-house195 { display: block; }
-body.show-room1 .group-room1 { display: block; }
-body.show-room2 .group-room2 { display: block; }
-body.show-room3 .group-room3 { display: block; }
-body.show-room4 .group-room4 { display: block; }
-body.show-room5 .group-room5 { display: block; }
-body.show-room6 .group-room6 { display: block; }
-body.show-rooma .group-rooma { display: block; }
-body.show-roomb .group-roomb { display: block; }
-body.show-bathroomA .group-bathroomA { display: block; }
-body.show-bathroomB .group-bathroomB { display: block; }
-body.show-bathroomC .group-bathroomC { display: block; }
-body.show-bathroomShared .group-bathroomShared { display: block; }
-body.show-bathroomPrivate .group-bathroomPrivate { display: block; }
-body.show-kitchenShared .group-kitchenShared { display: block; }
-body.show-kitchenPrivate .group-kitchenPrivate { display: block; }
-body.show-kitchenBase .group-kitchenBase { display: block; }
-body.show-noLaundry .group-noLaundry { display: block; }
-body.show-hasLaundry .group-hasLaundry { display: block; }
-body.show-storageUnderBed .group-storageUnderBed { display: block; }
-body.show-storageInBed .group-storageInBed { display: block; }
-body.show-windowsStandard .group-windowsStandard { display: block; }
-body.show-windowsTiltTurn .group-windowsTiltTurn { display: block; }
-
 /* ---------------------------------------------------
-   8. UTILITIES & PRINT STYLES
+   4. RESPONSIVE & PRINT STYLES
 --------------------------------------------------- */
-body::after{ content:''; display:block; height:100vh; }
-@media (max-width:600px){ body::after{height:60vh;} }
+@media (max-width: 768px) {
+  .main-wrapper {
+    flex-direction: column;
+  }
+  #table-of-contents {
+    position: static;
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    box-sizing: border-box;
+  }
+  .container {
+    padding: 1em;
+  }
+}
 
-body.print-mode::after{ display:none !important; }
-@media print{
-  section.collapsed .accordion-content{ display:block !important; }
-  section{ break-inside: avoid; page-break-inside: avoid; }
-  *{ color: var(--text-color-body) !important; }
-  .pdf-button, .accordion-header::after, body::after,
-  #chat-launcher, #chat-widget { display:none !important; }
+@media print {
+  body { color: #000 !important; }
+  .site-header, #table-of-contents, #chat-launcher, #chat-widget {
+    display: none !important;
+  }
+  .main-wrapper {
+    display: block;
+  }
+  section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  a {
+    text-decoration: none;
+  }
 }
