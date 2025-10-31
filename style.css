@@ -180,7 +180,17 @@ section:not(.collapsed) .accordion-content {
   align-items: center;
   font-weight: bold;
 }
-
+/* style.css */
+#chat-header { position: relative; }
+#chat-close {
+  background: transparent;
+  border: 0;
+  color: var(--text-color-light);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+#chat-close:focus { outline: 2px solid rgba(255,255,255,.6); outline-offset: 2px; }
 #chat-input-container {
   display: flex;
   border-top: 1px solid var(--border-color);

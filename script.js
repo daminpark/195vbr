@@ -79,21 +79,21 @@ function setupPrintButton() {
   }
 }
 
-// script.js (REPLACE the old function with this one)
-
 function setupChatToggle() {
   const chatLauncher = document.getElementById('chat-launcher');
   const chatWidget = document.getElementById('chat-widget');
-  
-  // We no longer need to select the icons individually!
-  
+  const closeBtn = document.getElementById('chat-close');
+
   if (chatLauncher && chatWidget) {
     chatLauncher.addEventListener('click', () => {
-      // Toggle the state class on the button itself
       chatLauncher.classList.toggle('is-open');
-      
-      // Toggle the visibility of the main chat window
       chatWidget.classList.toggle('hidden');
+    });
+  }
+  if (closeBtn && chatLauncher && chatWidget) {
+    closeBtn.addEventListener('click', () => {
+      chatWidget.classList.add('hidden');
+      chatLauncher.classList.remove('is-open');
     });
   }
 }
