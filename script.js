@@ -1,3 +1,4 @@
+// Triggering a new Vercel preview deployment
 // --- GLOBAL STATE VARIABLES ---
 const API_BASE_URL = 'https://guidebook-chatbot-backend-git-pwprotected-pierre-parks-projects.vercel.app';
 let chatbotContext = '';
