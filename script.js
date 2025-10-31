@@ -37,22 +37,34 @@ async function initializeAndAuthenticate() {
   let authSucceeded = false;
   let accessLevel = 'none';
 
-  try {
-    // CRITICAL FIX: Using backticks (`) for the template literal.
-    const response = await fetch(`${API_BASE_URL}/api/auth`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ bookingCode })
-    });
+// THIS IS THE "AFTER" VERSION
 
-    if (response.ok) {
-      const data = await response.json();
-      accessLevel = data.accessLevel;
-      authSucceeded = (accessLevel === 'full' || accessLevel === 'partial');
+  async function initializeAndAuthenticate() {
+    const guidebookContainer = document.getElementById('guidebook-container');
+    const tocContainer = document.getElementById('table-of-contents');
+    const params = new URLSearchParams(window.location.search);
+
+    // The 'bookingCode' part is no longer needed for this test, but we can leave it
+    const bookingCode = params.get('booking');
+
+    guidebookContainer.innerHTML = '<h1><span class="material-symbols-outlined">network_check</span> Testing CORS...</h1>';
+    
+    // --- REPLACEMENT STARTS HERE ---
+    console.log("Attempting to call /api/test...");
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/test`, { method: 'GET' });
+        const data = await response.json();
+        console.log("Response from /api/test:", data); // Should log { message: 'CORS test successful!' }
+        alert("CORS TEST SUCCEEDED!");
+    } catch (error) {
+        console.error("CORS Test failed:", error);
+        alert("CORS TEST FAILED!");
     }
-  } catch (error) {
-    console.error('Authentication request failed:', error);
-    authSucceeded = false;
+    // --- REPLACEMENT ENDS HERE ---
+
+    // The rest of the function below this will not run because of the alert,
+    // which is fine for this test.
+    // ...
   }
 
   if (!authSucceeded) {
