@@ -1,6 +1,5 @@
 let chatbotContext = '';
 let chatHistory = [];
-let visualViewportResizeHandler = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
   await buildGuidebook();
@@ -65,62 +64,39 @@ function setupMobileMenu() {
     nav.addEventListener('click', (e) => { if (e.target.tagName === 'A') { toggleMenu(); } });
 }
 
-// --- CHATBOT UI & LOGIC ---
+// --- CHATBOT UI & LOGIC (Simplified) ---
 
 function setupChatToggle() {
-  const chatLauncher = document.getElementById('chat-launcher');
-  const chatWidget = document.getElementById('chat-widget');
-  const closeBtn = document.getElementById('chat-close');
   const htmlEl = document.documentElement;
-
-  const cleanupChatListeners = () => {
-    if (window.visualViewport && visualViewportResizeHandler) {
-      window.visualViewport.removeEventListener('resize', visualViewportResizeHandler);
-      visualViewportResizeHandler = null;
-    }
-    chatWidget.style.height = '';
-  };
+  const closeBtn = document.getElementById('chat-close');
+  const chatLauncher = document.getElementById('chat-launcher');
 
   const openChat = () => {
     if (htmlEl.classList.contains('chat-open')) return;
-    
     htmlEl.classList.add('chat-open');
+    // Add a history entry so the back button works
     history.pushState({ chatOpen: true }, '');
-
-    // THE FIX: Only activate keyboard handling on mobile-sized screens
-    if (window.visualViewport && window.innerWidth < 768) {
-      const chatBox = document.getElementById('chat-box');
-      visualViewportResizeHandler = () => {
-        chatWidget.style.height = `${window.visualViewport.height - 10}px`;
-        chatBox.scrollTop = chatBox.scrollHeight;
-      };
-      window.visualViewport.addEventListener('resize', visualViewportResizeHandler);
-      visualViewportResizeHandler();
-    }
   };
 
   const closeChat = () => {
     if (!htmlEl.classList.contains('chat-open')) return;
-    
     htmlEl.classList.remove('chat-open');
-    cleanupChatListeners();
-
+    // If the user is closing with the 'X', we need to go back in history
     if (history.state && history.state.chatOpen) {
       history.back();
     }
   };
-  
+
   chatLauncher.addEventListener('click', openChat);
   closeBtn.addEventListener('click', closeChat);
-  
+
+  // This handles the browser's back button action
   window.addEventListener('popstate', () => {
     if (htmlEl.classList.contains('chat-open')) {
       htmlEl.classList.remove('chat-open');
-      cleanupChatListeners();
     }
   });
 }
-
 
 function buildDynamicContent(keys, fragments) {
   const content = {};

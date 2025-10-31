@@ -96,16 +96,8 @@ html.chat-open #chat-widget {
 --------------------------------------------------- */
 .mobile-header { display: none; }
 
-/* Tablet Styles */
-@media (max-width: 1024px) {
-  #chat-widget {
-    width: 400px;
-    max-height: 80vh;
-  }
-}
-
-/* Mobile Styles */
 @media (max-width: 768px) {
+  /* Scroll lock for modals on mobile */
   html.nav-open, body.nav-open, html.chat-open, body.chat-open {
     overflow: hidden;
   }
@@ -122,18 +114,19 @@ html.chat-open #chat-widget {
   #hamburger-btn { background: none; border: none; cursor: pointer; padding: 10px; display: flex; flex-direction: column; justify-content: space-around; width: 30px; height: 30px; }
   #hamburger-btn span { display: block; width: 100%; height: 2px; background-color: var(--text-color-dark); }
 
+  /* Re-implementing the simple, robust full-screen modal */
   #chat-widget {
-    inset: 10px 10px 0 10px;
-    width: auto;
-    height: auto;
-    max-height: calc(100vh - 10px);
-    border-radius: 15px 15px 0 0;
-    transform: translateY(100%);
+    inset: 0;
+    width: 100%;
+    height: 100dvh; /* Dynamic viewport height handles keyboard */
+    max-height: 100dvh;
+    border-radius: 0;
+    transform: translateY(100%); /* Start off-screen at the bottom */
     opacity: 1;
   }
   
   html.chat-open #chat-widget {
-    transform: translateY(0);
+    transform: translateY(0); /* Animate into view */
   }
 }
 
