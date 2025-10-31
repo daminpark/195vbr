@@ -1,7 +1,6 @@
 // --- GLOBAL STATE & CONFIGURATION ---
 
 // The base URL for your backend. All API calls will use this.
-// For testing, change this to your backend's preview URL.
 // For production, use the final backend domain.
 const API_BASE_URL = 'https://guidebook-chatbot-backend-git-pwprotected-pierre-parks-projects.vercel.app';
 
