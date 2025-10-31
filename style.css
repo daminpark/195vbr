@@ -23,14 +23,6 @@ body {
   color: var(--text-color-dark);
 }
 
-/* More aggressive scroll lock for modals */
-html.nav-open,
-body.nav-open,
-html.chat-open,
-body.chat-open {
-  overflow: hidden;
-}
-
 .main-wrapper { display: flex; flex-direction: row; }
 .container { max-width: 800px; flex-grow: 1; padding: 1em 2em; }
 section { border-bottom: 1px solid var(--border-color); padding: 1.5rem 0; scroll-margin-top: 70px; }
@@ -105,6 +97,14 @@ html.chat-open #chat-widget {
 .mobile-header { display: none; }
 
 @media (max-width: 768px) {
+  /* THE FIX: Apply scroll lock ONLY on mobile devices when a modal is open */
+  html.nav-open,
+  body.nav-open,
+  html.chat-open,
+  body.chat-open {
+    overflow: hidden;
+  }
+
   .site-header { display: none; }
   .mobile-header { display: flex; justify-content: space-between; align-items: center; background: #fff; border-bottom: 1px solid var(--border-color); padding: 0 1rem; height: var(--mobile-header-height); position: sticky; top: 0; z-index: 999; }
   .main-wrapper { flex-direction: column; }
@@ -117,13 +117,11 @@ html.chat-open #chat-widget {
   #hamburger-btn { background: none; border: none; cursor: pointer; padding: 10px; display: flex; flex-direction: column; justify-content: space-around; width: 30px; height: 30px; }
   #hamburger-btn span { display: block; width: 100%; height: 2px; background-color: var(--text-color-dark); }
 
-  /* Polished "Inset Card" style for the mobile chat modal */
   #chat-widget {
-    /* Use inset for symmetrical margins on top and sides, flush with bottom */
     inset: 10px 10px 0 10px;
-    width: auto; /* Let inset define the width */
-    height: auto; /* Let inset and content define the height */
-    max-height: calc(100vh - 10px); /* Respect top margin */
+    width: auto;
+    height: auto;
+    max-height: calc(100vh - 10px);
     border-radius: 15px 15px 0 0;
     transform: translateY(100%);
     opacity: 1;
