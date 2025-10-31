@@ -26,17 +26,20 @@ async function buildGuidebook() {
     let fullHtml = `<header class="site-header"><img src="logo.png" alt="195VBR Guesthouse Logo" class="logo" /></header><h1>195VBR Guidebook</h1>`;
     let tocHtml = '<ul>';
     
-    // Updated the section order to include 'ironing'
+    // Updated the section order to include new dynamic sections
     const sectionOrder = [
       'video', 'what-not-to-bring', 'Address', 'domestic-directions', 'airport-directions', 
-      'getting-around', 'codetimes', 'check-in-luggage', 'Wifi', 'heating', 'Bedroom', 
-      'Bathroom', 'Kitchen', 'Windows', 'Laundry', 'ironing', 'troubleshooting', 'tv', 'contact', 'local-guidebook'
+      'getting-around', 'codetimes', 'Check-in & Luggage', 'Wifi', 'heating', 'Bedroom', 
+      'Bathroom', 'Kitchen', 'Rubbish Disposal', 'Windows', 'Laundry', 'ironing', 'troubleshooting', 'tv', 'contact', 'local-guidebook'
     ];
 
     sectionOrder.forEach(key => {
-      if (allContent[key]) {
-        const section = allContent[key];
-        const sectionId = key.toLowerCase().replace(/\s/g, '-');
+      // Find the key in allContent that matches the sectionOrder key, case-insensitively
+      const sectionObjectKey = Object.keys(allContent).find(k => k.toLowerCase() === key.toLowerCase());
+      if (sectionObjectKey && allContent[sectionObjectKey]) {
+        const section = allContent[sectionObjectKey];
+        // Use the section's actual title for the ID to ensure consistency
+        const sectionId = section.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
         fullHtml += `<section id="${sectionId}"><h2>${section.emoji} ${section.title}</h2>${section.html}</section>`;
         tocHtml += `<li><a href="#${sectionId}">${section.emoji} ${section.title}</a></li>`;
       }
@@ -103,7 +106,17 @@ function buildDynamicContent(keys, fragments) {
     const fragment = fragments[key];
     if (fragment) {
       if (!content[fragment.title]) {
-        const emoji = { "Address": "🏘️", "Wifi": "🛜", "Bedroom": "🛏️", "Bathroom": "🛁", "Kitchen": "🍳", "Windows": "🪟", "Laundry": "🧺" }[fragment.title] || 'ℹ️';
+        const emoji = { 
+          "Address": "🏘️", 
+          "Wifi": "🛜", 
+          "Bedroom": "🛏️", 
+          "Bathroom": "🛁", 
+          "Kitchen": "🍳", 
+          "Windows": "🪟", 
+          "Laundry": "🧺",
+          "Check-in & Luggage": "🧳",
+          "Rubbish Disposal": "🗑️"
+        }[fragment.title] || 'ℹ️';
         content[fragment.title] = { title: fragment.title, emoji: emoji, html: '' };
       }
       content[fragment.title].html += fragment.html;
@@ -113,7 +126,7 @@ function buildDynamicContent(keys, fragments) {
 }
 
 function getStaticContent() {
-  // Added the new 'ironing' section here
+  // Added the new 'ironing' section and updated local guide
   return {
     'video': {
       title: 'Instructional Video Playlist', emoji: '🎬',
@@ -139,10 +152,6 @@ function getStaticContent() {
         title: 'Lock info', emoji: '*️⃣',
         html: `<p><strong>How to unlock:</strong> Press your palm to the black screen to activate the keypad. See the video playlist for a demonstration.</p><p><strong>Front door & Luggage (Cupboard V):</strong> Your code is valid from 11:00 on check-in day until 14:00 on check-out day.</p><p><strong>Bedroom/Bathroom/Kitchen:</strong> Your code is valid from 15:00 on check-in day until 11:00 on check-out day.</p><p><strong>Locking from inside:</strong> This video shows how to lock your bedroom door from the inside for privacy.</p><div class="video-container"><iframe src="https://www.youtube.com/embed/7orX7Wh_g1U" title="How to lock door from inside" allowfullscreen></iframe></div>`
     },
-    'check-in-luggage': {
-        title: 'Check-in & Luggage', emoji: '🧳',
-        html: `<p><strong>Self Check-in:</strong> From 15:00 onwards.</p><p><strong>Early Luggage Drop-off:</strong> From 11:00, you can use your front door code to access Cupboard V downstairs.</p><p><strong>Luggage Storage After Check-out:</strong> Until 14:00, you can store bags in Cupboard V.</p><p>This video shows the full process:</p><div class="video-container"><iframe src="https://www.youtube.com/embed/rlUbHfWcN0s" title="Luggage drop-off process" allowfullscreen></iframe></div>`
-    },
      'heating': {
         title: 'Heating and Cooling', emoji: '🌡️',
         html: `<p>The central heating is on an automatic schedule:</p><ul><li><strong>Morning (07:00 – 10:00):</strong> Rises to <strong>20.0°C</strong>.</li><li><strong>Daytime (10:00 – 17:00):</strong> Enters a cool, energy-saving mode at <strong>18.0°C</strong>.</li><li><strong>Evening (17:00 – 22:30):</strong> Warms to a comfortable <strong>21.0°C</strong>.</li><li><strong>Overnight:</strong> Lowers to <strong>17.0°C</strong>.</li></ul><p>You can boost the temperature at any time using the valve (TRV) on your radiator.</p><p><strong>Cooling:</strong> We do not have air conditioning. We recommend keeping the window and curtains closed during sunny days and opening them in the evening.</p>`
@@ -165,7 +174,7 @@ function getStaticContent() {
     },
     'local-guidebook': {
         title: 'Local Guidebook', emoji: '📍',
-        html: `<h3>Food</h3><ul><li><a href="https://www.google.com/maps/search/?api=1&query=Regency+Cafe+London" target="_blank">Regency Cafe</a> – Classic English breakfast.</li><li><a href="https://www.google.com/maps/search/?api=1&query=Jugged+Hare+London" target="_blank">Jugged Hare</a> – Great pub across the road.</li><li><a href="https://www.google.com/maps/search/?api=1&query=Tachbrook+Street+Market+London" target="_blank">Tachbrook Street Market</a> – Weekday lunch market.</li><li><a href="https://www.google.com/maps/search/?api=1&query=A+Wong+70+Wilton+Road+London" target="_blank">A. Wong</a> – Michelin-starred Chinese food.</li><li><a href="https://www.google.com/maps/search/?api=1&query=Sainsbury%27s+Victoria+Station" target="_blank">Sainsbury's</a> – Large supermarket in Victoria Station.</li></ul><h3>Sights</h3><ul><li>Wicked and Hamilton – Two of the world's best musicals are right on our doorstep.</li><li>St James's Park – A beautiful royal park, perfect for a stroll.</li><li>A great walk: Start at Big Ben, cross Westminster Bridge, and walk along the scenic South Bank to Tower Bridge.</li></ul>`
+        html: `<h3>Food</h3><ul><li><a href="https://www.google.com/maps/search/?api=1&query=Regency+Cafe+London" target="_blank" rel="noopener">Regency Cafe</a> – traditional full English breakfast</li><li><a href="https://www.google.com/maps/search/?api=1&query=Jugged+Hare+London" target="_blank" rel="noopener">Jugged Hare</a> – great pub across the road</li><li><a href="https://www.google.com/maps/search/?api=1&query=Tachbrook+Street+Market+London" target="_blank" rel="noopener">Tachbrook Street Market</a> – local market for lunch on weekdays</li><li><a href="https://www.google.com/maps/search/?api=1&query=Kimchimama+London" target="_blank" rel="noopener">Kimchimama</a> – casual Korean food (especially fried chicken)</li><li><a href="https://www.google.com/maps/search/?api=1&query=Ben+Venuti+London" target="_blank" rel="noopener">Ben Venuti</a> – amazing Italian cafe around the corner</li><li><a href="https://www.google.com/maps/search/?api=1&query=Tozi+London" target="_blank" rel="noopener">Tozi</a> – upscale Italian restaurant nearby</li><li><a href="https://www.google.com/maps/search/?api=1&query=A+Wong+70+Wilton+Road+London" target="_blank" rel="noopener">A. Wong</a> – Michelin-starred Chinese restaurant behind the house</li><li><a href="https://www.google.com/maps/search/?api=1&query=Little+Waitrose+London" target="_blank" rel="noopener">Little Waitrose</a> – closest upmarket supermarket</li><li><a href="https://www.google.com/maps/search/?api=1&query=Sainsbury%27s+Victoria+Station" target="_blank" rel="noopener">Sainsbury's</a> – big supermarket</li><li><a href="https://www.google.com/maps/search/?api=1&query=Rippon+Cheese+London" target="_blank" rel="noopener">Rippon Cheese</a> – famous cheese store nearby</li><li><a href="https://www.google.com/maps/search/?api=1&query=Dishoom+London" target="_blank" rel="noopener">Dishoom</a> – famous Indian food (further away, book in advance)</li><li><a href="https://www.google.com/maps/search/?api=1&query=Gold+Mine+London" target="_blank" rel="noopener">Gold Mine</a> – great Peking duck (further away)</li></ul><h3>Sights</h3><ul><li>Wicked and Hamilton – Two of the world's best musicals are right on our doorstep.</li><li>St James's Park – A beautiful royal park, perfect for a stroll.</li><li>A great walk: Start at Big Ben, cross Westminster Bridge, and walk along the scenic South Bank to Tower Bridge.</li></ul>`
     }
   };
 }
