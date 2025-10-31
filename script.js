@@ -1,4 +1,5 @@
 // --- GLOBAL STATE VARIABLES ---
+const API_BASE_URL = 'https://guidebook-chatbot-backend.vercel.app';
 let chatbotContext = '';
 let chatHistory = [];
 
@@ -33,7 +34,7 @@ async function initializeAndAuthenticate() {
   let accessLevel = 'none';
 
   try {
-    const response = await fetch('/api/auth', {
+    const response = await fetch('${API_BASE_URL}/api/auth', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ bookingCode }) // Send the combined code
@@ -212,7 +213,7 @@ function createDashboardCards(bookingConfig) {
 }
 
 async function fetchHAData(entityId, house, type = 'state') {
-  const proxyUrl = 'https://guidebook-chatbot-backend.vercel.app/api/ha-proxy';
+  const proxyUrl = '${API_BASE_URL}/api/ha-proxy';
   const response = await fetch(`${proxyUrl}?house=${house}&entity=${entityId}&type=${type}`);
   if (!response.ok) {
     const errorData = await response.json();
@@ -434,7 +435,7 @@ async function sendMessage() {
     chatBox.insertAdjacentHTML('beforeend', typingIndicatorHtml);
     chatBox.scrollTop = chatBox.scrollHeight;
     const typingIndicator = chatBox.querySelector('.typing-indicator');
-    const serverlessFunctionUrl = 'https://guidebook-chatbot-backend.vercel.app/api/chatbot';
+    const serverlessFunctionUrl = '${API_BASE_URL}/api/chatbot';
     try {
         const response = await fetch(serverlessFunctionUrl, {
             method: 'POST',
