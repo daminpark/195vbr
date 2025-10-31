@@ -15,18 +15,12 @@ async function buildGuidebook() {
     if (!response.ok) throw new Error('config.json not found');
     const config = await response.json();
     const params = new URLSearchParams(window.location.search);
-    const bookingKey = params.keys().next().value; // Default removed
+    const bookingKey = params.keys().next().value || '31';
 
-    // Handle missing booking code
-    if (!bookingKey) {
-      document.getElementById('table-of-contents').style.display = 'none';
-      document.getElementById('chat-launcher').style.display = 'none';
-      throw new Error("No booking code provided. Please use the link from your booking confirmation email, which includes your unique code (e.g., manual.195vbr.com/?31).");
-    }
-
-    const requiredKeys = config.bookings[bookingKey];
-    if (!requiredKeys) throw new Error(`Booking key "${bookingKey}" not found.`);
+    const bookingConfig = config.bookings[bookingKey];
+    if (!bookingConfig) throw new Error(`Booking key "${bookingKey}" not found.`);
     
+    const requiredKeys = bookingConfig.content;
     const staticContent = getStaticContent();
     const dynamicContent = buildDynamicContent(requiredKeys, config.contentFragments);
     const allContent = { ...staticContent, ...dynamicContent };
@@ -55,13 +49,63 @@ async function buildGuidebook() {
     guidebookContainer.innerHTML = fullHtml;
     tocContainer.innerHTML = tocHtml;
     buildChatbotContextFromPage();
+
+    // SECURE: Call the function to fetch HA data using the booking config.
+    // This no longer handles secrets; it just points to the right house and entities.
+    if (bookingConfig.house && bookingConfig.entities) {
+      displayHomeAssistantStatus(bookingConfig);
+      // Refresh the status every 30 seconds
+      setInterval(() => displayHomeAssistantStatus(bookingConfig), 30000);
+    }
+
   } catch (error) {
     console.error("Error building guidebook:", error);
-    document.getElementById('guidebook-container').innerHTML = `
-      <header class="site-header"><img src="logo.png" alt="195VBR Guesthouse Logo" class="logo" /></header>
-      <h1>Guidebook Error</h1>
-      <p style="color: red; font-weight: bold;">Could not load the guidebook: ${error.message}</p>`;
+    document.getElementById('guidebook-container').innerHTML = `<p>Error: Could not load guidebook. ${error.message}</p>`;
     chatbotContext = "You are a helpful assistant for 195VBR. Please inform the user that there was an error loading the specific guidebook information and that they should refer to the on-page text.";
+  }
+}
+
+// SECURE: Fetches a single entity state by calling our serverless proxy.
+// Notice there are no tokens or private URLs in this function.
+async function fetchHAState(entityId, house) {
+  // This URL points to your Vercel backend project, not directly to Home Assistant.
+  const proxyUrl = 'https://guidebook-chatbot-backend.vercel.app/api/ha-proxy';
+  const response = await fetch(`${proxyUrl}?house=${house}&entity=${entityId}`);
+  
+  if (!response.ok) {
+    throw new Error(`Proxy API responded with status: ${response.status}`);
+  }
+  
+  const data = await response.json();
+  return data.state; // e.g., 'on' or 'off'
+}
+
+// SECURE: Updates all occupancy statuses on the page by calling the secure fetch function.
+async function displayHomeAssistantStatus(bookingConfig) {
+  // Get the house number and entity list from the public config.json.
+  const { house, entities } = bookingConfig;
+  if (!house || !entities) return;
+
+  for (const [key, entityId] of Object.entries(entities)) {
+    const elementId = `${key}-status`; // e.g., 'bathroom-status', 'kitchen-status'
+    const statusElement = document.getElementById(elementId);
+
+    if (statusElement) {
+      try {
+        // Call the secure fetchHAState function with the house number.
+        const state = await fetchHAState(entityId, house);
+        const statusText = state === 'on' ? 'Occupied' : 'Vacant';
+        const statusColor = state === 'on' ? '#d9534f' : '#5cb85c'; // Red for Occupied, Green for Vacant
+
+        statusElement.textContent = statusText;
+        statusElement.style.color = statusColor;
+        statusElement.style.fontWeight = 'bold';
+      } catch (error) {
+        console.error(error);
+        statusElement.textContent = 'Unavailable';
+        statusElement.style.color = 'gray';
+      }
+    }
   }
 }
 
