@@ -188,7 +188,6 @@ function handleTemperatureChange(event) {
     setTemperature(entityId, newTemp, currentBookingConfig.house);
 }
 
-// (The full, correct displayHomeAssistantStatus function is included here)
 async function displayHomeAssistantStatus(bookingConfig) {
   const { house, entities } = bookingConfig;
   if (!house || !entities) return;
@@ -235,7 +234,11 @@ async function displayHomeAssistantStatus(bookingConfig) {
                 try {
                     const state = await fetchHAData(entityId, house);
                     const { current_temperature, temperature, hvac_mode } = state.attributes;
-                    const modeText = hvac_mode.charAt(0).toUpperCase() + hvac_mode.slice(1);
+                    
+                    // --- THIS IS THE ROBUSTNESS FIX ---
+                    // Handle cases where hvac_mode might not exist.
+                    const modeText = hvac_mode ? hvac_mode.charAt(0).toUpperCase() + hvac_mode.slice(1) : 'Off';
+                    
                     container.querySelector('.climate-temp-display').textContent = `Current: ${current_temperature.toFixed(1)}° | Mode: ${modeText}`;
                     container.querySelector('.climate-set-temp').textContent = `${temperature.toFixed(1)}°`;
                     container.querySelectorAll('button').forEach(b => b.disabled = false);
