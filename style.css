@@ -114,15 +114,17 @@ html.chat-open #chat-widget {
   #hamburger-btn { background: none; border: none; cursor: pointer; padding: 10px; display: flex; flex-direction: column; justify-content: space-around; width: 30px; height: 30px; }
   #hamburger-btn span { display: block; width: 100%; height: 2px; background-color: var(--text-color-dark); }
 
-  /* Re-implementing the simple, robust full-screen modal */
+  /* Simple and robust full-screen modal */
   #chat-widget {
     inset: 0;
     width: 100%;
-    height: 100dvh; /* Dynamic viewport height handles keyboard */
+    height: 100dvh; /* Dynamic viewport height handles the keyboard */
     max-height: 100dvh;
+    max-width: 100%;
     border-radius: 0;
-    transform: translateY(100%); /* Start off-screen at the bottom */
+    transform: translateY(100%); /* Start off-screen */
     opacity: 1;
+    background: #fff; /* Ensure it has a solid background */
   }
   
   html.chat-open #chat-widget {

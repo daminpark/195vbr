@@ -64,7 +64,7 @@ function setupMobileMenu() {
     nav.addEventListener('click', (e) => { if (e.target.tagName === 'A') { toggleMenu(); } });
 }
 
-// --- CHATBOT UI & LOGIC (Simplified) ---
+// --- CHATBOT UI & LOGIC (Simplified and Robust) ---
 
 function setupChatToggle() {
   const htmlEl = document.documentElement;
@@ -74,14 +74,12 @@ function setupChatToggle() {
   const openChat = () => {
     if (htmlEl.classList.contains('chat-open')) return;
     htmlEl.classList.add('chat-open');
-    // Add a history entry so the back button works
     history.pushState({ chatOpen: true }, '');
   };
 
   const closeChat = () => {
     if (!htmlEl.classList.contains('chat-open')) return;
     htmlEl.classList.remove('chat-open');
-    // If the user is closing with the 'X', we need to go back in history
     if (history.state && history.state.chatOpen) {
       history.back();
     }
@@ -90,7 +88,6 @@ function setupChatToggle() {
   chatLauncher.addEventListener('click', openChat);
   closeBtn.addEventListener('click', closeChat);
 
-  // This handles the browser's back button action
   window.addEventListener('popstate', () => {
     if (htmlEl.classList.contains('chat-open')) {
       htmlEl.classList.remove('chat-open');
