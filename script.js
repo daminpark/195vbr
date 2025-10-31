@@ -1,15 +1,95 @@
+// --- GLOBAL STATE VARIABLES ---
 let chatbotContext = '';
 let chatHistory = [];
 
+// --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', async () => {
-  await buildGuidebook();
+  await initializeAndAuthenticate();
   setupChatToggle();
   setupEnterKeyListener();
   addInitialBotMessage();
   setupMobileMenu();
 });
 
-async function buildGuidebook() {
+/**
+ * Handles authentication by parsing a single opaque URL parameter.
+ */
+async function initializeAndAuthenticate() {
+  const guidebookContainer = document.getElementById('guidebook-container');
+  const tocContainer = document.getElementById('table-of-contents');
+  const params = new URLSearchParams(window.location.search);
+
+  // Expects URL format: ?booking=[bookingKey]-[password], e.g., ?booking=31-6556
+  const bookingCode = params.get('booking');
+
+  if (!bookingCode) {
+    displayAuthError(guidebookContainer, tocContainer);
+    return;
+  }
+
+  guidebookContainer.innerHTML = '<h1><span class="material-symbols-outlined">lock</span> Verifying Access...</h1>';
+  
+  let authSucceeded = false;
+  let accessLevel = 'none';
+
+  try {
+    const response = await fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bookingCode }) // Send the combined code
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      accessLevel = data.accessLevel;
+      authSucceeded = (accessLevel === 'full' || accessLevel === 'partial');
+    }
+  } catch (error) {
+    console.error('Authentication request failed:', error);
+    authSucceeded = false;
+  }
+
+  if (!authSucceeded) {
+    displayAuthError(guidebookContainer, tocContainer);
+    return;
+  }
+
+  // Extract the booking key (the part before the hyphen) to build the correct guidebook
+  const bookingKey = bookingCode.split('-', 1)[0];
+  await buildGuidebook(bookingKey, accessLevel);
+}
+
+/**
+ * Displays a generic "Booking Not Found" or "Invalid Link" error.
+ * @param {HTMLElement} guidebookContainer - The main content container.
+ * @param {HTMLElement} tocContainer - The table of contents container.
+ */
+function displayAuthError(guidebookContainer, tocContainer) {
+  const errorHtml = `
+    <header class="site-header"><img src="logo.png" alt="195VBR Guesthouse Logo" class="logo" /></header>
+    <h1>Access Denied</h1>
+    <section id="error-message">
+      <h2><span style="color: #d9534f;">&#9888;</span> Invalid or Expired Link</h2>
+      <p>The link you have used is not valid. This may be because:</p>
+      <ul>
+        <li>The link is incorrect or was not copied properly.</li>
+        <li>Your booking has ended.</li>
+      </ul>
+      <p><strong>Please use the exact link provided to you in your booking confirmation message.</strong></p>
+      <p>If you continue to have trouble, please contact us through your booking platform.</p>
+    </section>
+  `;
+  guidebookContainer.innerHTML = errorHtml;
+  tocContainer.innerHTML = '';
+  document.getElementById('chat-launcher').style.display = 'none';
+}
+
+/**
+ * Fetches configuration and builds the main guidebook content.
+ * @param {string} bookingKey - The validated booking key for the guest.
+ * @param {string} accessLevel - The access level ('full' or 'partial') determined by auth.
+ */
+async function buildGuidebook(bookingKey, accessLevel) {
   const guidebookContainer = document.getElementById('guidebook-container');
   const tocContainer = document.getElementById('table-of-contents');
 
@@ -17,30 +97,9 @@ async function buildGuidebook() {
     const response = await fetch('config.json');
     if (!response.ok) throw new Error('config.json not found');
     const config = await response.json();
-    const params = new URLSearchParams(window.location.search);
-    const bookingKey = params.keys().next().value; // Get the key, with no fallback
-
-    // --- NEW: Check if the booking key is missing or invalid ---
-    if (!bookingKey || !config.bookings[bookingKey]) {
-      const errorHtml = `
-        <header class="site-header"><img src="logo.png" alt="195VBR Guesthouse Logo" class="logo" /></header>
-        <h1>Booking Not Found</h1>
-        <section id="error-message">
-          <h2><span style="color: #d9534f;">&#9888;</span> Invalid Access Link</h2>
-          <p>The link you have used does not contain a valid booking code.</p>
-          <p><strong>Please use the exact link provided to you in your booking confirmation message.</strong></p>
-          <p>If you are copying the link manually, please ensure it is complete and correct. If you continue to have trouble, please contact us through your booking platform.</p>
-        </section>
-      `;
-      guidebookContainer.innerHTML = errorHtml;
-      tocContainer.innerHTML = ''; // Clear the table of contents
-      // Hide the chat launcher as it's not needed on an error page
-      document.getElementById('chat-launcher').style.display = 'none';
-      return; // Stop the function from building the rest of the page
-    }
 
     const bookingConfig = config.bookings[bookingKey];
-    if (!bookingConfig) throw new Error(`Booking key "${bookingKey}" not found.`);
+    if (!bookingConfig) throw new Error(`Booking key "${bookingKey}" not found after auth.`);
     
     const requiredKeys = bookingConfig.content;
     const staticContent = getStaticContent();
@@ -75,6 +134,14 @@ async function buildGuidebook() {
       createDashboardCards(bookingConfig);
       displayHomeAssistantStatus(bookingConfig);
       setInterval(() => displayHomeAssistantStatus(bookingConfig), 600000); 
+
+      if (accessLevel === 'full') {
+        const controlsContainer = document.getElementById('smart-home-controls');
+        if (controlsContainer) {
+            createSmartHomeControlCards(controlsContainer, bookingConfig);
+            controlsContainer.style.display = 'block';
+        }
+      }
     }
 
   } catch (error) {
@@ -82,6 +149,26 @@ async function buildGuidebook() {
     guidebookContainer.innerHTML = `<p>Error: Could not load guidebook configuration. ${error.message}</p>`;
     chatbotContext = "You are a helpful assistant for 195VBR. Please inform the user that there was an error loading the specific guidebook information and that they should refer to the on-page text.";
   }
+}
+
+// ... ALL OTHER HELPER FUNCTIONS (createSmartHomeControlCards, formatCardTitle, fetchHAData, etc.) remain unchanged ...
+
+function createSmartHomeControlCards(container, bookingConfig) {
+    let controlsHtml = `
+        <div class="ha-card">
+            <div class="ha-card-title">Main Thermostat</div>
+            <div class="ha-card-controls">
+                <span id="thermostat-temp">21°C</span>
+            </div>
+        </div>
+        <div class="ha-card">
+            <div class="ha-card-title">Room Light</div>
+            <div class="ha-card-controls">
+                <button>Toggle</button>
+            </div>
+        </div>
+    `;
+    container.querySelector('#smart-home-dashboard').innerHTML = controlsHtml;
 }
 
 function formatCardTitle(key, houseNumber) {
@@ -106,17 +193,10 @@ function createDashboardCards(bookingConfig) {
 
     entityKeys.forEach(key => {
         if (key === 'weather') {
-            // --- MODIFIED HTML STRUCTURE ---
-            // We've replaced the separate 'weather-main' and 'weather-hourly-forecast' divs
-            // with a single 'weather-top-row' container.
             cardsHtml += `
                 <div class="ha-card weather-card" id="ha-card-weather">
-                    <div class="weather-top-row" id="ha-weather-top-row">
-                        <!-- Current weather & hourly forecast will be injected here -->
-                    </div>
-                    <div class="weather-forecast" id="ha-weather-daily">
-                        <!-- Daily forecast will be injected here (this part is unchanged) -->
-                    </div>
+                    <div class="weather-top-row" id="ha-weather-top-row"></div>
+                    <div class="weather-forecast" id="ha-weather-daily"></div>
                 </div>
             `;
         } else {
@@ -154,30 +234,12 @@ async function displayHomeAssistantStatus(bookingConfig) {
             fetchHAData(entityId, house, 'daily_forecast')
         ]);
 
-        // --- NEW LOGIC TO BUILD THE COMBINED TOP ROW ---
         const topRowContainer = document.getElementById('ha-weather-top-row');
         if (topRowContainer) {
-            let topRowHtml = '';
-
-            // 1. Add the "Current" weather item
-            topRowHtml += `
-                <div class="weather-item current-weather-item">
-                    <div class="weather-item-label">Now</div>
-                    <span class="weather-item-icon material-symbols-outlined">${weatherIconMap[currentState.state] || 'sunny'}</span>
-                    <div class="weather-item-temp">${Math.round(currentState.attributes.temperature)}°</div>
-                </div>
-            `;
-            
-            // 2. Add the next 4 hourly forecast items
+            let topRowHtml = `<div class="weather-item current-weather-item"><div class="weather-item-label">Now</div><span class="weather-item-icon material-symbols-outlined">${weatherIconMap[currentState.state] || 'sunny'}</span><div class="weather-item-temp">${Math.round(currentState.attributes.temperature)}°</div></div>`;
             hourlyForecast.slice(1, 5).forEach(hour => {
                 const time = new Date(hour.datetime).toLocaleTimeString('en-US', { hour: 'numeric', hour12: false });
-                topRowHtml += `
-                    <div class="weather-item">
-                        <div class="weather-item-label">${time}</div>
-                        <span class="weather-item-icon material-symbols-outlined">${weatherIconMap[hour.condition] || 'sunny'}</span>
-                        <div class="weather-item-temp">${Math.round(hour.temperature)}°</div>
-                    </div>
-                `;
+                topRowHtml += `<div class="weather-item"><div class="weather-item-label">${time}</div><span class="weather-item-icon material-symbols-outlined">${weatherIconMap[hour.condition] || 'sunny'}</span><div class="weather-item-temp">${Math.round(hour.temperature)}°</div></div>`;
             });
             topRowContainer.innerHTML = topRowHtml;
         }
@@ -185,19 +247,9 @@ async function displayHomeAssistantStatus(bookingConfig) {
         const dailyContainer = document.getElementById('ha-weather-daily');
         if (dailyContainer) {
             let dailyHtml = '';
-            // Daily forecast logic remains unchanged
             dailyForecast.slice(0, 4).forEach((day, index) => {
                 const dayName = index === 0 ? 'Today' : new Date(day.datetime).toLocaleDateString('en-US', { weekday: 'short' });
-                dailyHtml += `
-                    <div class="forecast-day">
-                        <div class="forecast-day-name">${dayName}</div>
-                        <span class="forecast-day-icon material-symbols-outlined">${weatherIconMap[day.condition] || 'sunny'}</span>
-                        <div class="forecast-day-temp">
-                            ${Math.round(day.temperature)}°
-                            <span class="forecast-day-temp-low">${Math.round(day.templow)}°</span>
-                        </div>
-                    </div>
-                `;
+                dailyHtml += `<div class="forecast-day"><div class="forecast-day-name">${dayName}</div><span class="forecast-day-icon material-symbols-outlined">${weatherIconMap[day.condition] || 'sunny'}</span><div class="forecast-day-temp">${Math.round(day.temperature)}°<span class="forecast-day-temp-low">${Math.round(day.templow)}°</span></div></div>`;
             });
             dailyContainer.innerHTML = dailyHtml;
         }
@@ -294,7 +346,7 @@ function getStaticContent() {
   return {
     'video': {
       title: 'Instructional Video Playlist', emoji: '🎬',
-      html: `<p>This playlist contains all the instructional videos from this guide in one convenient location.</p><a href="https://www.youtube.com/playlist?list=PL7olRlH5yDt4Zk_2CIS9fRnkYmC9gkcDh" target="_blank" rel="noopener noreferrer">Link to Full YouTube Playlist</a>`
+      html: `<p>This playlist contains all the instructional videos from this guide in one convenient location.</p><a href="https://www.youtube.com/playlist?list=PL7olRlH5yDt4Zk_2CISfRnkYmC9gkcDh" target="_blank" rel="noopener noreferrer">Link to Full YouTube Playlist</a>`
     },
     'what-not-to-bring': {
       title: 'What not to bring', emoji: '🚫',
