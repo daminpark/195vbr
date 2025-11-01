@@ -533,10 +533,9 @@ function handleSliderInput(event) {
     display.textContent = `${parseFloat(slider.value).toFixed(1)}°`;
 }
 
-const debouncedSetTemperature = debounce((event) => {
-    const slider = event.currentTarget;
-    const newTemp = parseFloat(slider.value);
-    setTemperature(slider.dataset.entity, newTemp, currentBookingConfig.house);
+const debouncedSetTemperature = debounce((entityId, newTemp, house) => {
+    // The arguments are already what we need, so we just pass them along.
+    setTemperature(entityId, newTemp, house);
 }, 500);
 
 async function handleLightToggle(event) {
