@@ -1,10 +1,39 @@
 {
   "contentFragments": {
-    // ... no changes here
+    "house193": { "title": "Address", "html": "<p>193 Vauxhall Bridge Road<br>Pimlico, London<br>SW1V 1ER</p>" },
+    "house195": { "title": "Address", "html": "<p>195 Vauxhall Bridge Road<br>Pimlico, London<br>SW1V 1ER</p>" },
+    "wifi193": { "title": "Wifi", "html": "<p>Network Name (SSID): <strong>193</strong><br>Password: <strong>12345671</strong></p>" },
+    "wifi195": { "title": "Wifi", "html": "<p>Network Name (SSID): <strong>195</strong><br>Password: <strong>09876543</strong></p>" },
+    "room1": { "title": "Bedroom", "html": "<p>Your room number is: 1.</p>" },
+    "room2": { "title": "Bedroom", "html": "<p>Your room number is: 2.</p>" },
+    "room3": { "title": "Bedroom", "html": "<p>Your room number is: 3.</p>" },
+    "room4": { "title": "Bedroom", "html": "<p>Your room number is: 4.</p>" },
+    "room5": { "title": "Bedroom", "html": "<p>Your room number is: 5.</p>" },
+    "room6": { "title": "Bedroom", "html": "<p>Your room number is: 6.</p>" },
+    "rooma": { "title": "Bedroom", "html": "<p>You have booked Rooms 1 & 2.</p>" },
+    "roomb": { "title": "Bedroom", "html": "<p>You have booked Rooms 4, 5 & 6.</p>" },
+    "wholeHomeBedroomsDetailed": { "title": "Bedroom", "html": "<p>The house has the following bedrooms:</p><ul><li><strong>Ground Floor:</strong> Rooms 1 & 2.</li><li><strong>First Floor:</strong> Room 3.</li><li><strong>Second Floor:</strong> Rooms 4 & 5.</li><li><strong>Third Floor (Loft):</strong> Room 6.</li><li><strong>Basement:</strong> A bonus room (Room 0) with a single bed is attached to the kitchen.</li></ul>" },
+    "storageUnderBed": { "title": "Bedroom", "html": "<p>You can create more space by storing luggage under the bed, as shown in this video:</p><div class=\"video-container\"><iframe src=\"https://www.youtube.com/embed/3Ejpyf4MYTI\" title=\"Luggage storage under bed\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe></div>" },
+    "storageInBed": { "title": "Bedroom", "html": "<p>This bed frame has a lift-up mattress with significant storage space inside, as shown in this video:</p><div class=\"video-container\"><iframe src=\"https://www.youtube.com/embed/VoFABSMLII8\" title=\"Luggage storage inside bed\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe></div>" },
+    "wholeHomeBathrooms": { "title": "Bathroom", "html": "<p>There are three bathrooms available for your use:</p><ul><li><strong>Bathroom A:</strong> Located on the ground floor.</li><li><strong>Bathroom B:</strong> Located on the second floor.</li><li><strong>Bathroom C:</strong> This is an en-suite bathroom located inside Room 3 on the first floor.</li></ul>" },
+    "bathroomA": { "title": "Bathroom", "html": "<p>Your assigned bathroom is labelled 'A'.</p>" },
+    "bathroomB": { "title": "Bathroom", "html": "<p>Your assigned bathroom is labelled 'B'.</p>" },
+    "bathroomC": { "title": "Bathroom", "html": "<p>Your private bathroom is the en-suite inside your room.</p>" },
+    "bathroomShared": { "title": "Bathroom", "html": "<p>This is a shared bathroom. Please be considerate of other guests:</p><ul><li><strong>Use Your Assigned Compartment:</strong> Store your toiletries in your numbered space.</li><li><strong>Keep it Tidy:</strong> Please leave the bathroom clean for the next person.</li><li><strong>Be Mindful of Time:</strong> Limit use to ~15 minutes, especially during peak morning hours.</li></ul>" },
+    "bathroomPrivate": { "title": "Bathroom", "html": "<p>This bathroom is private for your exclusive use.</p>" },
+    "kitchenShared": { "title": "Kitchen", "html": "<p>The shared kitchen is located in the basement, through the door marked 'K'. Please:</p><ul><li><strong>Use Assigned Storage:</strong> Each room has a numbered space in the fridge and cabinets.</li><li><strong>Clean As You Go:</strong> Place used dishes in the dishwasher. Staff will run it when full.</li></ul>" },
+    "kitchenPrivate": { "title": "Kitchen", "html": "<p>The kitchen is private for your group's exclusive use.</p>" },
+    "kitchenBase": { "title": "Kitchen", "html": "<p><strong>Shared Supplies:</strong> Help yourself to complimentary tea and coffee, as well as basic condiments and spices.</p><p><strong>Rubbish:</strong> The large metal bin is for recycling. General waste goes in the black bin.</p><p>Here are video guides for the appliances:</p><ul><li><strong>Induction Stove:</strong><div class=\"video-container\"><iframe src=\"https://www.youtube.com/embed/_ZepccyHD_o\" title=\"How to use induction stove\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe></div></li><li><strong>Microwave:</strong><div class=\"video-container\"><iframe src=\"https://www.youtube.com/embed/Qs9o7G8MvjI\" title=\"How to use microwave\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe></div></li></ul>" },
+    "windowsStandard": { "title": "Windows", "html": "<p>The window can be opened by pressing the button on the handle and turning it upwards.</p>" },
+    "windowsTiltTurn": { "title": "Windows", "html": "<p>These are \"tilt and turn\" windows. This video demonstrates how to open them for ventilation (tilt) or fully (turn):</p><div class=\"video-container\"><iframe src=\"https://www.youtube.com/embed/uqOEIZtq_wI\" title=\"How to use tilt-and-turn windows\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe></div>" },
+    "noLaundry": { "title": "Laundry", "html": "<p>There are no guest-accessible washing machines on-site. A highly-rated local launderette is <a href=\"https://maps.app.goo.gl/uYuoqcrG3xC3Q2Nz8\" target=\"_blank\" rel=\"noopener noreferrer\">True Colours Launderette</a>.</p><p>Towels are not changed daily. For fresh towels (max. once every 2 days), please leave used ones outside your door by 11:00am.</p>" },
+    "hasLaundry": { "title": "Laundry", "html": "<p>The washing machine is available for your use. It is located in the basement. This video provides access and usage instructions:</p><div class=\"video-container\"><iframe src=\"https://www.youtube.com/embed/hLV62ekup-E\" title=\"How to use washing machine\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe></div>" },
+    "wholeHomeLuggage": { "title": "Check-in & Luggage", "html": "<p><strong>Self Check-in:</strong> From 15:00 onwards.</p><p><strong>Luggage Storage:</strong> If you require luggage storage outside of check-in/out times, please message us. Depending on availability, you may be able to store bags in the front room (Room 1).</p>" },
+    "wholeHomeRubbish": { "title": "Rubbish Disposal", "html": "<p>Rubbish bags can be left on the pavement outside the front door, in front of the black fencing. The council collects it daily from this location.</p>" }
   },
   "bookings": {
     "31": { 
-      "content": ["house193", "wifi193", "guestLuggage", "room1", "bathroomA", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], 
+      "content": ["house193", "wifi193", "room1", "bathroomA", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], 
       "house": "193", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -17,7 +46,7 @@
       }
     },
     "32": {
-      "content": ["house193", "wifi193", "guestLuggage", "room2", "bathroomA", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageInBed", "windowsStandard"], 
+      "content": ["house193", "wifi193", "room2", "bathroomA", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageInBed", "windowsStandard"], 
       "house": "193", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -30,7 +59,7 @@
       }
     },
     "33": {
-      "content": ["house193", "wifi193", "guestLuggage", "room3", "bathroomC", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsStandard"], 
+      "content": ["house193", "wifi193", "room3", "bathroomC", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsStandard"], 
       "house": "193", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -44,7 +73,7 @@
       }
     },
     "34": {
-      "content": ["house193", "wifi193", "guestLuggage", "room4", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], 
+      "content": ["house193", "wifi193", "room4", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], 
       "house": "193", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -58,7 +87,7 @@
       }
     },
     "35": {
-      "content": ["house193", "wifi193", "guestLuggage", "room5", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageInBed", "windowsStandard"], 
+      "content": ["house193", "wifi193", "room5", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageInBed", "windowsStandard"], 
       "house": "193", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -71,7 +100,7 @@
       }
     },
     "36": {
-      "content": ["house193", "wifi193", "guestLuggage", "room6", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], 
+      "content": ["house193", "wifi193", "room6", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], 
       "house": "193", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -84,7 +113,7 @@
       }
     },
     "3a": {
-      "content": ["house193", "wifi193", "guestLuggage", "rooma", "bathroomA", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], 
+      "content": ["house193", "wifi193", "rooma", "bathroomA", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], 
       "house": "193", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -97,7 +126,7 @@
       }
     },
     "3b": {
-      "content": ["house193", "wifi193", "guestLuggage", "roomb", "bathroomB", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], 
+      "content": ["house193", "wifi193", "roomb", "bathroomB", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], 
       "house": "193", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -112,7 +141,7 @@
       }
     },
     "51": {
-      "content": ["house195", "wifi195", "guestLuggage", "room1", "bathroomA", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], 
+      "content": ["house195", "wifi195", "room1", "bathroomA", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], 
       "house": "195", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -125,7 +154,7 @@
       }
     },
     "52": {
-      "content": ["house195", "wifi195", "guestLuggage", "room2", "bathroomA", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageInBed", "windowsStandard"], 
+      "content": ["house195", "wifi195", "room2", "bathroomA", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageInBed", "windowsStandard"], 
       "house": "195", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -138,7 +167,7 @@
       }
     },
     "53": {
-      "content": ["house195", "wifi195", "guestLuggage", "room3", "bathroomC", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsStandard"], 
+      "content": ["house195", "wifi195", "room3", "bathroomC", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsStandard"], 
       "house": "195", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -152,7 +181,7 @@
       }
     },
     "54": {
-      "content": ["house195", "wifi195", "guestLuggage", "room4", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], 
+      "content": ["house195", "wifi195", "room4", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], 
       "house": "195", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -166,7 +195,7 @@
       }
     },
     "55": {
-      "content": ["house195", "wifi195", "guestLuggage", "room5", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageInBed", "windowsStandard"], 
+      "content": ["house195", "wifi195", "room5", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageInBed", "windowsStandard"], 
       "house": "195", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -179,7 +208,7 @@
       }
     },
     "56": {
-      "content": ["house195", "wifi195", "guestLuggage", "room6", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], 
+      "content": ["house195", "wifi195", "room6", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], 
       "house": "195", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -192,7 +221,7 @@
       }
     },
     "5a": {
-      "content": ["house195", "wifi195", "guestLuggage", "rooma", "bathroomA", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], 
+      "content": ["house195", "wifi195", "rooma", "bathroomA", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], 
       "house": "195", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -205,7 +234,7 @@
       }
     },
     "5b": {
-      "content": ["house195", "wifi195", "guestLuggage", "roomb", "bathroomB", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], 
+      "content": ["house195", "wifi195", "roomb", "bathroomB", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], 
       "house": "195", 
       "entities": { 
         "weather": "weather.forecast_home", 
