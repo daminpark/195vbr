@@ -618,7 +618,7 @@ function updateCardFromPush(data) {
             toggle.checked = state === 'on';
 
             const brightnessRow = card.querySelector('[data-control="brightness"]');
-            if (brightnessRow && attributes.supported_color_modes?.includes('brightness')) {
+            if (brightnessRow && attributes.hasOwnProperty('brightness')) {
                 const slider = brightnessRow.querySelector('.light-slider');
                 const valueDisplay = brightnessRow.querySelector('.light-slider-value');
                 const currentBrightness = attributes.brightness || 0;
@@ -718,7 +718,7 @@ async function displayHomeAssistantStatus(bookingConfig) {
                     const colorTempRow = card.querySelector('[data-control="color_temp"]');
                     let hasControls = false;
                     
-                    if (attributes.supported_color_modes?.includes('brightness')) {
+                    if (attributes.hasOwnProperty('brightness')) {
                         hasControls = true;
                         brightnessRow.style.display = 'flex';
                         const slider = brightnessRow.querySelector('.light-slider');
