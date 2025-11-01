@@ -98,7 +98,7 @@ html.chat-open #chat-widget {
 
 @media (max-width: 768px) {
   /* Scroll lock for modals on mobile */
-  html.nav-open, body.nav-open, html.chat-open, body.chat-open {
+  html.nav-open, body.nav-open, body.chat-open {
     overflow: hidden;
   }
 

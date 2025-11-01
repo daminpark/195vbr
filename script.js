@@ -11,6 +11,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
   opaqueBookingKey = params.get('booking');
 
+  // --- NEW: Add the mousedown event listener for the send button ---
+  // This is the key to keeping the keyboard open on mobile.
+  const sendBtn = document.getElementById('send-btn');
+  if (sendBtn) {
+    sendBtn.addEventListener('mousedown', (e) => {
+      // Prevent the input from losing focus when the button is tapped
+      e.preventDefault();
+      sendMessage();
+    });
+  }
+
   if (params.has('wholehome') || params.has('sharedb') || params.has('sharedk')) {
     await buildLegacyGuidebook(params);
     setupMobileMenu();
@@ -33,12 +44,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// --- THIS FUNCTION IS MODIFIED TO BE MORE COMPREHENSIVE ---
+// --- REPLACEMENT 2: buildLegacyGuidebook ---
+// This function now enables the AI chatbot for legacy pages.
 async function buildLegacyGuidebook(params) {
   const guidebookContainer = document.getElementById('guidebook-container');
   const tocContainer = document.getElementById('table-of-contents');
 
-  document.getElementById('chat-launcher').style.display = 'none';
+  // --- CHANGED: We NO LONGER hide the chat launcher ---
+  // document.getElementById('chat-launcher').style.display = 'none';
 
   try {
     const response = await fetch('config.json');
@@ -46,18 +59,16 @@ async function buildLegacyGuidebook(params) {
     const config = await response.json();
 
     let pageTitle = "195VBR Guidebook";
-
-    // --- NEW: Start with a base of all common static content ---
     const staticContent = getStaticContent();
     const baseContentKeys = Object.keys(staticContent);
     let legacyContentKeys = new Set(baseContentKeys);
 
     if (params.has('wholehome')) {
-      pageTitle = "Whole Home Manual";
+      pageTitle = "Whole Home Guide";
       ['house193', 'house195', 'wifi193', 'wifi195', 'wholeHomeLuggage', 'wholeHomeRubbish', 'hasLaundry', 'kitchenBase', 'windowsStandard', 'windowsTiltTurn']
         .forEach(item => legacyContentKeys.add(item));
     } else {
-      pageTitle = "195VBR Guidebook";
+      pageTitle = "Private Room Guide";
       ['house193', 'wifi193', 'guestLuggage'].forEach(item => legacyContentKeys.add(item));
       if (params.has('sharedk')) {
         ['kitchenShared', 'kitchenBase', 'noLaundry'].forEach(item => legacyContentKeys.add(item));
@@ -72,8 +83,6 @@ async function buildLegacyGuidebook(params) {
     
     let fullHtml = `<header class="site-header"><img src="logo.png" alt="195VBR Guesthouse Logo" class="logo" /></header><h1>${pageTitle}</h1><div id="ha-dashboard" style="display: none;"></div>`;
     let tocHtml = '<ul>';
-    
-    // Use the comprehensive section order so all common content appears correctly
     const sectionOrder = ['video', 'what-not-to-bring', 'Address', 'domestic-directions', 'airport-directions', 'getting-around', 'codetimes', 'Check-in & Luggage', 'Wifi', 'heating', 'Bedroom', 'Bathroom', 'Kitchen', 'Rubbish Disposal', 'Windows', 'Laundry', 'ironing', 'troubleshooting', 'tv', 'contact', 'local-guidebook'];
     
     sectionOrder.forEach(key => {
@@ -89,6 +98,12 @@ async function buildLegacyGuidebook(params) {
     tocHtml += '</ul>';
     guidebookContainer.innerHTML = fullHtml;
     tocContainer.innerHTML = tocHtml;
+
+    // --- NEW: Enable all chat functionality for legacy pages ---
+    buildChatbotContextFromPage();
+    setupChatToggle();
+    setupEnterKeyListener();
+    addInitialBotMessage();
     
   } catch (error) {
     console.error("Error building legacy guidebook:", error);
@@ -413,18 +428,17 @@ function setupChatToggle() {
   const htmlEl = document.documentElement;
   const closeBtn = document.getElementById('chat-close');
   const chatLauncher = document.getElementById('chat-launcher');
-  const userInput = document.getElementById('user-input'); // Get a reference to the input
+  const userInput = document.getElementById('user-input');
 
   const openChat = () => {
     if (htmlEl.classList.contains('chat-open')) return;
     htmlEl.classList.add('chat-open');
     history.pushState({ chatOpen: true }, '');
     
-    // Use a tiny delay to ensure the element is visible before focusing.
-    // This makes it more reliable on all devices.
+    // Increased delay to 350ms to ensure animation is complete before focusing.
     setTimeout(() => {
       userInput.focus();
-    }, 100); 
+    }, 350); 
   };
 
   const closeChat = () => {
