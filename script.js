@@ -556,31 +556,28 @@ async function fetchHAData(entityId, house, type = 'state') {
 }
 
 function updateCardFromPush(data) {
-    let { entity_id, state, attributes } = data; // Use 'let' to allow modification
+    let { entity_id, state, attributes } = data; 
 
-    // FIX: Check if attributes is a string and parse it into an object if necessary.
     if (typeof attributes === 'string') {
         try {
-            // This is a workaround for attributes being sent as a Python dict string.
-            // 1. Replace all single quotes with double quotes to make it valid JSON.
-            // 2. Replace Python-specific object notations like <...> with a simple string.
+            // FIX: Add replacements for Python booleans (True/False) and None.
             const jsonString = attributes
                 .replace(/'/g, '"')
-                .replace(/<[^>]+>/g, '"(object)"');
+                .replace(/<[^>]+>/g, '"(object)"')
+                .replace(/\bTrue\b/g, 'true')   // Convert Python True to JSON true
+                .replace(/\bFalse\b/g, 'false') // Convert Python False to JSON false
+                .replace(/\bNone\b/g, 'null');    // Convert Python None to JSON null
 
-            // 3. Parse the sanitized string into a usable object.
             attributes = JSON.parse(jsonString);
         } catch (e) {
             console.error("Could not parse attributes string from push update:", data.attributes);
-            // If parsing fails, exit the function to prevent crashing.
-            return;
+            return; 
         }
     }
 
     if (entity_id.startsWith('climate.')) {
         const container = document.getElementById(`climate-${entity_id}`);
         if (container) {
-            // This line will now work correctly because 'attributes' is an object.
             container.querySelector('.climate-current-temp').textContent = `Current: ${attributes.current_temperature.toFixed(1)}°`;
             const display = container.querySelector('.climate-set-temp-display');
             const slider = container.querySelector('.climate-slider');
@@ -637,6 +634,8 @@ function updateCardFromPush(data) {
         }
     }
 }
+
+This enhanced sanitization correctly converts the Python-formatted string into a valid JSON string that can be successfully parsed, resolving the error and allowing your real-time updates to function correctly.
 
 
 async function displayHomeAssistantStatus(bookingConfig) {
