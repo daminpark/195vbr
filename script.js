@@ -340,12 +340,13 @@ async function displayHomeAssistantStatus(bookingConfig) {
   }
 }
 
+
 async function sendMessage() {
     const userInputField = document.getElementById('user-input');
-    const inputContainer = document.getElementById('chat-input-container'); // Get the container
+    const inputContainer = document.getElementById('chat-input-container');
     const userInput = userInputField.value.trim();
 
-    // Check if the input is empty or if we are already loading a response.
+    // Prevent sending if input is empty or a response is already loading
     if (!userInput || inputContainer.classList.contains('loading')) return;
 
     const chatBox = document.getElementById('chat-box');
@@ -355,8 +356,7 @@ async function sendMessage() {
     chatHistory.push({ role: 'user', content: userInput });
     userInputField.value = '';
     
-    // --- The New Method ---
-    // Add the .loading class to visually disable the input area.
+    // Add the .loading class to visually disable the input area
     inputContainer.classList.add('loading');
     
     chatBox.scrollTop = chatBox.scrollHeight;
@@ -395,11 +395,10 @@ async function sendMessage() {
         const errorHtml = `<div class="message-bubble bot-message"><p>Sorry, I'm having trouble connecting. Please try again later.</p></div><div class="timestamp">${getTimeStamp()}</div>`;
         chatBox.insertAdjacentHTML('beforeend', errorHtml);
     } finally {
-        // --- The New Method ---
-        // Remove the .loading class to re-enable the input area.
+        // Remove the .loading class to re-enable the input area
         inputContainer.classList.remove('loading');
         
-        // This is the key to keeping the keyboard up and the cursor ready.
+        // This is the key to keeping the keyboard up and the cursor ready for the next message.
         userInputField.focus(); 
         
         chatBox.scrollTop = chatBox.scrollHeight;
@@ -434,13 +433,14 @@ function setupChatToggle() {
   const openChat = () => {
     if (htmlEl.classList.contains('chat-open')) return;
     
-    // Add the class to both html and body for maximum compatibility
+    // Add class to both html and body for scroll lock compatibility
     htmlEl.classList.add('chat-open');
     bodyEl.classList.add('chat-open');
     
+    // Use the History API to allow the back button to close the chat
     history.pushState({ chatOpen: true }, '');
     
-    // In a fullscreen model, we can focus the input directly.
+    // In a fullscreen modal, we can focus the input directly.
     // The browser will correctly handle bringing the keyboard up.
     userInput.focus();
   };
@@ -451,6 +451,7 @@ function setupChatToggle() {
     htmlEl.classList.remove('chat-open');
     bodyEl.classList.remove('chat-open');
     
+    // If we pushed a state, go back to remove it from history
     if (history.state && history.state.chatOpen) {
       history.back();
     }
@@ -459,6 +460,7 @@ function setupChatToggle() {
   chatLauncher.addEventListener('click', openChat);
   closeBtn.addEventListener('click', closeChat);
 
+  // Listen for popstate (back button) to close the chat
   window.addEventListener('popstate', () => {
     if (htmlEl.classList.contains('chat-open')) {
       htmlEl.classList.remove('chat-open');
@@ -466,7 +468,6 @@ function setupChatToggle() {
     }
   });
 }
-
 
 function buildDynamicContent(keys, fragments) {
   const content = {};
