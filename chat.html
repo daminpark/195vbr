@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Victoria AI Assistant</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body class="chat-page">
+
+  <!-- The chat widget is now the primary content of the page -->
+  <div id="chat-widget">
+    <div id="chat-header">
+      <!-- Add a link to go back to the guidebook -->
+      <a href="javascript:history.back()" id="chat-back-btn">← Back to Guide</a>
+      <span>Victoria (AI)</span>
+    </div>
+    <div id="chat-box">
+      <!-- Chat messages will be loaded here by chat-loader.js -->
+    </div>
+    <div id="chat-input-container">
+      <input type="text" id="user-input" placeholder="Ask a question..." />
+      <button id="send-btn">Send</button>
+    </div>
+  </div>
+  
+  <!-- We use a new, dedicated script for this page -->
+  <script src="chat-loader.js"></script>
+
+</body>
+</html>

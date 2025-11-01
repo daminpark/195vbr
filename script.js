@@ -353,7 +353,7 @@ async function sendMessage() {
     const getTimeStamp = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const userMessageHtml = `<div class="message-bubble user-message"><p>${userInput}</p></div><div class="timestamp">${getTimeStamp()}</div>`;
     chatBox.insertAdjacentHTML('beforeend', userMessageHtml);
-    chatHistory.push({ role: 'user', content: userInput });
+    chatHistory.push({ role: 'user', content: userInput, timestamp: new Date().toISOString() });
     userInputField.value = '';
     
     // Add the .loading class to visually disable the input area
@@ -386,7 +386,7 @@ async function sendMessage() {
             botMessageContainer.innerHTML = marked.parse(fullResponse);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
-        chatHistory.push({ role: 'model', content: fullResponse });
+        chatHistory.push({ role: 'model', content: fullResponse, timestamp: new Date().toISOString() });
         const timestampHtml = `<div class="timestamp">${getTimeStamp()}</div>`;
         chatBox.insertAdjacentHTML('beforeend', timestampHtml);
     } catch (error) {
@@ -424,49 +424,34 @@ function setupMobileMenu() {
 }
 
 function setupChatToggle() {
-  const htmlEl = document.documentElement;
-  const bodyEl = document.body;
-  const closeBtn = document.getElementById('chat-close');
   const chatLauncher = document.getElementById('chat-launcher');
-  const userInput = document.getElementById('user-input');
+  
+  // Simple check for mobile screen widths
+  const isMobile = () => window.innerWidth <= 768;
 
-  const openChat = () => {
-    if (htmlEl.classList.contains('chat-open')) return;
-    
-    // Add class to both html and body for scroll lock compatibility
-    htmlEl.classList.add('chat-open');
-    bodyEl.classList.add('chat-open');
-    
-    // Use the History API to allow the back button to close the chat
-    history.pushState({ chatOpen: true }, '');
-    
-    // In a fullscreen modal, we can focus the input directly.
-    // The browser will correctly handle bringing the keyboard up.
-    userInput.focus();
-  };
-
-  const closeChat = () => {
-    if (!htmlEl.classList.contains('chat-open')) return;
-
-    htmlEl.classList.remove('chat-open');
-    bodyEl.classList.remove('chat-open');
-    
-    // If we pushed a state, go back to remove it from history
-    if (history.state && history.state.chatOpen) {
-      history.back();
+  const launchChat = (e) => {
+    e.preventDefault();
+    if (isMobile()) {
+      // On mobile, save data and redirect to the dedicated chat page
+      sessionStorage.setItem('chatbotContext', chatbotContext);
+      sessionStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+      window.location.href = 'chat.html';
+    } else {
+      // On desktop, use the original overlay toggle
+      document.documentElement.classList.add('chat-open');
+      document.getElementById('user-input').focus();
     }
   };
 
-  chatLauncher.addEventListener('click', openChat);
-  closeBtn.addEventListener('click', closeChat);
+  chatLauncher.addEventListener('click', launchChat);
 
-  // Listen for popstate (back button) to close the chat
-  window.addEventListener('popstate', () => {
-    if (htmlEl.classList.contains('chat-open')) {
-      htmlEl.classList.remove('chat-open');
-      bodyEl.classList.remove('chat-open');
-    }
-  });
+  // Desktop-only logic for closing the widget
+  const closeBtn = document.getElementById('chat-close');
+  if(closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      document.documentElement.classList.remove('chat-open');
+    });
+  }
 }
 
 function buildDynamicContent(keys, fragments) {
@@ -557,4 +542,11 @@ function addInitialBotMessage() {
     const chatBox = document.getElementById('chat-box');
     const welcomeMessage = `<div class="message-bubble bot-message"><p>Welcome to 195VBR! I'm Victoria, your AI assistant. Ask me anything about the guesthouse or your London trip.</p></div>`;
     chatBox.innerHTML = welcomeMessage;
+
+    // Initialize chat history with the first message and a timestamp
+    chatHistory = [{
+        role: 'model',
+        content: "Welcome to 195VBR! I'm Victoria, your AI assistant. Ask me anything about the guesthouse or your London trip.",
+        timestamp: new Date().toISOString()
+    }];
 }
