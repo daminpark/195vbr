@@ -11,12 +11,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
   opaqueBookingKey = params.get('booking');
 
-  // --- NEW: Add the mousedown event listener for the send button ---
-  // This is the key to keeping the keyboard open on mobile.
+  // This mousedown event listener is for the DESKTOP chat widget.
   const sendBtn = document.getElementById('send-btn');
   if (sendBtn) {
     sendBtn.addEventListener('mousedown', (e) => {
-      // Prevent the input from losing focus when the button is tapped
       e.preventDefault();
       sendMessage();
     });
@@ -44,14 +42,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// --- REPLACEMENT 2: buildLegacyGuidebook ---
-// This function now enables the AI chatbot for legacy pages.
 async function buildLegacyGuidebook(params) {
   const guidebookContainer = document.getElementById('guidebook-container');
   const tocContainer = document.getElementById('table-of-contents');
-
-  // --- CHANGED: We NO LONGER hide the chat launcher ---
-  // document.getElementById('chat-launcher').style.display = 'none';
 
   try {
     const response = await fetch('config.json');
@@ -80,6 +73,8 @@ async function buildLegacyGuidebook(params) {
     
     const dynamicContent = buildDynamicContent(Array.from(legacyContentKeys), config.contentFragments);
     const allContent = { ...staticContent, ...dynamicContent };
+
+    chatbotContext = buildChatbotContextFromConfig(allContent);
     
     let fullHtml = `<header class="site-header"><img src="logo.png" alt="195VBR Guesthouse Logo" class="logo" /></header><h1>${pageTitle}</h1><div id="ha-dashboard" style="display: none;"></div>`;
     let tocHtml = '<ul>';
@@ -99,8 +94,6 @@ async function buildLegacyGuidebook(params) {
     guidebookContainer.innerHTML = fullHtml;
     tocContainer.innerHTML = tocHtml;
 
-    // --- NEW: Enable all chat functionality for legacy pages ---
-    buildChatbotContextFromPage();
     setupChatToggle();
     setupEnterKeyListener();
     addInitialBotMessage();
@@ -155,6 +148,9 @@ async function buildGuidebook(opaqueBookingKey) {
     const staticContent = getStaticContent();
     const dynamicContent = buildDynamicContent(requiredKeys, config.contentFragments);
     const allContent = { ...staticContent, ...dynamicContent };
+
+    chatbotContext = buildChatbotContextFromConfig(allContent);
+    
     let fullHtml = `<header class="site-header"><img src="logo.png" alt="195VBR Guesthouse Logo" class="logo" /></header><h1>195VBR Guidebook</h1><div id="ha-dashboard"></div>`;
     let tocHtml = '<ul>';
     const sectionOrder = ['video', 'what-not-to-bring', 'Address', 'domestic-directions', 'airport-directions', 'getting-around', 'codetimes', 'Check-in & Luggage', 'Wifi', 'heating', 'Bedroom', 'Bathroom', 'Kitchen', 'Rubbish Disposal', 'Windows', 'Laundry', 'ironing', 'troubleshooting', 'tv', 'contact', 'local-guidebook'];
@@ -170,7 +166,7 @@ async function buildGuidebook(opaqueBookingKey) {
     tocHtml += '</ul>';
     guidebookContainer.innerHTML = fullHtml;
     tocContainer.innerHTML = tocHtml;
-    buildChatbotContextFromPage();
+    
     if (currentBookingConfig.house && currentBookingConfig.entities) {
       createDashboardCards(currentBookingConfig);
       displayHomeAssistantStatus(currentBookingConfig);
@@ -340,23 +336,23 @@ async function displayHomeAssistantStatus(bookingConfig) {
   }
 }
 
-
+// This sendMessage is for the DESKTOP overlay only.
 async function sendMessage() {
     const userInputField = document.getElementById('user-input');
     const inputContainer = document.getElementById('chat-input-container');
     const userInput = userInputField.value.trim();
 
-    // Prevent sending if input is empty or a response is already loading
     if (!userInput || inputContainer.classList.contains('loading')) return;
 
     const chatBox = document.getElementById('chat-box');
-    const getTimeStamp = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const now = new Date();
+    const getTimeStamp = () => now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
     const userMessageHtml = `<div class="message-bubble user-message"><p>${userInput}</p></div><div class="timestamp">${getTimeStamp()}</div>`;
     chatBox.insertAdjacentHTML('beforeend', userMessageHtml);
-    chatHistory.push({ role: 'user', content: userInput, timestamp: new Date().toISOString() });
+    chatHistory.push({ role: 'user', content: userInput, timestamp: now.toISOString() });
     userInputField.value = '';
     
-    // Add the .loading class to visually disable the input area
     inputContainer.classList.add('loading');
     
     chatBox.scrollTop = chatBox.scrollHeight;
@@ -386,8 +382,9 @@ async function sendMessage() {
             botMessageContainer.innerHTML = marked.parse(fullResponse);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
-        chatHistory.push({ role: 'model', content: fullResponse, timestamp: new Date().toISOString() });
-        const timestampHtml = `<div class="timestamp">${getTimeStamp()}</div>`;
+        const botTimestamp = new Date();
+        chatHistory.push({ role: 'model', content: fullResponse, timestamp: botTimestamp.toISOString() });
+        const timestampHtml = `<div class="timestamp">${botTimestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>`;
         chatBox.insertAdjacentHTML('beforeend', timestampHtml);
     } catch (error) {
         console.error('Fetch error:', error);
@@ -395,12 +392,8 @@ async function sendMessage() {
         const errorHtml = `<div class="message-bubble bot-message"><p>Sorry, I'm having trouble connecting. Please try again later.</p></div><div class="timestamp">${getTimeStamp()}</div>`;
         chatBox.insertAdjacentHTML('beforeend', errorHtml);
     } finally {
-        // Remove the .loading class to re-enable the input area
         inputContainer.classList.remove('loading');
-        
-        // This is the key to keeping the keyboard up and the cursor ready for the next message.
         userInputField.focus(); 
-        
         chatBox.scrollTop = chatBox.scrollHeight;
     }
 }
@@ -423,7 +416,6 @@ function setupMobileMenu() {
     nav.addEventListener('click', (e) => { if (e.target.tagName === 'A') { toggleMenu(); } });
 }
 
-
 function setupChatToggle() {
   const chatLauncher = document.getElementById('chat-launcher');
   const isMobile = () => window.innerWidth <= 768;
@@ -431,19 +423,13 @@ function setupChatToggle() {
   const launchChat = (e) => {
     e.preventDefault();
     if (isMobile()) {
-      // Get current URL's search parameters (?booking=...etc)
       const currentSearchParams = window.location.search;
-
-      // Save data to sessionStorage
       sessionStorage.setItem('chatbotContext', chatbotContext);
       sessionStorage.setItem('chatHistory', JSON.stringify(chatHistory));
-      
-      // Redirect to chat.html, preserving the booking parameters
       window.location.href = `chat.html${currentSearchParams}`;
-
     } else {
-      // On desktop, use the original overlay toggle
       document.documentElement.classList.add('chat-open');
+      document.body.classList.add('chat-open'); // For scroll lock
       document.getElementById('user-input').focus();
     }
   };
@@ -452,9 +438,10 @@ function setupChatToggle() {
 
   // Desktop-only logic for closing the widget
   const closeBtn = document.getElementById('chat-close');
-  if(closeBtn) {
+  if (closeBtn) {
     closeBtn.addEventListener('click', () => {
       document.documentElement.classList.remove('chat-open');
+      document.body.classList.remove('chat-open');
     });
   }
 }
@@ -474,7 +461,6 @@ function buildDynamicContent(keys, fragments) {
   return content;
 }
 
-// --- THIS FUNCTION IS MODIFIED to remove the schedule ---
 function getStaticContent() {
   return {
     'video': {
@@ -528,14 +514,24 @@ function getStaticContent() {
   };
 }
 
-function buildChatbotContextFromPage() {
-  const mainContainer = document.querySelector('main.container');
-  if (mainContainer) {
-    const guidebookText = mainContainer.innerText;
-    const cleanedText = guidebookText.replace(/(\s\s)\s+/g, '$1').trim();
-    const systemPrompt = "You are 'Victoria', a friendly AI assistant for the 195VBR guesthouse. You MUST base your answer ONLY on the detailed guidebook information provided below. For all other questions, you should use your general knowledge. Be concise, friendly, and use Markdown for formatting links like [Link Text](URL).";
-    chatbotContext = `${systemPrompt}\n\nRELEVANT GUIDEBOOK CONTENT:\n${cleanedText}`;
-  }
+function buildChatbotContextFromConfig(content) {
+  let contextText = '';
+  const tempDiv = document.createElement('div');
+  const sectionOrder = ['video', 'what-not-to-bring', 'Address', 'domestic-directions', 'airport-directions', 'getting-around', 'codetimes', 'Check-in & Luggage', 'Wifi', 'heating', 'Bedroom', 'Bathroom', 'Kitchen', 'Rubbish Disposal', 'Windows', 'Laundry', 'ironing', 'troubleshooting', 'tv', 'contact', 'local-guidebook'];
+
+  sectionOrder.forEach(key => {
+    const sectionObjectKey = Object.keys(content).find(k => k.toLowerCase() === key.toLowerCase());
+    if (sectionObjectKey && content[sectionObjectKey]) {
+      const section = content[sectionObjectKey];
+      contextText += `--- Section: ${section.title} ---\n`;
+      tempDiv.innerHTML = section.html;
+      const plainText = tempDiv.textContent || tempDiv.innerText || "";
+      contextText += plainText.replace(/(\s\s)\s+/g, '$1').trim() + "\n\n";
+    }
+  });
+
+  const systemPrompt = "You are 'Victoria', a friendly AI assistant for the 195VBR guesthouse. You MUST base your answer ONLY on the detailed guidebook information provided below. For all other questions, you should use your general knowledge. Be concise, friendly, and use Markdown for formatting links like [Link Text](URL).";
+  return `${systemPrompt}\n\nRELEVANT GUIDEBOOK CONTENT:\n${contextText}`;
 }
 
 function setupEnterKeyListener() {
@@ -547,8 +543,6 @@ function addInitialBotMessage() {
     const chatBox = document.getElementById('chat-box');
     const welcomeMessage = `<div class="message-bubble bot-message"><p>Welcome to 195VBR! I'm Victoria, your AI assistant. Ask me anything about the guesthouse or your London trip.</p></div>`;
     chatBox.innerHTML = welcomeMessage;
-
-    // Initialize chat history with the first message and a timestamp
     chatHistory = [{
         role: 'model',
         content: "Welcome to 195VBR! I'm Victoria, your AI assistant. Ask me anything about the guesthouse or your London trip.",
