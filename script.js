@@ -426,24 +426,31 @@ function setupMobileMenu() {
 
 function setupChatToggle() {
   const htmlEl = document.documentElement;
+  const bodyEl = document.body;
   const closeBtn = document.getElementById('chat-close');
   const chatLauncher = document.getElementById('chat-launcher');
   const userInput = document.getElementById('user-input');
 
   const openChat = () => {
     if (htmlEl.classList.contains('chat-open')) return;
+    
+    // Add the class to both html and body for maximum compatibility
     htmlEl.classList.add('chat-open');
+    bodyEl.classList.add('chat-open');
+    
     history.pushState({ chatOpen: true }, '');
     
-    // Increased delay to 350ms to ensure animation is complete before focusing.
-    setTimeout(() => {
-      userInput.focus();
-    }, 350); 
+    // In a fullscreen model, we can focus the input directly.
+    // The browser will correctly handle bringing the keyboard up.
+    userInput.focus();
   };
 
   const closeChat = () => {
     if (!htmlEl.classList.contains('chat-open')) return;
+
     htmlEl.classList.remove('chat-open');
+    bodyEl.classList.remove('chat-open');
+    
     if (history.state && history.state.chatOpen) {
       history.back();
     }
@@ -455,6 +462,7 @@ function setupChatToggle() {
   window.addEventListener('popstate', () => {
     if (htmlEl.classList.contains('chat-open')) {
       htmlEl.classList.remove('chat-open');
+      bodyEl.classList.remove('chat-open');
     }
   });
 }
