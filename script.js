@@ -423,19 +423,24 @@ function setupMobileMenu() {
     nav.addEventListener('click', (e) => { if (e.target.tagName === 'A') { toggleMenu(); } });
 }
 
+
 function setupChatToggle() {
   const chatLauncher = document.getElementById('chat-launcher');
-  
-  // Simple check for mobile screen widths
   const isMobile = () => window.innerWidth <= 768;
 
   const launchChat = (e) => {
     e.preventDefault();
     if (isMobile()) {
-      // On mobile, save data and redirect to the dedicated chat page
+      // Get current URL's search parameters (?booking=...etc)
+      const currentSearchParams = window.location.search;
+
+      // Save data to sessionStorage
       sessionStorage.setItem('chatbotContext', chatbotContext);
       sessionStorage.setItem('chatHistory', JSON.stringify(chatHistory));
-      window.location.href = 'chat.html';
+      
+      // Redirect to chat.html, preserving the booking parameters
+      window.location.href = `chat.html${currentSearchParams}`;
+
     } else {
       // On desktop, use the original overlay toggle
       document.documentElement.classList.add('chat-open');

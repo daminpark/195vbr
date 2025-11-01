@@ -87,9 +87,20 @@ html.chat-open #chat-widget {
 .message-bubble { padding: 10px 15px; border-radius: 18px; max-width: 80%; width: fit-content; }
 .bot-message { background-color: var(--bot-message-bg); color: var(--text-color-dark); align-self: flex-start; border-bottom-left-radius: 4px; }
 .user-message { background-color: var(--primary-color); color: var(--text-color-light); align-self: flex-end; border-bottom-right-radius: 4px; }
-.timestamp { font-size: 0.75rem; color: #666; margin-top: -8px; margin-bottom: 8px; }
-.user-message + .timestamp { align-self: flex-end; margin-right: 15px; }
-.bot-message + .timestamp { align-self: flex-start; margin-left: 15px; }
+.timestamp {
+  font-size: 0.75rem;
+  color: #666;
+  margin-top: 8px; /* Reset margin */
+  margin-bottom: -8px; /* Pull the message bubble closer */
+}
+.user-message + .timestamp {
+  align-self: flex-end;
+  margin-right: 15px;
+}
+.bot-message + .timestamp {
+  align-self: flex-start;
+  margin-left: 15px;
+}
 
 /* ---------------------------------------------------
    4. RESPONSIVE & MOBILE STYLES
@@ -138,16 +149,15 @@ html.chat-open #chat-widget {
     transform: translateY(0);
   }
 
-  /* --- ADD these new rules for the chat box and input container --- */
-  #chat-box {
-    /* This container will grow to fill available space */
-    flex: 1 1 auto;
-    overflow-y: auto; /* Enable native scrolling ONLY in this area */
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
+#chat-box {
+  flex: 1 1 auto;
+  overflow-y: auto; /* Enable native scrolling */
+  padding: 15px;
+  display: flex;
+  /* This is the magic part: messages stack from the bottom up */
+  flex-direction: column-reverse; 
+  gap: 12px;
+}
   
   #chat-input-container {
     /* This container stays fixed at the bottom */
@@ -496,4 +506,60 @@ body.chat-page #chat-input-container {
 /* Adjust header for the back button */
 #chat-header {
   justify-content: space-between;
+}
+
+#chat-header {
+  display: flex;
+  align-items: center; /* Vertically align items */
+  gap: 15px; /* Add space between the back button and title */
+  justify-content: flex-start; /* Align items to the start */
+}
+
+/* --- DEPRECATE the old chat close button by hiding it --- */
+#chat-close {
+  display: none;
+}
+
+/* --- Add these styles for the new input container to style.css --- */
+#chat-input-container {
+  display: flex;
+  align-items: center; /* Vertically align items */
+  padding: 8px;
+  gap: 8px;
+}
+
+#chat-input-container #chat-back-btn {
+  color: #555;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+#chat-input-container #chat-back-btn:hover {
+  color: #000;
+}
+
+#chat-input-container #user-input {
+  flex-grow: 1;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 10px 15px;
+  font-size: 16px;
+  margin: 0;
+}
+
+#chat-input-container #send-btn {
+  background: var(--primary-color);
+  color: var(--text-color-light);
+  border: none;
+  border-radius: 50%; /* Make it a circle */
+  width: 44px;  /* Fixed width */
+  height: 44px; /* Fixed height */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex-shrink: 0; /* Prevent the button from shrinking */
 }

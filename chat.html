@@ -5,27 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Victoria AI Assistant</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body class="chat-page">
 
-  <!-- The chat widget is now the primary content of the page -->
   <div id="chat-widget">
+    <!-- The header is now just a simple title bar -->
     <div id="chat-header">
-      <!-- Add a link to go back to the guidebook -->
-      <a href="javascript:history.back()" id="chat-back-btn">← Back to Guide</a>
-      <span>Victoria (AI)</span>
+      <span>Victoria (AI Assistant)</span>
     </div>
+
     <div id="chat-box">
-      <!-- Chat messages will be loaded here by chat-loader.js -->
+      <!-- Chat messages will be loaded here in reverse order -->
     </div>
+
+    <!-- The input container now includes the back button -->
     <div id="chat-input-container">
+      <a href="index.html" id="chat-back-btn" aria-label="Back to Guidebook">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </a>
       <input type="text" id="user-input" placeholder="Ask a question..." />
-      <button id="send-btn">Send</button>
+      <button id="send-btn" aria-label="Send message">
+        <span class="material-symbols-outlined">send</span>
+      </button>
     </div>
   </div>
   
-  <!-- We use a new, dedicated script for this page -->
   <script src="chat-loader.js"></script>
 
 </body>

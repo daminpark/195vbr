@@ -5,42 +5,55 @@ let chatbotContext = '';
 let chatHistory = [];
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Retrieve data from sessionStorage
+    // 1. Get the booking parameters from the URL
+    const searchParams = new URLSearchParams(window.location.search);
+    const bookingKey = searchParams.get('booking');
+
+    // 2. Set the "Back to Guidebook" link
+    const backBtn = document.getElementById('chat-back-btn');
+    if (bookingKey) {
+        // Construct the correct return URL
+        backBtn.href = `index.html?booking=${bookingKey}`;
+    } else {
+        // Fallback if the URL is missing parameters
+        backBtn.href = 'index.html'; 
+    }
+
+    // 3. Retrieve data from sessionStorage
     chatbotContext = sessionStorage.getItem('chatbotContext');
     const storedHistory = sessionStorage.getItem('chatHistory');
 
     if (!chatbotContext || !storedHistory) {
-        // Handle error if user lands here directly
         document.getElementById('chat-box').innerHTML = 
-            '<p style="padding: 1rem; text-align: center;">Could not load chat session. Please return to the guidebook and try again.</p>';
+            '<p style="padding: 1rem; text-align: center; position: absolute; bottom: 0;">Could not load chat session. Please return to the guidebook and try again.</p>';
         document.getElementById('chat-input-container').style.display = 'none';
         return;
     }
 
     chatHistory = JSON.parse(storedHistory);
 
-    // 2. Populate the chat box with existing history
+    // 4. Populate the chat box with existing history (in REVERSE order)
     const chatBox = document.getElementById('chat-box');
     let messagesHtml = '';
     const getTimeStamp = (date) => new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    chatHistory.forEach(msg => {
+    // Iterate backwards to add new messages to the top of the container
+    for (let i = chatHistory.length - 1; i >= 0; i--) {
+        const msg = chatHistory[i];
         if (msg.role === 'user') {
             messagesHtml += `<div class="message-bubble user-message"><p>${msg.content}</p></div><div class="timestamp">${getTimeStamp(msg.timestamp)}</div>`;
         } else if (msg.role === 'model') {
             messagesHtml += `<div class="message-bubble bot-message">${marked.parse(msg.content)}</div><div class="timestamp">${getTimeStamp(msg.timestamp)}</div>`;
         }
-    });
+    }
     chatBox.innerHTML = messagesHtml;
-    chatBox.scrollTop = chatBox.scrollHeight;
 
-
-    // 3. Set up event listeners
+    // 5. Set up event listeners
     const sendBtn = document.getElementById('send-btn');
     const userInputField = document.getElementById('user-input');
 
     sendBtn.addEventListener('mousedown', (e) => {
-        e.preventDefault();
+        e.preventDefault(); // Keep keyboard open
         sendMessage();
     });
 
@@ -53,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     userInputField.focus();
 });
+
 
 async function sendMessage() {
     const userInputField = document.getElementById('user-input');
@@ -67,18 +81,18 @@ async function sendMessage() {
     
     // Add user message to UI and history
     const userMessageHtml = `<div class="message-bubble user-message"><p>${userInput}</p></div><div class="timestamp">${getTimeStamp()}</div>`;
-    chatBox.insertAdjacentHTML('beforeend', userMessageHtml);
+    // Use insertAdjacentHTML 'afterbegin' to add the new message to the top of the reversed flex container
+    chatBox.insertAdjacentHTML('afterbegin', userMessageHtml);
+    
     chatHistory.push({ role: 'user', content: userInput, timestamp: now.toISOString() });
-    sessionStorage.setItem('chatHistory', JSON.stringify(chatHistory)); // Save updated history
+    sessionStorage.setItem('chatHistory', JSON.stringify(chatHistory));
     userInputField.value = '';
     
     inputContainer.classList.add('loading');
-    chatBox.scrollTop = chatBox.scrollHeight;
 
     // Add typing indicator
     const typingIndicatorHtml = `<div class="message-bubble bot-message typing-indicator"><span></span><span></span><span></span></div>`;
-    chatBox.insertAdjacentHTML('beforeend', typingIndicatorHtml);
-    chatBox.scrollTop = chatBox.scrollHeight;
+    chatBox.insertAdjacentHTML('afterbegin', typingIndicatorHtml);
     const typingIndicator = chatBox.querySelector('.typing-indicator');
 
     try {
@@ -90,9 +104,10 @@ async function sendMessage() {
         if (!response.ok) throw new Error('Network response was not ok.');
 
         typingIndicator.remove();
-        const botMessageContainer = document.createElement('div');
-        botMessageContainer.className = 'message-bubble bot-message';
-        chatBox.appendChild(botMessageContainer);
+        
+        // Create a temporary div to hold the incoming message parts
+        const tempBotContainer = document.createElement('div');
+        chatBox.insertAdjacentElement('afterbegin', tempBotContainer);
 
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
@@ -101,25 +116,31 @@ async function sendMessage() {
             const { value, done } = await reader.read();
             if (done) break;
             fullResponse += decoder.decode(value, { stream: true });
-            botMessageContainer.innerHTML = marked.parse(fullResponse);
-            chatBox.scrollTop = chatBox.scrollHeight;
+            // Update the temporary container as the stream comes in
+            tempBotContainer.innerHTML = `<div class="message-bubble bot-message">${marked.parse(fullResponse)}</div>`;
         }
 
         const botTimestamp = new Date();
         chatHistory.push({ role: 'model', content: fullResponse, timestamp: botTimestamp.toISOString() });
-        sessionStorage.setItem('chatHistory', JSON.stringify(chatHistory)); // Save updated history
+        sessionStorage.setItem('chatHistory', JSON.stringify(chatHistory));
         
         const timestampHtml = `<div class="timestamp">${botTimestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>`;
-        chatBox.insertAdjacentHTML('beforeend', timestampHtml);
+        // Insert the final timestamp just after the message bubble
+        tempBotContainer.insertAdjacentHTML('afterend', timestampHtml);
+        
+        // Unwrap the final message from the temporary container
+        while (tempBotContainer.firstChild) {
+            chatBox.insertAdjacentElement('afterbegin', tempBotContainer.firstChild);
+        }
+        tempBotContainer.remove();
 
     } catch (error) {
         console.error('Fetch error:', error);
-        typingIndicator.remove();
+        if (typingIndicator) typingIndicator.remove();
         const errorHtml = `<div class="message-bubble bot-message"><p>Sorry, I'm having trouble connecting.</p></div>`;
-        chatBox.insertAdjacentHTML('beforeend', errorHtml);
+        chatBox.insertAdjacentHTML('afterbegin', errorHtml);
     } finally {
         inputContainer.classList.remove('loading');
         userInputField.focus();
-        chatBox.scrollTop = chatBox.scrollHeight;
     }
 }
