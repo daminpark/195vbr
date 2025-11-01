@@ -267,10 +267,8 @@ function getChatbotOnlyContext(bookingId) {
         '195vbr': "The guest has booked the entire house. The house has an original narrow staircase connecting all floors, which is relevant for groups with heavy luggage or mobility concerns. The common area is cozy and centered around the kitchen, rather than a large living room.",
     };
     
-    // --- CORRECTED LOGIC ---
     const isWholeHome = bookingId.includes('vbr');
     const isLegacy = bookingId === 'legacy';
-    // Create an explicit list of bookings that use a shared bathroom.
     const sharedBathroomBookings = new Set(['31', '32', '34', '35', '36', '51', '52', '54', '55', '56']);
 
     let context = `
@@ -308,14 +306,12 @@ ${quirks[bookingId] || "No specific quirks for this booking."}
 `;
     }
 
-    // --- CORRECTED LOGIC ---
-    // The Shared Kitchen is for ALL non-whole-home bookings.
     if (!isWholeHome) {
         context += `
 **Shared Kitchen:** Located in the basement, it's cleaned to a high standard daily. Each room has a private, labeled compartment in the fridge and cupboard. Complimentary tea and instant coffee are provided. It is fully equipped with an induction hob, oven, microwave, dishwasher, and all cookware.
 `;
     }
-    // The Shared Bathroom is ONLY for specific bookings.
+
     if (sharedBathroomBookings.has(bookingId)) {
         context += `
 **Shared Bathroom:** Professionally cleaned daily. Features a superior shower with strong, hot water pressure and sustainable toiletries.
@@ -371,14 +367,7 @@ function createDashboardCards(bookingConfig) {
     const dashboard = document.getElementById('ha-dashboard');
     if (!dashboard) return;
     let cardsHtml = '';
-    
-    // Sort to ensure a consistent order: weather, climate, lights, then others.
-    const entityKeys = Object.keys(entities).sort((a, b) => {
-        const order = { weather: 1, climate: 2, lights: 3 };
-        const aOrder = order[a] || 99;
-        const bOrder = order[b] || 99;
-        return aOrder - bOrder;
-    });
+    const entityKeys = Object.keys(entities).sort((a, b) => a === 'weather' ? -1 : b === 'weather' ? 1 : a === 'climate' ? -1 : b === 'climate' ? 1 : 0);
     
     entityKeys.forEach(key => {
         if (key === 'weather') {
@@ -417,7 +406,6 @@ function createDashboardCards(bookingConfig) {
         dashboard.innerHTML = cardsHtml;
     }
 
-    // Add event listeners AFTER innerHTML is set
     document.querySelectorAll('.climate-slider').forEach(slider => {
         slider.addEventListener('input', handleSliderInput);
         slider.addEventListener('change', debouncedSetTemperature);
@@ -426,42 +414,6 @@ function createDashboardCards(bookingConfig) {
     document.querySelectorAll('.light-switch').forEach(toggle => {
         toggle.addEventListener('change', handleLightToggle);
     });
-}
-
-async function handleLightToggle(event) {
-    const toggle = event.currentTarget;
-    const entityId = toggle.dataset.entity;
-    
-    // Temporarily disable to prevent rapid clicking
-    toggle.disabled = true;
-
-    try {
-        const response = await fetch(`${BACKEND_API_BASE_URL}/api/ha-proxy`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                house: currentBookingConfig.house,
-                entity: entityId,
-                type: 'toggle_light',
-                opaqueBookingKey: opaqueBookingKey
-            })
-        });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'Failed to toggle light.');
-        
-        // The new state is returned from the service call. Update the UI to match.
-        const newState = data.state.find(s => s.entity_id === entityId);
-        if (newState) {
-            toggle.checked = newState.state === 'on';
-        }
-    } catch (error) {
-        console.error('Error toggling light:', error);
-        // Revert the toggle on error to reflect the actual state
-        toggle.checked = !toggle.checked; 
-    } finally {
-        // Re-enable the toggle after the operation is complete
-        toggle.disabled = false;
-    }
 }
 
 async function fetchHAData(entityId, house, type = 'state') {
@@ -505,6 +457,37 @@ const debouncedSetTemperature = debounce((event) => {
     setTemperature(slider.dataset.entity, newTemp, currentBookingConfig.house);
 }, 500);
 
+async function handleLightToggle(event) {
+    const toggle = event.currentTarget;
+    const entityId = toggle.dataset.entity;
+    
+    toggle.disabled = true;
+
+    try {
+        const response = await fetch(`${BACKEND_API_BASE_URL}/api/ha-proxy`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                house: currentBookingConfig.house,
+                entity: entityId,
+                type: 'toggle_light',
+                opaqueBookingKey: opaqueBookingKey
+            })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Failed to toggle light.');
+        
+        const newState = data.state.find(s => s.entity_id === entityId);
+        if (newState) {
+            toggle.checked = newState.state === 'on';
+        }
+    } catch (error) {
+        console.error('Error toggling light:', error);
+        toggle.checked = !toggle.checked; 
+    } finally {
+        toggle.disabled = false;
+    }
+}
 
 async function displayHomeAssistantStatus(bookingConfig) {
   const { house, entities } = bookingConfig;
@@ -574,7 +557,6 @@ async function displayHomeAssistantStatus(bookingConfig) {
                     toggle.disabled = false;
                 } catch (error) {
                     console.error(`Light fetch error for ${entityId}:`, error);
-                    // Leave the toggle disabled to indicate an error state
                 }
             }
         }
