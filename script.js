@@ -362,6 +362,8 @@ function debounce(func, delay) {
   };
 }
 
+// --- In script.js ---
+
 function createDashboardCards(bookingConfig) {
     const { house, entities } = bookingConfig;
     const dashboard = document.getElementById('ha-dashboard');
@@ -383,8 +385,6 @@ function createDashboardCards(bookingConfig) {
             for (const [entityId, friendlyName] of Object.entries(entities[key])) {
                 cardsHtml += `
                     <div class="ha-card light-control-card" id="light-card-${entityId.replace(/\./g, '-')}">
-                        
-                        <!-- Wrapper for all active controls -->
                         <div class="light-controls-wrapper">
                             <div class="light-control-header">
                                 <span class="light-control-name">${friendlyName}</span>
@@ -406,13 +406,10 @@ function createDashboardCards(bookingConfig) {
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Notice for when the light is unavailable -->
                         <div class="light-unavailable-notice">
                             <span class="material-symbols-outlined">power_off</span>
                             <span>Power is off at the wall switch.</span>
                         </div>
-
                     </div>
                 `;
             }
@@ -427,17 +424,24 @@ function createDashboardCards(bookingConfig) {
         dashboard.innerHTML = cardsHtml;
     }
 
+    // --- FIX FOR TEMPERATURE SLIDER ---
     document.querySelectorAll('.climate-slider').forEach(slider => {
         slider.addEventListener('input', handleSliderInput);
-        slider.addEventListener('change', debouncedSetTemperature);
+        // Pass values directly to the debounced function instead of the event object
+        slider.addEventListener('change', (event) => {
+            const currentSlider = event.currentTarget;
+            const newTemp = parseFloat(currentSlider.value);
+            debouncedSetTemperature(currentSlider.dataset.entity, newTemp, currentBookingConfig.house);
+        });
     });
+    // --- END FIX ---
 
     document.querySelectorAll('.light-switch').forEach(toggle => {
         toggle.addEventListener('change', handleLightToggle);
     });
     
     document.querySelectorAll('.light-slider').forEach(slider => {
-        slider.addEventListener('input', (e) => { // Real-time value display
+        slider.addEventListener('input', (e) => {
              const card = e.target.closest('.light-control-card');
              const type = e.target.dataset.type;
              const valueDisplay = card.querySelector(`[data-value-for="${type}"]`);
@@ -447,7 +451,7 @@ function createDashboardCards(bookingConfig) {
                  valueDisplay.textContent = `${Math.round(1000000 / e.target.value)}K`;
              }
         });
-        slider.addEventListener('change', handleLightSlider); // API call on release
+        slider.addEventListener('change', handleLightSlider);
     });
 }
 
@@ -632,7 +636,6 @@ async function displayHomeAssistantStatus(bookingConfig) {
             try {
                 const state = await fetchHAData(entityId, house);
 
-                // CORE LOGIC: Check if the entity is unavailable
                 if (state.state === 'unavailable') {
                     card.classList.add('is-unavailable');
                 } else {
@@ -640,7 +643,6 @@ async function displayHomeAssistantStatus(bookingConfig) {
                     
                     const { attributes, state: onOffState } = state;
                     
-                    // Set On/Off Toggle
                     const toggle = card.querySelector('.light-switch');
                     toggle.checked = onOffState === 'on';
                     toggle.disabled = false;
@@ -651,6 +653,9 @@ async function displayHomeAssistantStatus(bookingConfig) {
 
                     let hasControls = false;
 
+                    // --- FIX FOR LIGHT SLIDERS ---
+                    // This logic now correctly shows each slider independently.
+                    
                     // Feature Detection: Brightness
                     if (attributes.supported_color_modes?.includes('brightness')) {
                         hasControls = true;
@@ -681,14 +686,16 @@ async function displayHomeAssistantStatus(bookingConfig) {
                     } else {
                         colorTempRow.style.display = 'none';
                     }
+                    // --- END FIX ---
                     
                     if(hasControls) {
                         sliderGroup.style.display = 'flex';
+                    } else {
+                        sliderGroup.style.display = 'none';
                     }
                 }
             } catch (error) {
                 console.error(`Light fetch error for ${entityId}:`, error);
-                // If fetching fails entirely, also show as unavailable
                 card.classList.add('is-unavailable');
             }
         }
