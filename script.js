@@ -514,7 +514,7 @@ async function setTemperature(entityId, newTemp, house) {
         const response = await fetch(proxyUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ house, entity: entityId, type: 'set_temperature', temperature: newTemp, opaqueBookingKey: opaqueBookingKey })
+            body: JSON.stringify({ house, entity: entityId, type: 'set_temperature', value: newTemp, opaqueBookingKey: opaqueBookingKey })
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'Failed to set temperature.');
