@@ -228,7 +228,7 @@ function getDynamicPersonalizedContent(guestDetails) {
             title: "Check-in & Luggage", emoji: "🧳",
             html: `<p><strong>Self Check-in:</strong> From 15:00 onwards.</p>
                    <p><strong>Early Luggage Drop-off:</strong> From 11:00, you can use your front door code to access Cupboard V downstairs.</p>
-                   <p>If you need to store bags before 11:00, please send us a message the day before your arrival (on ${dayBeforeCheckInFormatted}), and if we can accommodate it, we're happy to.</p>
+                   <p>If you need to store bags before 11:00, please send us a message at the earliest the day before your arrival (on ${dayBeforeCheckInFormatted}), and if we can accommodate it, we're happy to.</p>
                    <p><strong>Early Check-in:</strong> While you are welcome to check if the room is ready from midday onwards, please only leave your belongings inside if it is completely finished. If it's not ready, please use Cupboard V.</p>
                    <p>This video shows the full process:</p>
                    <div class="video-container"><iframe src="https://www.youtube.com/embed/rlUbHfWcN0s" title="Luggage drop-off process" allowfullscreen></iframe></div>`
@@ -237,36 +237,42 @@ function getDynamicPersonalizedContent(guestDetails) {
             title: "Check-out", emoji: "👋",
             html: `<p>Check-out is at <strong>11:00 AM on ${guestDetails.checkOutDateFormatted}</strong>.</p>
                    <p>You don't need to worry about any cleaning; our team will handle everything.</p>
-                   <p>If you need to store your luggage 🧳 after you check out, you are welcome to use Cupboard V downstairs. Your existing entry code will continue to work for the front door and the cupboard until 14:00. If you need to arrange a later pick-up, please send us a message (ideally on ${dayBeforeCheckOutFormatted}) to check if we can extend your code.</p>
+                   <p>If you need to store your luggage 🧳 after you check out, you are welcome to use Cupboard V downstairs. Your existing entry code will continue to work for the front door and the cupboard until 14:00. If you need to arrange a later pick-up, please send us a message (ideally by ${dayBeforeCheckOutFormatted}) to check for availability. We need to confirm because the house may be privately booked by a new group from 15:00, and for their privacy and security, access won't be possible after their check-in time.</p>
                    <p>⚠️ <strong>A quick but important request:</strong> Please be sure to take all your belongings from the room by 11am. Our cleaning team works on a tight schedule and will clear the room completely for our next guests.</p>`
         }
     };
 }
 
 function getChatbotOnlyContext(bookingId) {
+    const groundFloorLuggageQuirk = "The guest is in a ground floor room. While their room is easily accessible, they should be aware that the luggage storage cupboard (Cupboard V) is downstairs, reached by a narrow staircase. This is something to keep in mind if they plan to store heavy bags.";
+    
     const quirks = {
-        '31': "The guest is in Room 1. Their private room is conveniently located on the ground floor. The shared kitchen and bathroom are downstairs, reached by a narrow staircase. This is relevant for heavy luggage.",
-        '32': "The guest is in Room 2, which is on the ground floor and has a private patio. The shared kitchen and bathroom are downstairs, reached by a narrow staircase. This is relevant for heavy luggage.",
+        '31': groundFloorLuggageQuirk,
+        '32': groundFloorLuggageQuirk + " This room also has a private patio.",
         '33': "The guest is in Room 3 on the first floor. It has a private en-suite bathroom. The shared kitchen is downstairs. The room is reached by a narrow staircase, which is relevant for heavy luggage.",
         '34': "The guest is in Room 4 on the second floor. The shared bathroom for this room is located 1.5 floors downstairs. The kitchen is also downstairs. Everything is reached via a narrow staircase. This is a key detail for mobility or heavy luggage.",
         '35': "The guest is in Room 5 on the second floor. The shared bathroom for this room is located 1.5 floors downstairs. The kitchen is also downstairs. Everything is reached via a narrow staircase. This is a key detail for mobility or heavy luggage.",
         '36': "The guest is in Room 6, a cozy top-floor loft with some low, sloping ceilings. The shared bathroom is 2.5 floors downstairs. This is a key detail for taller guests, mobility concerns, or heavy luggage.",
-        '3a': "The guest has booked Rooms 1 & 2 on the ground floor. Their private bathroom for the group is located half a floor downstairs, reached via a narrow staircase.",
+        '3a': "The guest has booked Rooms 1 & 2 on the ground floor. Their private bathroom for the group is located half a floor downstairs. This is reached via a narrow staircase, which is also something to keep in mind if using the downstairs luggage storage cupboard with heavy bags.",
         '3b': "The guest has booked Rooms 4, 5 & 6, a private suite on the top two floors. One bedroom is a loft with low ceilings. Their private bathroom is multiple floors downstairs on the upper ground level, reached via a narrow staircase. This layout is not a good fit for anyone with mobility concerns or heavy luggage.",
         '193vbr': "The guest has booked the entire house. The house has an original narrow staircase connecting all floors, which is relevant for groups with heavy luggage or mobility concerns. The common area is cozy and centered around the kitchen, rather than a large living room.",
-        '51': "The guest is in Room 1. Their private room is conveniently located on the ground floor. The shared kitchen and bathroom are downstairs, reached by a narrow staircase. This is relevant for heavy luggage.",
-        '52': "The guest is in Room 2, which is on the ground floor and has a private patio. The shared kitchen and bathroom are downstairs, reached by a narrow staircase. This is relevant for heavy luggage.",
+        '51': groundFloorLuggageQuirk,
+        '52': groundFloorLuggageQuirk + " This room also has a private patio.",
         '53': "The guest is in Room 3 on the first floor. It has a private en-suite bathroom. The shared kitchen is downstairs. The room is reached by a narrow staircase, which is relevant for heavy luggage.",
         '54': "The guest is in Room 4 on the second floor. The shared bathroom for this room is located 1.5 floors downstairs. The kitchen is also downstairs. Everything is reached via a narrow staircase. This is a key detail for mobility or heavy luggage.",
         '55': "The guest is in Room 5 on the second floor. The shared bathroom for this room is located 1.5 floors downstairs. The kitchen is also downstairs. Everything is reached via a narrow staircase. This is a key detail for mobility or heavy luggage.",
         '56': "The guest is in Room 6, a cozy top-floor loft with some low, sloping ceilings. The shared bathroom is 2.5 floors downstairs. This is a key detail for taller guests, mobility concerns, or heavy luggage.",
-        '5a': "The guest has booked Rooms 1 & 2 on the ground floor. Their private bathroom for the group is located half a floor downstairs, reached via a narrow staircase.",
+        '5a': "The guest has booked Rooms 1 & 2 on the ground floor. Their private bathroom for the group is located half a floor downstairs. This is reached via a narrow staircase, which is also something to keep in mind if using the downstairs luggage storage cupboard with heavy bags.",
         '5b': "The guest has booked Rooms 4, 5 & 6, a private suite on the top two floors. One bedroom is a loft with low ceilings. Their private bathroom is multiple floors downstairs on the upper ground level, reached via a narrow staircase. This layout is not a good fit for anyone with mobility concerns or heavy luggage.",
         '195vbr': "The guest has booked the entire house. The house has an original narrow staircase connecting all floors, which is relevant for groups with heavy luggage or mobility concerns. The common area is cozy and centered around the kitchen, rather than a large living room.",
     };
     
-    const isSharedKitchen = bookingId !== 'legacy' && !bookingId.includes('vbr');
-    
+    // --- CORRECTED LOGIC ---
+    const isWholeHome = bookingId.includes('vbr');
+    const isLegacy = bookingId === 'legacy';
+    // Create an explicit list of bookings that use a shared bathroom.
+    const sharedBathroomBookings = new Set(['31', '32', '34', '35', '36', '51', '52', '54', '55', '56']);
+
     let context = `
 --- HIDDEN CONTEXT FOR AI ONLY ---
 
@@ -285,18 +291,34 @@ The entire property has exceptionally fast Fibre 1Gbps Wi-Fi 6.
 **House Rules & Policies:**
 - No extra guests, parties, smoking, or pets.
 - Be respectful of our neighbours.
-- Quiet hours are strictly enforced from 10:00 PM to 8:00 AM. This is our most important rule.
-- Complimentary housekeeping (towel refresh, bathroom/kitchen tidy) is available on request. The guest must message at least one day in advance. Service is between 11am - 3pm.
+`;
 
+    if (!isWholeHome) {
+        context += `- **Quiet hours are strictly enforced from 10:00 PM to 8:00 AM.** This is our most important rule for shared spaces.\n`;
+    }
+
+    if (isWholeHome) {
+        context += `- **Complimentary housekeeping** (towel refresh, bathroom/kitchen tidy) is available on request for whole-home bookings. The guest must message at least one day in advance. Service is between 11am - 3pm.\n`;
+    }
+
+    if (!isLegacy) {
+        context += `
 **Room/Booking Specific Quirks:**
 ${quirks[bookingId] || "No specific quirks for this booking."}
 `;
+    }
 
-    if (isSharedKitchen) {
+    // --- CORRECTED LOGIC ---
+    // The Shared Kitchen is for ALL non-whole-home bookings.
+    if (!isWholeHome) {
         context += `
-**Shared Facilities (For this booking):**
-- **Shared Kitchen:** Located in the basement, it's cleaned to a high standard daily. Each room has a private, labeled compartment in the fridge and cupboard. Complimentary tea and instant coffee are provided. It is fully equipped with an induction hob, oven, microwave, dishwasher, and all cookware.
-- **Shared Bathroom:** Professionally cleaned daily. Features a superior shower with strong, hot water pressure and sustainable toiletries.
+**Shared Kitchen:** Located in the basement, it's cleaned to a high standard daily. Each room has a private, labeled compartment in the fridge and cupboard. Complimentary tea and instant coffee are provided. It is fully equipped with an induction hob, oven, microwave, dishwasher, and all cookware.
+`;
+    }
+    // The Shared Bathroom is ONLY for specific bookings.
+    if (sharedBathroomBookings.has(bookingId)) {
+        context += `
+**Shared Bathroom:** Professionally cleaned daily. Features a superior shower with strong, hot water pressure and sustainable toiletries.
 `;
     }
     
