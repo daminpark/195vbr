@@ -206,7 +206,6 @@ const debouncedSetTemperature = debounce((event) => {
 }, 500); // 500ms delay
 
 
-// --- REPLACE the displayHomeAssistantStatus function ---
 async function displayHomeAssistantStatus(bookingConfig) {
   const { house, entities } = bookingConfig;
   if (!house || !entities) return;
@@ -246,25 +245,20 @@ async function displayHomeAssistantStatus(bookingConfig) {
         if (topRowContainer) topRowContainer.innerHTML = '';
       }
     } else if (key === 'climate' && guestAccessLevel === 'full') {
-        const climateEntities = entityValue; // This is our object of entities
-        for (const entityId of Object.keys(climateEntities)) {
+        const climateEntities = entityValue;
+        for (const [entityId, friendlyName] of Object.entries(climateEntities)) {
             const container = document.getElementById(`climate-${entityId}`);
             if (container) {
                 try {
                     const state = await fetchHAData(entityId, house);
-                    const { current_temperature, temperature } = state.attributes;
-                    
-                    // Update current temp display (Mode is removed)
+                    const { current_temperature, temperature, hvac_mode } = state.attributes;
+                    const modeText = hvac_mode ? hvac_mode.charAt(0).toUpperCase() + hvac_mode.slice(1) : 'Off';
                     container.querySelector('.climate-current-temp').textContent = `Current: ${current_temperature.toFixed(1)}°`;
-                    
-                    // Update the set temp display AND the slider's value
                     const display = container.querySelector('.climate-set-temp-display');
                     const slider = container.querySelector('.climate-slider');
-                    
                     display.textContent = `${temperature.toFixed(1)}°`;
                     slider.value = temperature;
-                    slider.disabled = false; // Enable slider now that data is loaded
-
+                    slider.disabled = false;
                 } catch (error) {
                     console.error(`Climate fetch error for ${entityId}:`, error);
                     container.querySelector('.climate-current-temp').textContent = 'Status unavailable';
@@ -272,9 +266,22 @@ async function displayHomeAssistantStatus(bookingConfig) {
             }
         }
     } else if (guestAccessLevel === 'full') {
-      // (Occupancy sensor logic remains the same)
-      const statusElement = document.getElementById(`ha-status-${key}`);
-      if (statusElement) { /* ... */ }
+        // --- THIS IS THE RESTORED LOGIC ---
+        const statusElement = document.getElementById(`ha-status-${key}`);
+        if (statusElement) {
+          try {
+            // The entityValue is the string ID, e.g., "binary_sensor.bathroom_a_occupancy"
+            const state = await fetchHAData(entityValue, house);
+            const statusText = state.state === 'on' ? 'Occupied' : 'Vacant';
+            const statusColor = state.state === 'on' ? '#d9534f' : '#5cb85c';
+            statusElement.textContent = statusText;
+            statusElement.style.color = statusColor;
+          } catch (error) {
+            console.error(`Occupancy fetch error for ${key}:`, error);
+            statusElement.textContent = 'Unavailable';
+            statusElement.style.color = 'gray';
+          }
+        }
     }
   }
 }
