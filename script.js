@@ -380,16 +380,16 @@ function createDashboardCards(bookingConfig) {
             }
             cardsHtml += `<div class="ha-card climate-card">${climateHtml}</div>`;
         } else if (key === 'lights' && guestAccessLevel === 'full') {
-            // NEW: Create a separate card for each light
+            // Reverted to the original v2 layout with toggle on the right
             for (const [entityId, friendlyName] of Object.entries(entities[key])) {
                 cardsHtml += `
                     <div class="ha-card light-control-card" id="light-card-${entityId.replace(/\./g, '-')}">
                         <div class="light-control-header">
+                            <span class="light-control-name">${friendlyName}</span>
                             <label class="switch">
                                 <input type="checkbox" class="light-switch" data-entity="${entityId}" disabled>
                                 <span class="slider"></span>
                             </label>
-                            <span class="light-control-name">${friendlyName}</span>
                         </div>
                         <div class="light-slider-group" data-controls-for="${entityId}">
                             <div class="light-slider-row" data-control="brightness">
@@ -398,7 +398,7 @@ function createDashboardCards(bookingConfig) {
                                 <span class="light-slider-value" data-value-for="brightness">--%</span>
                             </div>
                             <div class="light-slider-row" data-control="color_temp">
-                                <span class="material-symbols-outlined">thermometer</span>
+                                <span class="material-symbols-outlined">wb_sunny</span>
                                 <input type="range" class="light-slider" data-type="color_temp" min="250" max="454" data-entity="${entityId}" disabled>
                                 <span class="light-slider-value" data-value-for="color_temp">--K</span>
                             </div>
@@ -635,20 +635,6 @@ async function displayHomeAssistantStatus(bookingConfig) {
                 let hasControls = false;
 
                 // Feature Detection: Brightness
-                if (attributes.supported_color_modes?.includes('brightness')) {
-                    hasControls = true;
-                    brightnessRow.style.display = 'flex';
-                    const slider = brightnessRow.querySelector('.light-slider');
-                    const valueDisplay = brightnessRow.querySelector('.light-slider-value');
-                    const currentBrightness = attributes.brightness || 0;
-                    slider.value = currentBrightness;
-                    valueDisplay.textContent = `${Math.round(currentBrightness / 2.55)}%`;
-                    slider.disabled = onOffState !== 'on'; // Disable slider if light is off
-                } else {
-                    brightnessRow.style.display = 'none';
-                }
-
-                // Feature Detection: Color Temp
                 if (attributes.supported_color_modes?.includes('color_temp')) {
                     hasControls = true;
                     colorTempRow.style.display = 'flex';
@@ -656,10 +642,15 @@ async function displayHomeAssistantStatus(bookingConfig) {
                     const valueDisplay = colorTempRow.querySelector('.light-slider-value');
                     slider.min = attributes.min_mireds;
                     slider.max = attributes.max_mireds;
+                    
+                    // This CSS trick reverses the slider direction to be more intuitive
+                    // Now, sliding RIGHT increases Kelvin (cooler light)
+                    slider.style.direction = 'rtl'; 
+                    
                     const currentColorTemp = attributes.color_temp || attributes.min_mireds;
                     slider.value = currentColorTemp;
                     valueDisplay.textContent = `${Math.round(1000000 / currentColorTemp)}K`;
-                    slider.disabled = onOffState !== 'on'; // Disable slider if light is off
+                    slider.disabled = false;
                 } else {
                     colorTempRow.style.display = 'none';
                 }

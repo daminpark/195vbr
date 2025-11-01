@@ -564,49 +564,48 @@ body.chat-page #chat-input-container {
   flex-shrink: 0; /* Prevent the button from shrinking */
 }
 
-/* --- Add these styles to the end of style.css --- */
 
 /* ---------------------------------------------------
-   8. HOME ASSISTANT LIGHT CONTROLS
+   8. HOME ASSISTANT LIGHT CONTROLS (v2.1 - Refined)
 --------------------------------------------------- */
-.light-card {
-  flex-basis: 100%;
-  gap: 1rem;
-}
-
-.light-entity {
+.light-control-card {
+  flex: 1 1 220px;
+  background-color: #f8f9fa;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1rem;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.light-control-header {
+  display: flex;
+  justify-content: space-between; /* Pushes name left, toggle right */
   align-items: center;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid var(--border-color);
 }
 
-.light-card .light-entity:last-of-type {
-  border-bottom: none;
-}
-
-.light-name {
+.light-control-name {
   font-weight: bold;
+  font-size: 1.1rem;
 }
 
-/* The switch - a wrapper around the checkbox */
+/* --- The normally-proportioned switch --- */
 .switch {
   position: relative;
   display: inline-block;
-  width: 60px;
-  height: 34px;
+  width: 50px;
+  height: 28px;
   flex-shrink: 0;
 }
 
-/* Hide default HTML checkbox */
 .switch input {
   opacity: 0;
   width: 0;
   height: 0;
 }
 
-/* The slider */
 .slider {
   position: absolute;
   cursor: pointer;
@@ -623,8 +622,8 @@ body.chat-page #chat-input-container {
 .slider:before {
   position: absolute;
   content: "";
-  height: 26px; /* Larger inner circle */
-  width: 26px;  /* Larger inner circle */
+  height: 20px;
+  width: 20px;
   left: 4px;
   bottom: 4px;
   background-color: white;
@@ -642,45 +641,19 @@ input:focus + .slider {
 }
 
 input:checked + .slider:before {
-  -webkit-transform: translateX(26px); /* Adjusted for new size */
-  -ms-transform: translateX(26px);    /* Adjusted for new size */
-  transform: translateX(26px);       /* Adjusted for new size */
+  -webkit-transform: translateX(22px);
+  -ms-transform: translateX(22px);
+  transform: translateX(22px);
 }
 
 input:disabled + .slider {
   cursor: not-allowed;
   opacity: 0.5;
 }
-
-/* ---------------------------------------------------
-   8. HOME ASSISTANT LIGHT CONTROLS (v2 - Individual Cards)
---------------------------------------------------- */
-.light-control-card {
-  flex: 1 1 220px; /* Allow multiple cards per row on wider screens */
-  background-color: #f8f9fa;
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
-
-.light-control-header {
-  display: flex;
-  justify-content: flex-start; /* Align items to the left */
-  align-items: center;
-  gap: 1rem; /* Add space between toggle and name */
-}
-
-.light-control-name {
-  font-weight: bold;
-  font-size: 1.1rem;
-}
+/* --- End of switch styles --- */
 
 .light-slider-group {
-  display: flex;
+  display: none; /* Hidden by default, shown by JS */
   flex-direction: column;
   gap: 0.5rem;
 }
@@ -698,17 +671,12 @@ input:disabled + .slider {
 
 .light-slider-row input[type="range"] {
   flex-grow: 1;
-  height: 6px; /* Make sliders a bit thinner */
+  height: 6px;
 }
 
 .light-slider-value {
   font-size: 0.8rem;
   color: #6c757d;
-  min-width: 40px; /* Reserve space to prevent layout shift */
+  min-width: 40px;
   text-align: right;
-}
-
-/* Hide slider groups by default, JS will show them if supported */
-.light-slider-group {
-    display: none;
 }
