@@ -118,7 +118,7 @@ async function buildGuidebook(opaqueBookingKey, guestDetails) {
 
     let fullHtml = `${welcomeHtml}<div id="ha-dashboard"></div>`;
     let tocHtml = '<ul>';
-    const sectionOrder = ['video', 'what-not-to-bring', 'Address', 'domestic-directions', 'airport-directions', 'getting-around', 'codetimes', 'Check-in & Luggage', 'checkout', 'Wifi', 'heating', 'Bedroom', 'Bathroom', 'Kitchen', 'Rubbish Disposal', 'Windows', 'Laundry', 'ironing', 'troubleshooting', 'tv', 'contact', 'local-guidebook'];
+    const sectionOrder = ['video', 'what-not-to-bring', 'Address', 'domestic-directions', 'airport-directions', 'getting-around', 'codetimes', 'Check-in & Luggage', 'checkout', 'Wifi', 'heating', 'lights-note', 'Bedroom', 'Bathroom', 'Kitchen', 'Rubbish Disposal', 'Windows', 'Laundry', 'ironing', 'troubleshooting', 'tv', 'contact', 'local-guidebook'];
     
     sectionOrder.forEach(key => {
       const sectionObjectKey = Object.keys(allContent).find(k => k.toLowerCase() === key.toLowerCase());
@@ -615,17 +615,62 @@ async function displayHomeAssistantStatus(bookingConfig) {
             }
         }
     } else if (key === 'lights' && guestAccessLevel === 'full') {
-        const lightEntities = entityValue;
-        for (const entityId of Object.keys(lightEntities)) {
-            const toggle = document.querySelector(`.light-switch[data-entity="${entityId}"]`);
-            if (toggle) {
-                try {
-                    const state = await fetchHAData(entityId, house);
-                    toggle.checked = state.state === 'on';
-                    toggle.disabled = false;
-                } catch (error) {
-                    console.error(`Light fetch error for ${entityId}:`, error);
+        for (const entityId of Object.keys(entityValue)) {
+            const card = document.getElementById(`light-card-${entityId.replace(/\./g, '-')}`);
+            if (!card) continue;
+            
+            try {
+                const state = await fetchHAData(entityId, house);
+                const { attributes, state: onOffState } = state;
+                
+                // Set On/Off Toggle
+                const toggle = card.querySelector('.light-switch');
+                toggle.checked = onOffState === 'on';
+                toggle.disabled = false;
+
+                const sliderGroup = card.querySelector('.light-slider-group');
+                const brightnessRow = card.querySelector('[data-control="brightness"]');
+                const colorTempRow = card.querySelector('[data-control="color_temp"]');
+
+                let hasControls = false;
+
+                // Feature Detection: Brightness
+                if (attributes.supported_color_modes?.includes('brightness')) {
+                    hasControls = true;
+                    brightnessRow.style.display = 'flex';
+                    const slider = brightnessRow.querySelector('.light-slider');
+                    const valueDisplay = brightnessRow.querySelector('.light-slider-value');
+                    const currentBrightness = attributes.brightness || 0;
+                    slider.value = currentBrightness;
+                    valueDisplay.textContent = `${Math.round(currentBrightness / 2.55)}%`;
+                    slider.disabled = onOffState !== 'on'; // Disable slider if light is off
+                } else {
+                    brightnessRow.style.display = 'none';
                 }
+
+                // Feature Detection: Color Temp
+                if (attributes.supported_color_modes?.includes('color_temp')) {
+                    hasControls = true;
+                    colorTempRow.style.display = 'flex';
+                    const slider = colorTempRow.querySelector('.light-slider');
+                    const valueDisplay = colorTempRow.querySelector('.light-slider-value');
+                    slider.min = attributes.min_mireds;
+                    slider.max = attributes.max_mireds;
+                    const currentColorTemp = attributes.color_temp || attributes.min_mireds;
+                    slider.value = currentColorTemp;
+                    valueDisplay.textContent = `${Math.round(1000000 / currentColorTemp)}K`;
+                    slider.disabled = onOffState !== 'on'; // Disable slider if light is off
+                } else {
+                    colorTempRow.style.display = 'none';
+                }
+                
+                if(hasControls) {
+                    sliderGroup.style.display = 'flex';
+                }
+
+            } catch (error) {
+                console.error(`Light fetch error for ${entityId}:`, error);
+                // You could add UI feedback here, like hiding the card or showing an error message
             }
         }
     } else if (guestAccessLevel === 'full') {
@@ -795,6 +840,10 @@ function getStaticContent() {
      'heating': {
         title: 'Heating and Cooling', emoji: '🌡️',
         html: `<p>You can control the temperature in your room using the valve (TRV) on your radiator. For bookings with smart home controls, you can also adjust this from the dashboard on this page.</p><p><strong>Cooling:</strong> We do not have air conditioning. We recommend keeping the window and curtains closed during sunny days and opening them in the evening.</p>`
+    },
+    'lights-note': {
+        title: "A Note on Light Controls", emoji: "🔌",
+        html: `<p>Please note that these smart lights can only be controlled from this app when the physical light switch on the wall is in the 'ON' position. If a light is unresponsive, please check that its corresponding wall switch is turned on first.</p>`
     },
     'ironing': {
         title: 'Iron & Ironing Mat', emoji: '👕',
