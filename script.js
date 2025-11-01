@@ -1,18 +1,21 @@
 // --- A SINGLE SOURCE OF TRUTH FOR THE BACKEND URL ---
 const BACKEND_API_BASE_URL = 'https://guidebook-chatbot-backend-git-ical-auth-pierre-parks-projects.vercel.app';
 
+// --- GLOBAL VARIABLES ---
 let guestAccessLevel = null;
 let chatbotContext = '';
 let chatHistory = [];
 let currentBookingConfig = {};
 let opaqueBookingKey = null; 
 let guestInfo = {};
+let pusher = null;
+let channel = null;
 
+// --- DOM EVENT LISTENERS ---
 document.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
   opaqueBookingKey = params.get('booking');
 
-  // Event listener for the chat send button (for desktop widget)
   const sendBtn = document.getElementById('send-btn');
   if (sendBtn) {
     sendBtn.addEventListener('mousedown', (e) => {
@@ -29,7 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const validationResult = await validateAccess(opaqueBookingKey);
     if (validationResult.success) {
       guestAccessLevel = validationResult.access;
-      guestInfo = validationResult; // Store all guest info globally
+      guestInfo = validationResult;
       
       await buildGuidebook(opaqueBookingKey, guestInfo);
       setupChatToggle();
@@ -44,6 +47,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     displayErrorPage('missing');
   }
 });
+
+// --- UI AND PAGE BUILDING FUNCTIONS ---
 
 function displayErrorPage(type, message = '') {
   const guidebookContainer = document.getElementById('guidebook-container');
@@ -94,7 +99,6 @@ async function buildGuidebook(opaqueBookingKey, guestDetails) {
 
     chatbotContext = buildChatbotContextFromConfig(allContent, guestDetails, bookingKey);
     
-    // Dynamic Welcome Message Logic
     const now = new Date();
     const checkInDate = new Date(guestDetails.checkInDateISO);
     const isDuringStay = now >= checkInDate;
@@ -134,10 +138,33 @@ async function buildGuidebook(opaqueBookingKey, guestDetails) {
     guidebookContainer.innerHTML = fullHtml;
     tocContainer.innerHTML = tocHtml;
     
+    // --- REAL-TIME UPDATES & DASHBOARD INITIALIZATION ---
     if (currentBookingConfig.house && currentBookingConfig.entities) {
+      if (channel) { // Disconnect from any previous channel if it exists
+        channel.unbind_all();
+        pusher.unsubscribe(channel.name);
+      }
+
+      try { // Securely fetch Pusher config and initialize
+        const pusherConfigResponse = await fetch(`${BACKEND_API_BASE_URL}/api/pusher-config`);
+        if (!pusherConfigResponse.ok) throw new Error('Could not fetch Pusher configuration.');
+        const pusherConfig = await pusherConfigResponse.json();
+
+        pusher = new Pusher(pusherConfig.key, { cluster: pusherConfig.cluster });
+        const channelName = `house-${currentBookingConfig.house}`;
+        channel = pusher.subscribe(channelName);
+        
+        channel.bind('state-update', function(data) {
+          console.log('Received real-time update:', data);
+          updateCardFromPush(data);
+        });
+
+      } catch (error) {
+        console.error("Failed to initialize real-time updates:", error);
+      }
+      
       createDashboardCards(currentBookingConfig);
-      displayHomeAssistantStatus(currentBookingConfig);
-      setInterval(() => displayHomeAssistantStatus(currentBookingConfig), 600000); 
+      displayHomeAssistantStatus(currentBookingConfig); // Fetch initial state
     }
   } catch (error) {
     console.error("Error building guidebook:", error);
@@ -146,6 +173,7 @@ async function buildGuidebook(opaqueBookingKey, guestDetails) {
 }
 
 async function buildLegacyGuidebook(params) {
+  // ... [This function remains unchanged] ...
   const guidebookContainer = document.getElementById('guidebook-container');
   const tocContainer = document.getElementById('table-of-contents');
 
@@ -207,7 +235,11 @@ async function buildLegacyGuidebook(params) {
   }
 }
 
+
+// --- CONTENT GENERATION FUNCTIONS ---
+
 function getDynamicPersonalizedContent(guestDetails) {
+  // ... [This function remains unchanged] ...
     if (!guestDetails || !guestDetails.checkInDateISO) return {};
 
     const checkInDate = new Date(guestDetails.checkInDateISO);
@@ -244,6 +276,7 @@ function getDynamicPersonalizedContent(guestDetails) {
 }
 
 function getChatbotOnlyContext(bookingId) {
+  // ... [This function remains unchanged] ...
     const groundFloorLuggageQuirk = "The guest is in a ground floor room. While their room is easily accessible, they should be aware that the luggage storage cupboard (Cupboard V) is downstairs, reached by a narrow staircase. This is something to keep in mind if they plan to store heavy bags.";
     
     const quirks = {
@@ -323,6 +356,7 @@ ${quirks[bookingId] || "No specific quirks for this booking."}
 }
 
 function buildChatbotContextFromConfig(content, guestDetails, bookingKey) {
+  // ... [This function remains unchanged] ...
   let contextText = '';
   const tempDiv = document.createElement('div');
 
@@ -353,6 +387,8 @@ function buildChatbotContextFromConfig(content, guestDetails, bookingKey) {
   return `${systemPrompt}\n\nRELEVANT GUIDEBOOK CONTENT:\n${contextText}`;
 }
 
+// --- UTILITY FUNCTIONS ---
+
 function debounce(func, delay) {
   let timeout;
   return function(...args) {
@@ -362,10 +398,10 @@ function debounce(func, delay) {
   };
 }
 
-// --- In script.js ---
+// --- HOME ASSISTANT DASHBOARD FUNCTIONS ---
 
 function createDashboardCards(bookingConfig) {
-    const { house, entities } = bookingConfig;
+    const { entities } = bookingConfig;
     const dashboard = document.getElementById('ha-dashboard');
     if (!dashboard) return;
     let cardsHtml = '';
@@ -414,7 +450,7 @@ function createDashboardCards(bookingConfig) {
                 `;
             }
         } else if (guestAccessLevel === 'full') {
-            cardsHtml += `<div class="ha-card"><div class="ha-card-title">${formatCardTitle(key, house)}</div><div class="ha-card-status" id="ha-status-${key}">Loading...</div></div>`;
+            cardsHtml += `<div class="ha-card"><div class="ha-card-title">${formatCardTitle(key, bookingConfig.house)}</div><div class="ha-card-status" id="ha-status-${key}">Loading...</div></div>`;
         }
     });
 
@@ -424,17 +460,14 @@ function createDashboardCards(bookingConfig) {
         dashboard.innerHTML = cardsHtml;
     }
 
-    // --- FIX FOR TEMPERATURE SLIDER ---
     document.querySelectorAll('.climate-slider').forEach(slider => {
         slider.addEventListener('input', handleSliderInput);
-        // Pass values directly to the debounced function instead of the event object
         slider.addEventListener('change', (event) => {
             const currentSlider = event.currentTarget;
             const newTemp = parseFloat(currentSlider.value);
             debouncedSetTemperature(currentSlider.dataset.entity, newTemp, currentBookingConfig.house);
         });
     });
-    // --- END FIX ---
 
     document.querySelectorAll('.light-switch').forEach(toggle => {
         toggle.addEventListener('change', handleLightToggle);
@@ -455,58 +488,11 @@ function createDashboardCards(bookingConfig) {
     });
 }
 
-async function handleLightToggle(event) {
-    const toggle = event.currentTarget;
-    const entityId = toggle.dataset.entity;
-    toggle.disabled = true;
+// --- API COMMUNICATION & STATE HANDLING ---
 
-    try {
-        await fetch(`${BACKEND_API_BASE_URL}/api/ha-proxy`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ house: currentBookingConfig.house, entity: entityId, type: 'light_toggle', opaqueBookingKey: opaqueBookingKey })
-        });
-        // We re-fetch the full status shortly, so no need to update state manually
-    } catch (error) {
-        console.error('Error toggling light:', error);
-        toggle.checked = !toggle.checked; // Revert on failure
-    } finally {
-        setTimeout(() => displayHomeAssistantStatus(currentBookingConfig), 500); // Refresh state after a moment
-        toggle.disabled = false;
-    }
-}
-
-const handleLightSlider = debounce(async (event) => {
-    const slider = event.currentTarget;
-    const entityId = slider.dataset.entity;
-    const type = slider.dataset.type;
-    const value = slider.value;
-    
-    const apiType = type === 'brightness' ? 'light_set_brightness' : 'light_set_color_temp';
-
-    try {
-        await fetch(`${BACKEND_API_BASE_URL}/api/ha-proxy`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ house: currentBookingConfig.house, entity: entityId, type: apiType, value: value, opaqueBookingKey: opaqueBookingKey })
-        });
-    } catch (error) {
-        console.error(`Error setting light ${type}:`, error);
-    } finally {
-        setTimeout(() => displayHomeAssistantStatus(currentBookingConfig), 500);
-    }
+const debouncedSetTemperature = debounce((entityId, newTemp, house) => {
+    setTemperature(entityId, newTemp, house);
 }, 500);
-
-
-async function fetchHAData(entityId, house, type = 'state') {
-  const proxyUrl = `${BACKEND_API_BASE_URL}/api/ha-proxy`;
-  const response = await fetch(`${proxyUrl}?house=${house}&entity=${entityId}&type=${type}&opaqueBookingKey=${opaqueBookingKey}`);
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(`Proxy API Error for type '${type}': ${errorData.error || response.statusText}`);
-  }
-  return response.json();
-}
 
 async function setTemperature(entityId, newTemp, house) {
     const proxyUrl = `${BACKEND_API_BASE_URL}/api/ha-proxy`;
@@ -519,54 +505,116 @@ async function setTemperature(entityId, newTemp, house) {
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'Failed to set temperature.');
         console.log('Successfully set temperature:', data);
-        displayHomeAssistantStatus(currentBookingConfig); 
     } catch (error) {
         console.error('Error setting temperature:', error);
     }
 }
 
-function handleSliderInput(event) {
-    const slider = event.currentTarget;
-    const entityId = slider.dataset.entity;
-    const container = document.getElementById(`climate-${entityId}`);
-    const display = container.querySelector('.climate-set-temp-display');
-    display.textContent = `${parseFloat(slider.value).toFixed(1)}°`;
-}
-
-const debouncedSetTemperature = debounce((entityId, newTemp, house) => {
-    // The arguments are already what we need, so we just pass them along.
-    setTemperature(entityId, newTemp, house);
-}, 500);
-
 async function handleLightToggle(event) {
     const toggle = event.currentTarget;
     const entityId = toggle.dataset.entity;
-    
     toggle.disabled = true;
-
     try {
-        const response = await fetch(`${BACKEND_API_BASE_URL}/api/ha-proxy`, {
+        await fetch(`${BACKEND_API_BASE_URL}/api/ha-proxy`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                house: currentBookingConfig.house,
-                entity: entityId,
-                type: 'toggle_light',
-                opaqueBookingKey: opaqueBookingKey
-            })
+            body: JSON.stringify({ house: currentBookingConfig.house, entity: entityId, type: 'light_toggle', opaqueBookingKey: opaqueBookingKey })
         });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'Failed to toggle light.');
-        
-        const newState = data.state.find(s => s.entity_id === entityId);
-        if (newState) {
-            toggle.checked = newState.state === 'on';
-        }
     } catch (error) {
         console.error('Error toggling light:', error);
-        toggle.checked = !toggle.checked; 
+        toggle.checked = !toggle.checked;
     } finally {
         toggle.disabled = false;
+    }
+}
+
+const handleLightSlider = debounce(async (event) => {
+    const slider = event.currentTarget;
+    const entityId = slider.dataset.entity;
+    const type = slider.dataset.type;
+    const value = slider.value;
+    const apiType = type === 'brightness' ? 'light_set_brightness' : 'light_set_color_temp';
+    try {
+        await fetch(`${BACKEND_API_BASE_URL}/api/ha-proxy`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ house: currentBookingConfig.house, entity: entityId, type: apiType, value: value, opaqueBookingKey: opaqueBookingKey })
+        });
+    } catch (error) {
+        console.error(`Error setting light ${type}:`, error);
+    }
+}, 500);
+
+async function fetchHAData(entityId, house, type = 'state') {
+  const proxyUrl = `${BACKEND_API_BASE_URL}/api/ha-proxy`;
+  const response = await fetch(`${proxyUrl}?house=${house}&entity=${entityId}&type=${type}&opaqueBookingKey=${opaqueBookingKey}`);
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(`Proxy API Error for type '${type}': ${errorData.error || response.statusText}`);
+  }
+  return response.json();
+}
+
+function updateCardFromPush(data) {
+    const { entity_id, state, attributes } = data;
+
+    if (entity_id.startsWith('climate.')) {
+        const container = document.getElementById(`climate-${entity_id}`);
+        if (container) {
+            container.querySelector('.climate-current-temp').textContent = `Current: ${attributes.current_temperature.toFixed(1)}°`;
+            const display = container.querySelector('.climate-set-temp-display');
+            const slider = container.querySelector('.climate-slider');
+            display.textContent = `${attributes.temperature.toFixed(1)}°`;
+            if (document.activeElement !== slider) {
+                slider.value = attributes.temperature;
+            }
+        }
+    }
+
+    if (entity_id.startsWith('binary_sensor.')) {
+        const entityKey = Object.keys(currentBookingConfig.entities).find(
+            key => currentBookingConfig.entities[key] === entity_id
+        );
+        if (entityKey) {
+            const statusElement = document.getElementById(`ha-status-${entityKey}`);
+            if (statusElement) {
+                const statusText = state === 'on' ? 'Occupied' : 'Vacant';
+                const statusColor = state === 'on' ? '#d9534f' : '#5cb85c';
+                statusElement.textContent = statusText;
+                statusElement.style.color = statusColor;
+            }
+        }
+    }
+    
+    if (entity_id.startsWith('light.')) {
+        const card = document.getElementById(`light-card-${entity_id.replace(/\./g, '-')}`);
+        if (!card) return;
+
+        if (state === 'unavailable') {
+            card.classList.add('is-unavailable');
+        } else {
+            card.classList.remove('is-unavailable');
+            const toggle = card.querySelector('.light-switch');
+            toggle.checked = state === 'on';
+
+            const brightnessRow = card.querySelector('[data-control="brightness"]');
+            if (brightnessRow && attributes.supported_color_modes?.includes('brightness')) {
+                const slider = brightnessRow.querySelector('.light-slider');
+                const valueDisplay = brightnessRow.querySelector('.light-slider-value');
+                const currentBrightness = attributes.brightness || 0;
+                slider.value = currentBrightness;
+                valueDisplay.textContent = `${Math.round(currentBrightness / 2.55)}%`;
+            }
+
+            const colorTempRow = card.querySelector('[data-control="color_temp"]');
+            if (colorTempRow && attributes.supported_color_modes?.includes('color_temp')) {
+                const slider = colorTempRow.querySelector('.light-slider');
+                const valueDisplay = colorTempRow.querySelector('.light-slider-value');
+                const currentColorTemp = attributes.color_temp || attributes.min_mireds;
+                slider.value = currentColorTemp;
+                valueDisplay.textContent = `${Math.round(1000000 / currentColorTemp)}K`;
+            }
+        }
     }
 }
 
@@ -634,12 +682,10 @@ async function displayHomeAssistantStatus(bookingConfig) {
             
             try {
                 const state = await fetchHAData(entityId, house);
-
                 if (state.state === 'unavailable') {
                     card.classList.add('is-unavailable');
                 } else {
                     card.classList.remove('is-unavailable');
-                    
                     const { attributes, state: onOffState } = state;
                     
                     const toggle = card.querySelector('.light-switch');
@@ -649,13 +695,8 @@ async function displayHomeAssistantStatus(bookingConfig) {
                     const sliderGroup = card.querySelector('.light-slider-group');
                     const brightnessRow = card.querySelector('[data-control="brightness"]');
                     const colorTempRow = card.querySelector('[data-control="color_temp"]');
-
                     let hasControls = false;
-
-                    // --- FIX FOR LIGHT SLIDERS ---
-                    // This logic now correctly shows each slider independently.
                     
-                    // Feature Detection: Brightness
                     if (attributes.supported_color_modes?.includes('brightness')) {
                         hasControls = true;
                         brightnessRow.style.display = 'flex';
@@ -669,7 +710,6 @@ async function displayHomeAssistantStatus(bookingConfig) {
                         brightnessRow.style.display = 'none';
                     }
 
-                    // Feature Detection: Color Temp
                     if (attributes.supported_color_modes?.includes('color_temp')) {
                         hasControls = true;
                         colorTempRow.style.display = 'flex';
@@ -685,7 +725,6 @@ async function displayHomeAssistantStatus(bookingConfig) {
                     } else {
                         colorTempRow.style.display = 'none';
                     }
-                    // --- END FIX ---
                     
                     if(hasControls) {
                         sliderGroup.style.display = 'flex';
@@ -716,6 +755,8 @@ async function displayHomeAssistantStatus(bookingConfig) {
     }
   }
 }
+
+// --- CHATBOT & UI SETUP FUNCTIONS ---
 
 async function sendMessage() {
     const userInputField = document.getElementById('user-input');
@@ -774,6 +815,14 @@ async function sendMessage() {
         userInputField.focus(); 
         chatBox.scrollTop = chatBox.scrollHeight;
     }
+}
+
+function handleSliderInput(event) {
+    const slider = event.currentTarget;
+    const entityId = slider.dataset.entity;
+    const container = document.getElementById(`climate-${entityId}`);
+    const display = container.querySelector('.climate-set-temp-display');
+    display.textContent = `${parseFloat(slider.value).toFixed(1)}°`;
 }
 
 function formatCardTitle(key, houseNumber) {
@@ -837,6 +886,7 @@ function buildDynamicContent(keys, fragments) {
 }
 
 function getStaticContent() {
+  // ... [This function remains unchanged] ...
   return {
     'video': {
       title: 'Instructional Video Playlist', emoji: '🎬',
