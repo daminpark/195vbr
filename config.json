@@ -1,55 +1,261 @@
 {
   "contentFragments": {
-    "house193": { "title": "Address", "html": "<p>193 Vauxhall Bridge Road<br>Pimlico, London<br>SW1V 1ER</p>" },
-    "house195": { "title": "Address", "html": "<p>195 Vauxhall Bridge Road<br>Pimlico, London<br>SW1V 1ER</p>" },
-    "wifi193": { "title": "Wifi", "html": "<p>Network Name (SSID): <strong>193</strong><br>Password: <strong>12345671</strong></p>" },
-    "wifi195": { "title": "Wifi", "html": "<p>Network Name (SSID): <strong>195</strong><br>Password: <strong>09876543</strong></p>" },
-    "room1": { "title": "Bedroom", "html": "<p>Your room number is: 1.</p>" },
-    "room2": { "title": "Bedroom", "html": "<p>Your room number is: 2.</p>" },
-    "room3": { "title": "Bedroom", "html": "<p>Your room number is: 3.</p>" },
-    "room4": { "title": "Bedroom", "html": "<p>Your room number is: 4.</p>" },
-    "room5": { "title": "Bedroom", "html": "<p>Your room number is: 5.</p>" },
-    "room6": { "title": "Bedroom", "html": "<p>Your room number is: 6.</p>" },
-    "rooma": { "title": "Bedroom", "html": "<p>You have booked Rooms 1 & 2.</p>" },
-    "roomb": { "title": "Bedroom", "html": "<p>You have booked Rooms 4, 5 & 6.</p>" },
-    "wholeHomeBedroomsDetailed": { "title": "Bedroom", "html": "<p>The house has the following bedrooms:</p><ul><li><strong>Ground Floor:</strong> Rooms 1 & 2.</li><li><strong>First Floor:</strong> Room 3.</li><li><strong>Second Floor:</strong> Rooms 4 & 5.</li><li><strong>Third Floor (Loft):</strong> Room 6.</li><li><strong>Basement:</strong> A bonus room (Room 0) with a single bed is attached to the kitchen.</li></ul>" },
-    "storageUnderBed": { "title": "Bedroom", "html": "<p>You can create more space by storing luggage under the bed, as shown in this video:</p><div class=\"video-container\"><iframe src=\"https://www.youtube.com/embed/3Ejpyf4MYTI\" title=\"Luggage storage under bed\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe></div>" },
-    "storageInBed": { "title": "Bedroom", "html": "<p>This bed frame has a lift-up mattress with significant storage space inside, as shown in this video:</p><div class=\"video-container\"><iframe src=\"https://www.youtube.com/embed/VoFABSMLII8\" title=\"Luggage storage inside bed\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe></div>" },
-    "wholeHomeBathrooms": { "title": "Bathroom", "html": "<p>There are three bathrooms available for your use:</p><ul><li><strong>Bathroom A:</strong> Located on the ground floor.</li><li><strong>Bathroom B:</strong> Located on the second floor.</li><li><strong>Bathroom C:</strong> This is an en-suite bathroom located inside Room 3 on the first floor.</li></ul>" },
-    "bathroomA": { "title": "Bathroom", "html": "<p>Your assigned bathroom is labelled 'A'.</p>" },
-    "bathroomB": { "title": "Bathroom", "html": "<p>Your assigned bathroom is labelled 'B'.</p>" },
-    "bathroomC": { "title": "Bathroom", "html": "<p>Your private bathroom is the en-suite inside your room.</p>" },
-    "bathroomShared": { "title": "Bathroom", "html": "<p>This is a shared bathroom. Please be considerate of other guests:</p><ul><li><strong>Use Your Assigned Compartment:</strong> Store your toiletries in your numbered space.</li><li><strong>Keep it Tidy:</strong> Please leave the bathroom clean for the next person.</li><li><strong>Be Mindful of Time:</strong> Limit use to ~15 minutes, especially during peak morning hours.</li></ul>" },
-    "bathroomPrivate": { "title": "Bathroom", "html": "<p>This bathroom is private for your exclusive use.</p>" },
-    "kitchenShared": { "title": "Kitchen", "html": "<p>The shared kitchen is located in the basement, through the door marked 'K'. Please:</p><ul><li><strong>Use Assigned Storage:</strong> Each room has a numbered space in the fridge and cabinets.</li><li><strong>Clean As You Go:</strong> Place used dishes in the dishwasher. Staff will run it when full.</li></ul>" },
-    "kitchenPrivate": { "title": "Kitchen", "html": "<p>The kitchen is private for your group's exclusive use.</p>" },
-    "kitchenBase": { "title": "Kitchen", "html": "<p><strong>Shared Supplies:</strong> Help yourself to complimentary tea and coffee, as well as basic condiments and spices.</p><p><strong>Rubbish:</strong> The large metal bin is for recycling. General waste goes in the black bin.</p><p>Here are video guides for the appliances:</p><ul><li><strong>Induction Stove:</strong><div class=\"video-container\"><iframe src=\"https://www.youtube.com/embed/_ZepccyHD_o\" title=\"How to use induction stove\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe></div></li><li><strong>Microwave:</strong><div class=\"video-container\"><iframe src=\"https://www.youtube.com/embed/Qs9o7G8MvjI\" title=\"How to use microwave\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe></div></li></ul>" },
-    "windowsStandard": { "title": "Windows", "html": "<p>The window can be opened by pressing the button on the handle and turning it upwards.</p>" },
-    "windowsTiltTurn": { "title": "Windows", "html": "<p>These are \"tilt and turn\" windows. This video demonstrates how to open them for ventilation (tilt) or fully (turn):</p><div class=\"video-container\"><iframe src=\"https://www.youtube.com/embed/uqOEIZtq_wI\" title=\"How to use tilt-and-turn windows\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe></div>" },
-    "noLaundry": { "title": "Laundry", "html": "<p>There are no guest-accessible washing machines on-site. A highly-rated local launderette is <a href=\"https://maps.app.goo.gl/uYuoqcrG3xC3Q2Nz8\" target=\"_blank\" rel=\"noopener noreferrer\">True Colours Launderette</a>.</p><p>Towels are not changed daily. For fresh towels (max. once every 2 days), please leave used ones outside your door by 11:00am.</p>" },
-    "hasLaundry": { "title": "Laundry", "html": "<p>The washing machine is available for your use. It is located in the basement. This video provides access and usage instructions:</p><div class=\"video-container\"><iframe src=\"https://www.youtube.com/embed/hLV62ekup-E\" title=\"How to use washing machine\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe></div>" },
-    "guestLuggage": { "title": "Check-in & Luggage", "html": "<p><strong>Self Check-in:</strong> From 15:00 onwards.</p><p><strong>Early Check-in:</strong> While you are welcome to check if the room is ready from midday onwards, please only leave your belongings inside if it is completely finished. If it's not ready, please store your bags in Cupboard V to avoid any mix-ups with our cleaners.</p><p><strong>Early Luggage Drop-off:</strong> From 11:00, you can use your front door code to access Cupboard V downstairs.</p><p><strong>Luggage Storage After Check-out:</strong> Until 14:00, you can store bags in Cupboard V.</p><p>This video shows the full process:</p><div class=\"video-container\"><iframe src=\"https://www.youtube.com/embed/rlUbHfWcN0s\" title=\"Luggage drop-off process\" allowfullscreen></iframe></div>" },
-    "wholeHomeLuggage": { "title": "Check-in & Luggage", "html": "<p><strong>Self Check-in:</strong> From 15:00 onwards.</p><p><strong>Luggage Storage:</strong> If you require luggage storage outside of check-in/out times, please message us. Depending on availability, you may be able to store bags in the front room (Room 1).</p>" },
-    "wholeHomeRubbish": { "title": "Rubbish Disposal", "html": "<p>Rubbish bags can be left on the pavement outside the front door, in front of the black fencing. The council collects it daily from this location.</p>" }
+    // ... no changes here
   },
   "bookings": {
-    "31": { "content": ["house193", "wifi193", "guestLuggage", "room1", "bathroomA", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], "house": "193", "entities": { "weather": "weather.forecast_home", "bathroom_a": "binary_sensor.bathroom_a_occupancy", "kitchen": "binary_sensor.kitchen_occupancy", "climate": {"climate.3_1_trv": "Room 1 Radiator"} }},
-    "32": { "content": ["house193", "wifi193", "guestLuggage", "room2", "bathroomA", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageInBed", "windowsStandard"], "house": "193", "entities": { "weather": "weather.forecast_home", "bathroom_a": "binary_sensor.bathroom_a_occupancy", "kitchen": "binary_sensor.kitchen_occupancy", "climate": {"climate.3_2_trv": "Room 2 Radiator"} }},
-    "33": { "content": ["house193", "wifi193", "guestLuggage", "room3", "bathroomC", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsStandard"], "house": "193", "entities": { "weather": "weather.forecast_home", "kitchen": "binary_sensor.kitchen_occupancy", "climate": {"climate.3_c_trv": "Bathroom C Radiator", "climate.3_3_trv": "Room 3 Radiator"} }},
-    "34": { "content": ["house193", "wifi193", "guestLuggage", "room4", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], "house": "193", "entities": { "weather": "weather.forecast_home", "bathroom_b": "binary_sensor.bathroom_b_occupancy", "kitchen": "binary_sensor.kitchen_occupancy", "climate": {"climate.3_4_trv": "Room 4 Radiator"} }},
-    "35": { "content": ["house193", "wifi193", "guestLuggage", "room5", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageInBed", "windowsStandard"], "house": "193", "entities": { "weather": "weather.forecast_home", "bathroom_b": "binary_sensor.bathroom_b_occupancy", "kitchen": "binary_sensor.kitchen_occupancy", "climate": {"climate.3_5_trv": "Room 5 Radiator"} }},
-    "36": { "content": ["house193", "wifi193", "guestLuggage", "room6", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], "house": "193", "entities": { "weather": "weather.forecast_home", "bathroom_b": "binary_sensor.bathroom_b_occupancy", "kitchen": "binary_sensor.kitchen_occupancy", "climate": {"climate.3_6_trv": "Room 6 Radiator"} }},
-    "3a": { "content": ["house193", "wifi193", "guestLuggage", "rooma", "bathroomA", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], "house": "193", "entities": { "weather": "weather.forecast_home", "kitchen": "binary_sensor.kitchen_occupancy", "climate": {"climate.3_1_trv": "Room 1 Radiator", "climate.3_2_trv": "Room 2 Radiator"} }},
-    "3b": { "content": ["house193", "wifi193", "guestLuggage", "roomb", "bathroomB", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], "house": "193", "entities": { "weather": "weather.forecast_home", "kitchen": "binary_sensor.kitchen_occupancy", "climate": {"climate.3_4_trv": "Room 4 Radiator", "climate.3_5_trv": "Room 5 Radiator", "climate.3_6_trv": "Room 6 Radiator"} }},
-    "51": { "content": ["house195", "wifi195", "guestLuggage", "room1", "bathroomA", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], "house": "195", "entities": { "weather": "weather.forecast_home", "bathroom_a": "binary_sensor.bathroom_a_occupancy", "kitchen": "binary_sensor.kitchen_occupancy", "climate": {"climate.5_1_trv": "Room 1 Radiator"} }},
-    "52": { "content": ["house195", "wifi195", "guestLuggage", "room2", "bathroomA", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageInBed", "windowsStandard"], "house": "195", "entities": { "weather": "weather.forecast_home", "bathroom_a": "binary_sensor.bathroom_a_occupancy", "kitchen": "binary_sensor.kitchen_occupancy", "climate": {"climate.5_2_trv": "Room 2 Radiator"} }},
-    "53": { "content": ["house195", "wifi195", "guestLuggage", "room3", "bathroomC", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsStandard"], "house": "195", "entities": { "weather": "weather.forecast_home", "kitchen": "binary_sensor.kitchen_occupancy", "climate": {"climate.5_c_trv": "Bathroom C Radiator", "climate.5_3_trv": "Room 3 Radiator"} }},
-    "54": { "content": ["house195", "wifi195", "guestLuggage", "room4", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], "house": "195", "entities": { "weather": "weather.forecast_home", "bathroom_b": "binary_sensor.bathroom_b_occupancy", "kitchen": "binary_sensor.kitchen_occupancy", "climate": {"climate.5_4_trv": "Room 4 Radiator"} }},
-    "55": { "content": ["house195", "wifi195", "guestLuggage", "room5", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageInBed", "windowsStandard"], "house": "195", "entities": { "weather": "weather.forecast_home", "bathroom_b": "binary_sensor.bathroom_b_occupancy", "kitchen": "binary_sensor.kitchen_occupancy", "climate": {"climate.5_5_trv": "Room 5 Radiator"} }},
-    "56": { "content": ["house195", "wifi195", "guestLuggage", "room6", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], "house": "195", "entities": { "weather": "weather.forecast_home", "bathroom_b": "binary_sensor.bathroom_b_occupancy", "kitchen": "binary_sensor.kitchen_occupancy", "climate": {"climate.5_6_trv": "Room 6 Radiator"} }},
-    "5a": { "content": ["house195", "wifi195", "guestLuggage", "rooma", "bathroomA", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], "house": "195", "entities": { "weather": "weather.forecast_home", "kitchen": "binary_sensor.kitchen_occupancy", "climate": {"climate.5_1_trv": "Room 1 Radiator", "climate.5_2_trv": "Room 2 Radiator"} }},
-    "5b": { "content": ["house195", "wifi195", "guestLuggage", "roomb", "bathroomB", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], "house": "195", "entities": { "weather": "weather.forecast_home", "kitchen": "binary_sensor.kitchen_occupancy", "climate": {"climate.5_4_trv": "Room 4 Radiator", "climate.5_5_trv": "Room 5 Radiator", "climate.5_6_trv": "Room 6 Radiator"} }},
-    "193vbr": { "content": ["house193", "wifi193", "wholeHomeLuggage", "wholeHomeBedroomsDetailed", "wholeHomeBathrooms", "kitchenBase", "wholeHomeRubbish", "hasLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], "house": "193", "entities": { "weather": "weather.forecast_home", "climate": {"climate.3_1_trv": "Room 1 Radiator", "climate.3_2_trv": "Room 2 Radiator", "climate.3_3_trv": "Room 3 Radiator", "climate.3_c_trv": "Bathroom C Radiator", "climate.3_4_trv": "Room 4 Radiator", "climate.3_5_trv": "Room 5 Radiator", "climate.3_6_trv": "Room 6 Radiator"} }},
-    "195vbr": { "content": ["house195", "wifi195", "wholeHomeLuggage", "wholeHomeBedroomsDetailed", "wholeHomeBathrooms", "kitchenBase", "wholeHomeRubbish", "hasLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], "house": "195", "entities": { "weather": "weather.forecast_home", "climate": {"climate.5_1_trv": "Room 1 Radiator", "climate.5_2_trv": "Room 2 Radiator", "climate.5_3_trv": "Room 3 Radiator", "climate.5_c_trv": "Bathroom C Radiator", "climate.5_4_trv": "Room 4 Radiator", "climate.5_5_trv": "Room 5 Radiator", "climate.5_6_trv": "Room 6 Radiator"} }}
+    "31": { 
+      "content": ["house193", "wifi193", "guestLuggage", "room1", "bathroomA", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], 
+      "house": "193", 
+      "entities": { 
+        "weather": "weather.forecast_home", 
+        "bathroom_a": "binary_sensor.bathroom_a_occupancy", 
+        "kitchen": "binary_sensor.kitchen_occupancy", 
+        "climate": {"climate.3_1_trv": "Room 1 Radiator"},
+        "lights": {
+          "light.3_1_lights": "Room 1 Main Lights"
+        }
+      }
+    },
+    "32": {
+      "content": ["house193", "wifi193", "guestLuggage", "room2", "bathroomA", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageInBed", "windowsStandard"], 
+      "house": "193", 
+      "entities": { 
+        "weather": "weather.forecast_home", 
+        "bathroom_a": "binary_sensor.bathroom_a_occupancy", 
+        "kitchen": "binary_sensor.kitchen_occupancy", 
+        "climate": {"climate.3_2_trv": "Room 2 Radiator"},
+        "lights": {
+          "light.3_2_lights": "Room 2 Main Lights"
+        }
+      }
+    },
+    "33": {
+      "content": ["house193", "wifi193", "guestLuggage", "room3", "bathroomC", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsStandard"], 
+      "house": "193", 
+      "entities": { 
+        "weather": "weather.forecast_home", 
+        "kitchen": "binary_sensor.kitchen_occupancy", 
+        "climate": {"climate.3_c_trv": "Bathroom C Radiator", "climate.3_3_trv": "Room 3 Radiator"},
+        "lights": {
+          "light.3_3_lights": "Room 3 Main Lights",
+          "light.3_3_lamp": "Room 3 Bedside Lamp",
+          "light.3_c_lights": "Bathroom Lights"
+        }
+      }
+    },
+    "34": {
+      "content": ["house193", "wifi193", "guestLuggage", "room4", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], 
+      "house": "193", 
+      "entities": { 
+        "weather": "weather.forecast_home", 
+        "bathroom_b": "binary_sensor.bathroom_b_occupancy", 
+        "kitchen": "binary_sensor.kitchen_occupancy", 
+        "climate": {"climate.3_4_trv": "Room 4 Radiator"},
+        "lights": {
+          "light.3_4_lights": "Room 4 Main Lights",
+          "light.3_4_lamp": "Room 4 Bedside Lamp"
+        }
+      }
+    },
+    "35": {
+      "content": ["house193", "wifi193", "guestLuggage", "room5", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageInBed", "windowsStandard"], 
+      "house": "193", 
+      "entities": { 
+        "weather": "weather.forecast_home", 
+        "bathroom_b": "binary_sensor.bathroom_b_occupancy", 
+        "kitchen": "binary_sensor.kitchen_occupancy", 
+        "climate": {"climate.3_5_trv": "Room 5 Radiator"},
+        "lights": {
+          "light.3_5_lights": "Room 5 Main Lights"
+        }
+      }
+    },
+    "36": {
+      "content": ["house193", "wifi193", "guestLuggage", "room6", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], 
+      "house": "193", 
+      "entities": { 
+        "weather": "weather.forecast_home", 
+        "bathroom_b": "binary_sensor.bathroom_b_occupancy", 
+        "kitchen": "binary_sensor.kitchen_occupancy", 
+        "climate": {"climate.3_6_trv": "Room 6 Radiator"},
+        "lights": {
+          "light.3_6_lights": "Room 6 Main Lights"
+        }
+      }
+    },
+    "3a": {
+      "content": ["house193", "wifi193", "guestLuggage", "rooma", "bathroomA", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], 
+      "house": "193", 
+      "entities": { 
+        "weather": "weather.forecast_home", 
+        "kitchen": "binary_sensor.kitchen_occupancy", 
+        "climate": {"climate.3_1_trv": "Room 1 Radiator", "climate.3_2_trv": "Room 2 Radiator"},
+        "lights": {
+          "light.3_1_lights": "Room 1 Main Lights",
+          "light.3_2_lights": "Room 2 Main Lights"
+        }
+      }
+    },
+    "3b": {
+      "content": ["house193", "wifi193", "guestLuggage", "roomb", "bathroomB", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], 
+      "house": "193", 
+      "entities": { 
+        "weather": "weather.forecast_home", 
+        "kitchen": "binary_sensor.kitchen_occupancy", 
+        "climate": {"climate.3_4_trv": "Room 4 Radiator", "climate.3_5_trv": "Room 5 Radiator", "climate.3_6_trv": "Room 6 Radiator"},
+        "lights": {
+          "light.3_4_lights": "Room 4 Main Lights",
+          "light.3_4_lamp": "Room 4 Bedside Lamp",
+          "light.3_5_lights": "Room 5 Main Lights",
+          "light.3_6_lights": "Room 6 Main Lights"
+        }
+      }
+    },
+    "51": {
+      "content": ["house195", "wifi195", "guestLuggage", "room1", "bathroomA", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], 
+      "house": "195", 
+      "entities": { 
+        "weather": "weather.forecast_home", 
+        "bathroom_a": "binary_sensor.bathroom_a_occupancy", 
+        "kitchen": "binary_sensor.kitchen_occupancy", 
+        "climate": {"climate.5_1_trv": "Room 1 Radiator"},
+        "lights": {
+          "light.5_1_lights": "Room 1 Main Lights"
+        }
+      }
+    },
+    "52": {
+      "content": ["house195", "wifi195", "guestLuggage", "room2", "bathroomA", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageInBed", "windowsStandard"], 
+      "house": "195", 
+      "entities": { 
+        "weather": "weather.forecast_home", 
+        "bathroom_a": "binary_sensor.bathroom_a_occupancy", 
+        "kitchen": "binary_sensor.kitchen_occupancy", 
+        "climate": {"climate.5_2_trv": "Room 2 Radiator"},
+        "lights": {
+          "light.5_2_lights": "Room 2 Main Lights"
+        }
+      }
+    },
+    "53": {
+      "content": ["house195", "wifi195", "guestLuggage", "room3", "bathroomC", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsStandard"], 
+      "house": "195", 
+      "entities": { 
+        "weather": "weather.forecast_home", 
+        "kitchen": "binary_sensor.kitchen_occupancy", 
+        "climate": {"climate.5_c_trv": "Bathroom C Radiator", "climate.5_3_trv": "Room 3 Radiator"},
+        "lights": {
+          "light.5_3_lights": "Room 3 Main Lights",
+          "light.5_3_lamp": "Room 3 Bedside Lamp",
+          "light.5_c_lights": "Bathroom Lights"
+        }
+      }
+    },
+    "54": {
+      "content": ["house195", "wifi195", "guestLuggage", "room4", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], 
+      "house": "195", 
+      "entities": { 
+        "weather": "weather.forecast_home", 
+        "bathroom_b": "binary_sensor.bathroom_b_occupancy", 
+        "kitchen": "binary_sensor.kitchen_occupancy", 
+        "climate": {"climate.5_4_trv": "Room 4 Radiator"},
+        "lights": {
+          "light.5_4_lights": "Room 4 Main Lights",
+          "light.5_4_lamp": "Room 4 Bedside Lamp"
+        }
+      }
+    },
+    "55": {
+      "content": ["house195", "wifi195", "guestLuggage", "room5", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageInBed", "windowsStandard"], 
+      "house": "195", 
+      "entities": { 
+        "weather": "weather.forecast_home", 
+        "bathroom_b": "binary_sensor.bathroom_b_occupancy", 
+        "kitchen": "binary_sensor.kitchen_occupancy", 
+        "climate": {"climate.5_5_trv": "Room 5 Radiator"},
+        "lights": {
+          "light.5_5_lights": "Room 5 Main Lights"
+        }
+      }
+    },
+    "56": {
+      "content": ["house195", "wifi195", "guestLuggage", "room6", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], 
+      "house": "195", 
+      "entities": { 
+        "weather": "weather.forecast_home", 
+        "bathroom_b": "binary_sensor.bathroom_b_occupancy", 
+        "kitchen": "binary_sensor.kitchen_occupancy", 
+        "climate": {"climate.5_6_trv": "Room 6 Radiator"},
+        "lights": {
+          "light.5_6_lights": "Room 6 Main Lights"
+        }
+      }
+    },
+    "5a": {
+      "content": ["house195", "wifi195", "guestLuggage", "rooma", "bathroomA", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], 
+      "house": "195", 
+      "entities": { 
+        "weather": "weather.forecast_home", 
+        "kitchen": "binary_sensor.kitchen_occupancy", 
+        "climate": {"climate.5_1_trv": "Room 1 Radiator", "climate.5_2_trv": "Room 2 Radiator"},
+        "lights": {
+          "light.5_1_lights": "Room 1 Main Lights",
+          "light.5_2_lights": "Room 2 Main Lights"
+        }
+      }
+    },
+    "5b": {
+      "content": ["house195", "wifi195", "guestLuggage", "roomb", "bathroomB", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], 
+      "house": "195", 
+      "entities": { 
+        "weather": "weather.forecast_home", 
+        "kitchen": "binary_sensor.kitchen_occupancy", 
+        "climate": {"climate.5_4_trv": "Room 4 Radiator", "climate.5_5_trv": "Room 5 Radiator", "climate.5_6_trv": "Room 6 Radiator"},
+        "lights": {
+          "light.5_4_lights": "Room 4 Main Lights",
+          "light.5_4_lamp": "Room 4 Bedside Lamp",
+          "light.5_5_lights": "Room 5 Main Lights",
+          "light.5_6_lights": "Room 6 Main Lights"
+        }
+      }
+    },
+    "193vbr": { 
+      "content": ["house193", "wifi193", "wholeHomeLuggage", "wholeHomeBedroomsDetailed", "wholeHomeBathrooms", "kitchenBase", "wholeHomeRubbish", "hasLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], 
+      "house": "193", 
+      "entities": { 
+        "weather": "weather.forecast_home", 
+        "climate": {"climate.3_1_trv": "Room 1 Radiator", "climate.3_2_trv": "Room 2 Radiator", "climate.3_3_trv": "Room 3 Radiator", "climate.3_c_trv": "Bathroom C Radiator", "climate.3_4_trv": "Room 4 Radiator", "climate.3_5_trv": "Room 5 Radiator", "climate.3_6_trv": "Room 6 Radiator"},
+        "lights": {
+          "light.3_1_lights": "Room 1 Lights",
+          "light.3_2_lights": "Room 2 Lights",
+          "light.3_3_lights": "Room 3 Lights",
+          "light.3_3_lamp": "Room 3 Lamp",
+          "light.3_c_lights": "Bathroom C Lights",
+          "light.3_4_lights": "Room 4 Lights",
+          "light.3_4_lamp": "Room 4 Lamp",
+          "light.3_5_lights": "Room 5 Lights",
+          "light.3_6_lights": "Room 6 Lights"
+        }
+      }
+    },
+    "195vbr": { 
+      "content": ["house195", "wifi195", "wholeHomeLuggage", "wholeHomeBedroomsDetailed", "wholeHomeBathrooms", "kitchenBase", "wholeHomeRubbish", "hasLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], 
+      "house": "195", 
+      "entities": { 
+        "weather": "weather.forecast_home", 
+        "climate": {"climate.5_1_trv": "Room 1 Radiator", "climate.5_2_trv": "Room 2 Radiator", "climate.5_3_trv": "Room 3 Radiator", "climate.5_c_trv": "Bathroom C Radiator", "climate.5_4_trv": "Room 4 Radiator", "climate.5_5_trv": "Room 5 Radiator", "climate.5_6_trv": "Room 6 Radiator"},
+        "lights": {
+          "light.5_1_lights": "Room 1 Lights",
+          "light.5_2_lights": "Room 2 Lights",
+          "light.5_3_lights": "Room 3 Lights",
+          "light.5_3_lamp": "Room 3 Lamp",
+          "light.5_c_lights": "Bathroom C Lights",
+          "light.5_4_lights": "Room 4 Lights",
+          "light.5_4_lamp": "Room 4 Lamp",
+          "light.5_5_lights": "Room 5 Lights",
+          "light.5_6_lights": "Room 6 Lights"
+        }
+      }
+    }
   }
 }

@@ -371,7 +371,15 @@ function createDashboardCards(bookingConfig) {
     const dashboard = document.getElementById('ha-dashboard');
     if (!dashboard) return;
     let cardsHtml = '';
-    const entityKeys = Object.keys(entities).sort((a, b) => a === 'weather' ? -1 : b === 'weather' ? 1 : 0);
+    
+    // Sort to ensure a consistent order: weather, climate, lights, then others.
+    const entityKeys = Object.keys(entities).sort((a, b) => {
+        const order = { weather: 1, climate: 2, lights: 3 };
+        const aOrder = order[a] || 99;
+        const bOrder = order[b] || 99;
+        return aOrder - bOrder;
+    });
+    
     entityKeys.forEach(key => {
         if (key === 'weather') {
             cardsHtml += `<div class="ha-card weather-card" id="ha-card-weather"><div class="weather-top-row" id="ha-weather-top-row">Loading Weather...</div><div class="weather-forecast" id="ha-weather-daily"></div></div>`;
@@ -382,19 +390,78 @@ function createDashboardCards(bookingConfig) {
                 climateHtml += `<div class="climate-entity" id="climate-${entityId}"><div class="climate-name">${friendlyName}</div><div class="climate-current-temp">Current: --°</div><div class="climate-set-temp-display">--°</div><div class="climate-slider-container"><input type="range" min="14" max="24" step="0.5" class="climate-slider" data-entity="${entityId}" disabled></div></div>`;
             }
             cardsHtml += `<div class="ha-card climate-card">${climateHtml}</div>`;
+        } else if (key === 'lights' && guestAccessLevel === 'full') {
+            const lightEntities = entities[key];
+            let lightHtml = '<div class="ha-card light-card"><h2>💡 Lights</h2>';
+            for (const [entityId, friendlyName] of Object.entries(lightEntities)) {
+                lightHtml += `
+                    <div class="light-entity">
+                        <span class="light-name">${friendlyName}</span>
+                        <label class="switch">
+                            <input type="checkbox" class="light-switch" data-entity="${entityId}" disabled>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                `;
+            }
+            lightHtml += '</div>';
+            cardsHtml += lightHtml;
         } else if (guestAccessLevel === 'full') {
             cardsHtml += `<div class="ha-card"><div class="ha-card-title">${formatCardTitle(key, house)}</div><div class="ha-card-status" id="ha-status-${key}">Loading...</div></div>`;
         }
     });
+
     if (!cardsHtml.trim()) {
         dashboard.style.display = 'none';
     } else {
         dashboard.innerHTML = cardsHtml;
     }
+
+    // Add event listeners AFTER innerHTML is set
     document.querySelectorAll('.climate-slider').forEach(slider => {
         slider.addEventListener('input', handleSliderInput);
         slider.addEventListener('change', debouncedSetTemperature);
     });
+
+    document.querySelectorAll('.light-switch').forEach(toggle => {
+        toggle.addEventListener('change', handleLightToggle);
+    });
+}
+
+async function handleLightToggle(event) {
+    const toggle = event.currentTarget;
+    const entityId = toggle.dataset.entity;
+    
+    // Temporarily disable to prevent rapid clicking
+    toggle.disabled = true;
+
+    try {
+        const response = await fetch(`${BACKEND_API_BASE_URL}/api/ha-proxy`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                house: currentBookingConfig.house,
+                entity: entityId,
+                type: 'toggle_light',
+                opaqueBookingKey: opaqueBookingKey
+            })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Failed to toggle light.');
+        
+        // The new state is returned from the service call. Update the UI to match.
+        const newState = data.state.find(s => s.entity_id === entityId);
+        if (newState) {
+            toggle.checked = newState.state === 'on';
+        }
+    } catch (error) {
+        console.error('Error toggling light:', error);
+        // Revert the toggle on error to reflect the actual state
+        toggle.checked = !toggle.checked; 
+    } finally {
+        // Re-enable the toggle after the operation is complete
+        toggle.disabled = false;
+    }
 }
 
 async function fetchHAData(entityId, house, type = 'state') {
@@ -437,6 +504,7 @@ const debouncedSetTemperature = debounce((event) => {
     const newTemp = parseFloat(slider.value);
     setTemperature(slider.dataset.entity, newTemp, currentBookingConfig.house);
 }, 500);
+
 
 async function displayHomeAssistantStatus(bookingConfig) {
   const { house, entities } = bookingConfig;
@@ -492,6 +560,21 @@ async function displayHomeAssistantStatus(bookingConfig) {
                 } catch (error) {
                     console.error(`Climate fetch error for ${entityId}:`, error);
                     container.querySelector('.climate-current-temp').textContent = 'Status unavailable';
+                }
+            }
+        }
+    } else if (key === 'lights' && guestAccessLevel === 'full') {
+        const lightEntities = entityValue;
+        for (const entityId of Object.keys(lightEntities)) {
+            const toggle = document.querySelector(`.light-switch[data-entity="${entityId}"]`);
+            if (toggle) {
+                try {
+                    const state = await fetchHAData(entityId, house);
+                    toggle.checked = state.state === 'on';
+                    toggle.disabled = false;
+                } catch (error) {
+                    console.error(`Light fetch error for ${entityId}:`, error);
+                    // Leave the toggle disabled to indicate an error state
                 }
             }
         }
