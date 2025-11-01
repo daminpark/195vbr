@@ -53,11 +53,11 @@ async function buildLegacyGuidebook(params) {
     let legacyContentKeys = new Set(baseContentKeys);
 
     if (params.has('wholehome')) {
-      pageTitle = "Whole Home Guide";
+      pageTitle = "Whole Home Manual";
       ['house193', 'house195', 'wifi193', 'wifi195', 'wholeHomeLuggage', 'wholeHomeRubbish', 'hasLaundry', 'kitchenBase', 'windowsStandard', 'windowsTiltTurn']
         .forEach(item => legacyContentKeys.add(item));
     } else {
-      pageTitle = "Shared Rooms Guide";
+      pageTitle = "195VBR Guidebook";
       ['house193', 'wifi193', 'guestLuggage'].forEach(item => legacyContentKeys.add(item));
       if (params.has('sharedk')) {
         ['kitchenShared', 'kitchenBase', 'noLaundry'].forEach(item => legacyContentKeys.add(item));
