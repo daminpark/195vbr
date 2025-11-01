@@ -380,29 +380,39 @@ function createDashboardCards(bookingConfig) {
             }
             cardsHtml += `<div class="ha-card climate-card">${climateHtml}</div>`;
         } else if (key === 'lights' && guestAccessLevel === 'full') {
-            // Reverted to the original v2 layout with toggle on the right
             for (const [entityId, friendlyName] of Object.entries(entities[key])) {
                 cardsHtml += `
                     <div class="ha-card light-control-card" id="light-card-${entityId.replace(/\./g, '-')}">
-                        <div class="light-control-header">
-                            <span class="light-control-name">${friendlyName}</span>
-                            <label class="switch">
-                                <input type="checkbox" class="light-switch" data-entity="${entityId}" disabled>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <div class="light-slider-group" data-controls-for="${entityId}">
-                            <div class="light-slider-row" data-control="brightness">
-                                <span class="material-symbols-outlined">brightness_medium</span>
-                                <input type="range" class="light-slider" data-type="brightness" min="0" max="255" data-entity="${entityId}" disabled>
-                                <span class="light-slider-value" data-value-for="brightness">--%</span>
+                        
+                        <!-- Wrapper for all active controls -->
+                        <div class="light-controls-wrapper">
+                            <div class="light-control-header">
+                                <span class="light-control-name">${friendlyName}</span>
+                                <label class="switch">
+                                    <input type="checkbox" class="light-switch" data-entity="${entityId}" disabled>
+                                    <span class="slider"></span>
+                                </label>
                             </div>
-                            <div class="light-slider-row" data-control="color_temp">
-                                <span class="material-symbols-outlined">wb_sunny</span>
-                                <input type="range" class="light-slider" data-type="color_temp" min="250" max="454" data-entity="${entityId}" disabled>
-                                <span class="light-slider-value" data-value-for="color_temp">--K</span>
+                            <div class="light-slider-group" data-controls-for="${entityId}">
+                                <div class="light-slider-row" data-control="brightness">
+                                    <span class="material-symbols-outlined">brightness_medium</span>
+                                    <input type="range" class="light-slider" data-type="brightness" min="0" max="255" data-entity="${entityId}" disabled>
+                                    <span class="light-slider-value" data-value-for="brightness">--%</span>
+                                </div>
+                                <div class="light-slider-row" data-control="color_temp">
+                                    <span class="material-symbols-outlined">wb_sunny</span>
+                                    <input type="range" class="light-slider" data-type="color_temp" min="250" max="454" data-entity="${entityId}" disabled>
+                                    <span class="light-slider-value" data-value-for="color_temp">--K</span>
+                                </div>
                             </div>
                         </div>
+
+                        <!-- Notice for when the light is unavailable -->
+                        <div class="light-unavailable-notice">
+                            <span class="material-symbols-outlined">power_off</span>
+                            <span>Power is off at the wall switch.</span>
+                        </div>
+
                     </div>
                 `;
             }
@@ -621,47 +631,65 @@ async function displayHomeAssistantStatus(bookingConfig) {
             
             try {
                 const state = await fetchHAData(entityId, house);
-                const { attributes, state: onOffState } = state;
-                
-                // Set On/Off Toggle
-                const toggle = card.querySelector('.light-switch');
-                toggle.checked = onOffState === 'on';
-                toggle.disabled = false;
 
-                const sliderGroup = card.querySelector('.light-slider-group');
-                const brightnessRow = card.querySelector('[data-control="brightness"]');
-                const colorTempRow = card.querySelector('[data-control="color_temp"]');
-
-                let hasControls = false;
-
-                // Feature Detection: Brightness
-                if (attributes.supported_color_modes?.includes('color_temp')) {
-                    hasControls = true;
-                    colorTempRow.style.display = 'flex';
-                    const slider = colorTempRow.querySelector('.light-slider');
-                    const valueDisplay = colorTempRow.querySelector('.light-slider-value');
-                    slider.min = attributes.min_mireds;
-                    slider.max = attributes.max_mireds;
-                    
-                    // This CSS trick reverses the slider direction to be more intuitive
-                    // Now, sliding RIGHT increases Kelvin (cooler light)
-                    slider.style.direction = 'rtl'; 
-                    
-                    const currentColorTemp = attributes.color_temp || attributes.min_mireds;
-                    slider.value = currentColorTemp;
-                    valueDisplay.textContent = `${Math.round(1000000 / currentColorTemp)}K`;
-                    slider.disabled = false;
+                // CORE LOGIC: Check if the entity is unavailable
+                if (state.state === 'unavailable') {
+                    card.classList.add('is-unavailable');
                 } else {
-                    colorTempRow.style.display = 'none';
-                }
-                
-                if(hasControls) {
-                    sliderGroup.style.display = 'flex';
-                }
+                    card.classList.remove('is-unavailable');
+                    
+                    const { attributes, state: onOffState } = state;
+                    
+                    // Set On/Off Toggle
+                    const toggle = card.querySelector('.light-switch');
+                    toggle.checked = onOffState === 'on';
+                    toggle.disabled = false;
 
+                    const sliderGroup = card.querySelector('.light-slider-group');
+                    const brightnessRow = card.querySelector('[data-control="brightness"]');
+                    const colorTempRow = card.querySelector('[data-control="color_temp"]');
+
+                    let hasControls = false;
+
+                    // Feature Detection: Brightness
+                    if (attributes.supported_color_modes?.includes('brightness')) {
+                        hasControls = true;
+                        brightnessRow.style.display = 'flex';
+                        const slider = brightnessRow.querySelector('.light-slider');
+                        const valueDisplay = brightnessRow.querySelector('.light-slider-value');
+                        const currentBrightness = attributes.brightness || 0;
+                        slider.value = currentBrightness;
+                        valueDisplay.textContent = `${Math.round(currentBrightness / 2.55)}%`;
+                        slider.disabled = false;
+                    } else {
+                        brightnessRow.style.display = 'none';
+                    }
+
+                    // Feature Detection: Color Temp
+                    if (attributes.supported_color_modes?.includes('color_temp')) {
+                        hasControls = true;
+                        colorTempRow.style.display = 'flex';
+                        const slider = colorTempRow.querySelector('.light-slider');
+                        const valueDisplay = colorTempRow.querySelector('.light-slider-value');
+                        slider.min = attributes.min_mireds;
+                        slider.max = attributes.max_mireds;
+                        slider.style.direction = 'rtl';
+                        const currentColorTemp = attributes.color_temp || attributes.min_mireds;
+                        slider.value = currentColorTemp;
+                        valueDisplay.textContent = `${Math.round(1000000 / currentColorTemp)}K`;
+                        slider.disabled = false;
+                    } else {
+                        colorTempRow.style.display = 'none';
+                    }
+                    
+                    if(hasControls) {
+                        sliderGroup.style.display = 'flex';
+                    }
+                }
             } catch (error) {
                 console.error(`Light fetch error for ${entityId}:`, error);
-                // You could add UI feedback here, like hiding the card or showing an error message
+                // If fetching fails entirely, also show as unavailable
+                card.classList.add('is-unavailable');
             }
         }
     } else if (guestAccessLevel === 'full') {
