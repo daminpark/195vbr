@@ -327,17 +327,23 @@ async function displayHomeAssistantStatus(bookingConfig) {
 
 async function sendMessage() {
     const userInputField = document.getElementById('user-input');
-    const sendBtn = document.getElementById('send-btn');
+    const inputContainer = document.getElementById('chat-input-container'); // Get the container
     const userInput = userInputField.value.trim();
-    if (!userInput || sendBtn.disabled) return;
+
+    // Check if the input is empty or if we are already loading a response.
+    if (!userInput || inputContainer.classList.contains('loading')) return;
+
     const chatBox = document.getElementById('chat-box');
     const getTimeStamp = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const userMessageHtml = `<div class="message-bubble user-message"><p>${userInput}</p></div><div class="timestamp">${getTimeStamp()}</div>`;
     chatBox.insertAdjacentHTML('beforeend', userMessageHtml);
     chatHistory.push({ role: 'user', content: userInput });
     userInputField.value = '';
-    userInputField.disabled = true;
-    sendBtn.disabled = true;
+    
+    // --- The New Method ---
+    // Add the .loading class to visually disable the input area.
+    inputContainer.classList.add('loading');
+    
     chatBox.scrollTop = chatBox.scrollHeight;
     const typingIndicatorHtml = `<div class="message-bubble bot-message typing-indicator"><span></span><span></span><span></span></div>`;
     chatBox.insertAdjacentHTML('beforeend', typingIndicatorHtml);
@@ -374,9 +380,13 @@ async function sendMessage() {
         const errorHtml = `<div class="message-bubble bot-message"><p>Sorry, I'm having trouble connecting. Please try again later.</p></div><div class="timestamp">${getTimeStamp()}</div>`;
         chatBox.insertAdjacentHTML('beforeend', errorHtml);
     } finally {
-        userInputField.disabled = false;
-        sendBtn.disabled = false;
-        userInputField.focus();
+        // --- The New Method ---
+        // Remove the .loading class to re-enable the input area.
+        inputContainer.classList.remove('loading');
+        
+        // This is the key to keeping the keyboard up and the cursor ready.
+        userInputField.focus(); 
+        
         chatBox.scrollTop = chatBox.scrollHeight;
     }
 }
@@ -403,12 +413,38 @@ function setupChatToggle() {
   const htmlEl = document.documentElement;
   const closeBtn = document.getElementById('chat-close');
   const chatLauncher = document.getElementById('chat-launcher');
-  const openChat = () => { if (!htmlEl.classList.contains('chat-open')) { htmlEl.classList.add('chat-open'); history.pushState({ chatOpen: true }, ''); } };
-  const closeChat = () => { if (htmlEl.classList.contains('chat-open')) { htmlEl.classList.remove('chat-open'); if (history.state && history.state.chatOpen) { history.back(); } } };
+  const userInput = document.getElementById('user-input'); // Get a reference to the input
+
+  const openChat = () => {
+    if (htmlEl.classList.contains('chat-open')) return;
+    htmlEl.classList.add('chat-open');
+    history.pushState({ chatOpen: true }, '');
+    
+    // Use a tiny delay to ensure the element is visible before focusing.
+    // This makes it more reliable on all devices.
+    setTimeout(() => {
+      userInput.focus();
+    }, 100); 
+  };
+
+  const closeChat = () => {
+    if (!htmlEl.classList.contains('chat-open')) return;
+    htmlEl.classList.remove('chat-open');
+    if (history.state && history.state.chatOpen) {
+      history.back();
+    }
+  };
+
   chatLauncher.addEventListener('click', openChat);
   closeBtn.addEventListener('click', closeChat);
-  window.addEventListener('popstate', () => { if (htmlEl.classList.contains('chat-open')) { htmlEl.classList.remove('chat-open'); } });
+
+  window.addEventListener('popstate', () => {
+    if (htmlEl.classList.contains('chat-open')) {
+      htmlEl.classList.remove('chat-open');
+    }
+  });
 }
+
 
 function buildDynamicContent(keys, fragments) {
   const content = {};
