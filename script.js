@@ -635,7 +635,6 @@ function updateCardFromPush(data) {
     }
 }
 
-This enhanced sanitization correctly converts the Python-formatted string into a valid JSON string that can be successfully parsed, resolving the error and allowing your real-time updates to function correctly.
 
 
 async function displayHomeAssistantStatus(bookingConfig) {
