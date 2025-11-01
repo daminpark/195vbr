@@ -1,7 +1,6 @@
 // --- A SINGLE SOURCE OF TRUTH FOR THE BACKEND URL ---
 const BACKEND_API_BASE_URL = 'https://guidebook-chatbot-backend-git-ical-auth-pierre-parks-projects.vercel.app';
 
-// --- Global State Variables ---
 let guestAccessLevel = null;
 let chatbotContext = '';
 let chatHistory = [];
@@ -9,12 +8,11 @@ let currentBookingConfig = {};
 let opaqueBookingKey = null; 
 let guestInfo = {};
 
-// --- Main Application Entry Point ---
 document.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
   opaqueBookingKey = params.get('booking');
 
-  // This mousedown listener is for the DESKTOP chat widget to prevent focus loss.
+  // Event listener for the chat send button (for desktop widget)
   const sendBtn = document.getElementById('send-btn');
   if (sendBtn) {
     sendBtn.addEventListener('mousedown', (e) => {
@@ -31,13 +29,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const validationResult = await validateAccess(opaqueBookingKey);
     if (validationResult.success) {
       guestAccessLevel = validationResult.access;
-      // Store guest info globally
-      guestInfo = {
-        name: validationResult.guestName,
-        checkIn: validationResult.checkInDate,
-        checkOut: validationResult.checkOutDate
-      };
-      // Pass the info to the build function
+      guestInfo = validationResult; // Store all guest info globally
+      
       await buildGuidebook(opaqueBookingKey, guestInfo);
       setupChatToggle();
       setupEnterKeyListener();
@@ -52,13 +45,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// --- Core Application Logic ---
+function displayErrorPage(type, message = '') {
+  const guidebookContainer = document.getElementById('guidebook-container');
+  const tocContainer = document.getElementById('table-of-contents');
+  document.getElementById('chat-launcher').style.display = 'none';
+  tocContainer.innerHTML = '';
+  let errorHtml;
+  if (type === 'missing') {
+    errorHtml = `<h1>Booking Not Found</h1><section id="error-message"><h2><span style="color: #d9534f;">&#9888;</span> Invalid Access Link</h2><p>Your link is missing a booking code. Please use the exact link provided to you.</p></section>`;
+  } else {
+    errorHtml = `<h1>Access Denied</h1><section id="error-message"><h2><span style="color: #d9534f;">&#9888;</span> Validation Failed</h2><p>${message}</p><p>Please ensure you are using the correct, most recent link. If you continue to have trouble, please contact us through your booking platform.</p></section>`;
+  }
+  guidebookContainer.innerHTML = errorHtml;
+}
 
-/**
- * Validates the booking key against the backend, retrieving guest and access level info.
- * @param {string} opaqueBookingKey - The booking key from the URL.
- * @returns {Promise<object>} A promise that resolves to the validation result.
- */
 async function validateAccess(opaqueBookingKey) {
   const guidebookContainer = document.getElementById('guidebook-container');
   guidebookContainer.innerHTML = `<h1>Validating Access...</h1><p>Please wait a moment.</p>`;
@@ -68,7 +68,6 @@ async function validateAccess(opaqueBookingKey) {
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || 'Unknown validation error.');
     console.log('Access validation successful:', data);
-    // Return the full data payload
     return { success: true, ...data };
   } catch (error) {
     console.error('Validation API call failed:', error);
@@ -76,11 +75,6 @@ async function validateAccess(opaqueBookingKey) {
   }
 }
 
-/**
- * Builds the main guidebook page with personalized content.
- * @param {string} opaqueBookingKey - The booking key from the URL.
- * @param {object} guestDetails - An object containing the guest's name and stay dates.
- */
 async function buildGuidebook(opaqueBookingKey, guestDetails) {
   const guidebookContainer = document.getElementById('guidebook-container');
   const tocContainer = document.getElementById('table-of-contents');
@@ -94,23 +88,37 @@ async function buildGuidebook(opaqueBookingKey, guestDetails) {
     
     const requiredKeys = currentBookingConfig.content;
     const staticContent = getStaticContent();
-    const dynamicContent = buildDynamicContent(requiredKeys, config.contentFragments);
-    const allContent = { ...staticContent, ...dynamicContent };
+    const dynamicPersonalizedContent = getDynamicPersonalizedContent(guestDetails);
+    const dynamicConfigContent = buildDynamicContent(requiredKeys, config.contentFragments);
+    const allContent = { ...staticContent, ...dynamicPersonalizedContent, ...dynamicConfigContent };
 
-    // Generate chatbot context directly from the content object and guest info
-    chatbotContext = buildChatbotContextFromConfig(allContent, guestDetails);
+    chatbotContext = buildChatbotContextFromConfig(allContent, guestDetails, bookingKey);
     
-    // Create the personalized welcome header
+    // Dynamic Welcome Message Logic
+    const now = new Date();
+    const checkInDate = new Date(guestDetails.checkInDateISO);
+    const isDuringStay = now >= checkInDate;
+    
+    let welcomeHeader, welcomeMessage;
+    if (isDuringStay) {
+      welcomeHeader = `Welcome, ${guestDetails.guestFirstName}'s group!`;
+      welcomeMessage = `Welcome to our guidebook, where you can find information, chat with our AI assistant, and see and control your room's heating.`;
+    } else {
+      welcomeHeader = `Hi ${guestDetails.guestFirstName}'s group!`;
+      welcomeMessage = `Your booking is confirmed for these dates. Please have a look through the guidebook, where you'll find key information and our AI assistant. During your stay, this page will also let you see and control your room's heating.`;
+    }
+    
     let welcomeHtml = `
       <section id="welcome">
-        <h2>Welcome, ${guestDetails.name}!</h2>
-        <p>Your booking is confirmed from <strong>${guestDetails.checkIn}</strong> to <strong>${guestDetails.checkOut}</strong>.</p>
+        <h2>${welcomeHeader}</h2>
+        <p><strong>Check-in:</strong> ${guestDetails.checkInDateFormatted}<br><strong>Check-out:</strong> ${guestDetails.checkOutDateFormatted}</p>
+        <p>${welcomeMessage}</p>
       </section>
     `;
 
-    let fullHtml = `<header class="site-header"><img src="logo.png" alt="195VBR Guesthouse Logo" class="logo" /></header><h1>195VBR Guidebook</h1>${welcomeHtml}<div id="ha-dashboard"></div>`;
+    let fullHtml = `${welcomeHtml}<div id="ha-dashboard"></div>`;
     let tocHtml = '<ul>';
-    const sectionOrder = ['video', 'what-not-to-bring', 'Address', 'domestic-directions', 'airport-directions', 'getting-around', 'codetimes', 'Check-in & Luggage', 'Wifi', 'heating', 'Bedroom', 'Bathroom', 'Kitchen', 'Rubbish Disposal', 'Windows', 'Laundry', 'ironing', 'troubleshooting', 'tv', 'contact', 'local-guidebook'];
+    const sectionOrder = ['video', 'what-not-to-bring', 'Address', 'domestic-directions', 'airport-directions', 'getting-around', 'codetimes', 'Check-in & Luggage', 'checkout', 'Wifi', 'heating', 'Bedroom', 'Bathroom', 'Kitchen', 'Rubbish Disposal', 'Windows', 'Laundry', 'ironing', 'troubleshooting', 'tv', 'contact', 'local-guidebook'];
     
     sectionOrder.forEach(key => {
       const sectionObjectKey = Object.keys(allContent).find(k => k.toLowerCase() === key.toLowerCase());
@@ -137,19 +145,16 @@ async function buildGuidebook(opaqueBookingKey, guestDetails) {
   }
 }
 
-/**
- * Builds a non-personalized guidebook for legacy URLs.
- * @param {URLSearchParams} params - The URL search parameters.
- */
 async function buildLegacyGuidebook(params) {
   const guidebookContainer = document.getElementById('guidebook-container');
   const tocContainer = document.getElementById('table-of-contents');
+
   try {
     const response = await fetch('config.json');
     if (!response.ok) throw new Error('config.json not found');
     const config = await response.json();
 
-    let pageTitle = "195VBR Guidebook";
+    let pageTitle = "Guidebook";
     const staticContent = getStaticContent();
     const baseContentKeys = Object.keys(staticContent);
     let legacyContentKeys = new Set(baseContentKeys);
@@ -161,19 +166,22 @@ async function buildLegacyGuidebook(params) {
     } else {
       pageTitle = "Private Room Guide";
       ['house193', 'wifi193', 'guestLuggage'].forEach(item => legacyContentKeys.add(item));
-      if (params.has('sharedk')) { ['kitchenShared', 'kitchenBase', 'noLaundry'].forEach(item => legacyContentKeys.add(item)); }
-      if (params.has('sharedb')) { ['bathroomShared'].forEach(item => legacyContentKeys.add(item)); }
+      if (params.has('sharedk')) {
+        ['kitchenShared', 'kitchenBase', 'noLaundry'].forEach(item => legacyContentKeys.add(item));
+      }
+      if (params.has('sharedb')) {
+        ['bathroomShared'].forEach(item => legacyContentKeys.add(item));
+      }
     }
     
     const dynamicContent = buildDynamicContent(Array.from(legacyContentKeys), config.contentFragments);
     const allContent = { ...staticContent, ...dynamicContent };
     
-    // Call the context builder with an empty object for guest details
-    chatbotContext = buildChatbotContextFromConfig(allContent, {});
+    chatbotContext = buildChatbotContextFromConfig(allContent, {}, 'legacy');
     
-    let fullHtml = `<header class="site-header"><img src="logo.png" alt="195VBR Guesthouse Logo" class="logo" /></header><h1>${pageTitle}</h1><div id="ha-dashboard" style="display: none;"></div>`;
+    let fullHtml = `<h1>${pageTitle}</h1><div id="ha-dashboard" style="display: none;"></div>`;
     let tocHtml = '<ul>';
-    const sectionOrder = ['video', 'what-not-to-bring', 'Address', 'domestic-directions', 'airport-directions', 'getting-around', 'codetimes', 'Check-in & Luggage', 'Wifi', 'heating', 'Bedroom', 'Bathroom', 'Kitchen', 'Rubbish Disposal', 'Windows', 'Laundry', 'ironing', 'troubleshooting', 'tv', 'contact', 'local-guidebook'];
+    const sectionOrder = ['video', 'what-not-to-bring', 'Address', 'domestic-directions', 'airport-directions', 'getting-around', 'codetimes', 'Check-in & Luggage', 'checkout', 'Wifi', 'heating', 'Bedroom', 'Bathroom', 'Kitchen', 'Rubbish Disposal', 'Windows', 'Laundry', 'ironing', 'troubleshooting', 'tv', 'contact', 'local-guidebook'];
     
     sectionOrder.forEach(key => {
       const sectionObjectKey = Object.keys(allContent).find(k => k.toLowerCase() === key.toLowerCase());
@@ -199,153 +207,142 @@ async function buildLegacyGuidebook(params) {
   }
 }
 
-/**
- * Displays an error page when validation or build fails.
- * @param {string} type - The type of error ('missing' or 'denied').
- * @param {string} [message=''] - An optional detailed error message.
- */
-function displayErrorPage(type, message = '') {
-  const guidebookContainer = document.getElementById('guidebook-container');
-  const tocContainer = document.getElementById('table-of-contents');
-  document.getElementById('chat-launcher').style.display = 'none';
-  tocContainer.innerHTML = '';
-  let errorHtml;
-  if (type === 'missing') {
-    errorHtml = `<header class="site-header"><img src="logo.png" alt="195VBR Guesthouse Logo" class="logo" /></header><h1>Booking Not Found</h1><section id="error-message"><h2><span style="color: #d9534f;">&#9888;</span> Invalid Access Link</h2><p>Your link is missing a booking code. Please use the exact link provided to you.</p></section>`;
-  } else {
-    errorHtml = `<header class="site-header"><img src="logo.png" alt="195VBR Guesthouse Logo" class="logo" /></header><h1>Access Denied</h1><section id="error-message"><h2><span style="color: #d9534f;">&#9888;</span> Validation Failed</h2><p>${message}</p><p>Please ensure you are using the correct, most recent link. If you continue to have trouble, please contact us through your booking platform.</p></section>`;
-  }
-  guidebookContainer.innerHTML = errorHtml;
+function getDynamicPersonalizedContent(guestDetails) {
+    if (!guestDetails || !guestDetails.checkInDateISO) return {};
+
+    const checkInDate = new Date(guestDetails.checkInDateISO);
+    const checkOutDate = new Date(guestDetails.checkOutDateISO);
+    
+    const dayBeforeCheckIn = new Date(checkInDate);
+    dayBeforeCheckIn.setDate(checkInDate.getDate() - 1);
+
+    const dayBeforeCheckOut = new Date(checkOutDate);
+    dayBeforeCheckOut.setDate(checkOutDate.getDate() - 1);
+
+    const dateOptions = { weekday: 'long', month: 'long', day: 'numeric' };
+    const dayBeforeCheckInFormatted = dayBeforeCheckIn.toLocaleDateString('en-GB', dateOptions);
+    const dayBeforeCheckOutFormatted = dayBeforeCheckOut.toLocaleDateString('en-GB', dateOptions);
+
+    return {
+        'guestLuggage': {
+            title: "Check-in & Luggage", emoji: "🧳",
+            html: `<p><strong>Self Check-in:</strong> From 15:00 onwards.</p>
+                   <p><strong>Early Luggage Drop-off:</strong> From 11:00, you can use your front door code to access Cupboard V downstairs.</p>
+                   <p>If you need to store bags before 11:00, please send us a message the day before your arrival (on ${dayBeforeCheckInFormatted}), and if we can accommodate it, we're happy to.</p>
+                   <p><strong>Early Check-in:</strong> While you are welcome to check if the room is ready from midday onwards, please only leave your belongings inside if it is completely finished. If it's not ready, please use Cupboard V.</p>
+                   <p>This video shows the full process:</p>
+                   <div class="video-container"><iframe src="https://www.youtube.com/embed/rlUbHfWcN0s" title="Luggage drop-off process" allowfullscreen></iframe></div>`
+        },
+        'checkout': {
+            title: "Check-out", emoji: "👋",
+            html: `<p>Check-out is at <strong>11:00 AM on ${guestDetails.checkOutDateFormatted}</strong>.</p>
+                   <p>You don't need to worry about any cleaning; our team will handle everything.</p>
+                   <p>If you need to store your luggage 🧳 after you check out, you are welcome to use Cupboard V downstairs. Your existing entry code will continue to work for the front door and the cupboard until 14:00. If you need to arrange a later pick-up, please send us a message (ideally on ${dayBeforeCheckOutFormatted}) to check if we can extend your code.</p>
+                   <p>⚠️ <strong>A quick but important request:</strong> Please be sure to take all your belongings from the room by 11am. Our cleaning team works on a tight schedule and will clear the room completely for our next guests.</p>`
+        }
+    };
 }
 
-// --- Chatbot-Related Functions ---
+function getChatbotOnlyContext(bookingId) {
+    const quirks = {
+        '31': "The guest is in Room 1. Their private room is conveniently located on the ground floor. The shared kitchen and bathroom are downstairs, reached by a narrow staircase. This is relevant for heavy luggage.",
+        '32': "The guest is in Room 2, which is on the ground floor and has a private patio. The shared kitchen and bathroom are downstairs, reached by a narrow staircase. This is relevant for heavy luggage.",
+        '33': "The guest is in Room 3 on the first floor. It has a private en-suite bathroom. The shared kitchen is downstairs. The room is reached by a narrow staircase, which is relevant for heavy luggage.",
+        '34': "The guest is in Room 4 on the second floor. The shared bathroom for this room is located 1.5 floors downstairs. The kitchen is also downstairs. Everything is reached via a narrow staircase. This is a key detail for mobility or heavy luggage.",
+        '35': "The guest is in Room 5 on the second floor. The shared bathroom for this room is located 1.5 floors downstairs. The kitchen is also downstairs. Everything is reached via a narrow staircase. This is a key detail for mobility or heavy luggage.",
+        '36': "The guest is in Room 6, a cozy top-floor loft with some low, sloping ceilings. The shared bathroom is 2.5 floors downstairs. This is a key detail for taller guests, mobility concerns, or heavy luggage.",
+        '3a': "The guest has booked Rooms 1 & 2 on the ground floor. Their private bathroom for the group is located half a floor downstairs, reached via a narrow staircase.",
+        '3b': "The guest has booked Rooms 4, 5 & 6, a private suite on the top two floors. One bedroom is a loft with low ceilings. Their private bathroom is multiple floors downstairs on the upper ground level, reached via a narrow staircase. This layout is not a good fit for anyone with mobility concerns or heavy luggage.",
+        '193vbr': "The guest has booked the entire house. The house has an original narrow staircase connecting all floors, which is relevant for groups with heavy luggage or mobility concerns. The common area is cozy and centered around the kitchen, rather than a large living room.",
+        '51': "The guest is in Room 1. Their private room is conveniently located on the ground floor. The shared kitchen and bathroom are downstairs, reached by a narrow staircase. This is relevant for heavy luggage.",
+        '52': "The guest is in Room 2, which is on the ground floor and has a private patio. The shared kitchen and bathroom are downstairs, reached by a narrow staircase. This is relevant for heavy luggage.",
+        '53': "The guest is in Room 3 on the first floor. It has a private en-suite bathroom. The shared kitchen is downstairs. The room is reached by a narrow staircase, which is relevant for heavy luggage.",
+        '54': "The guest is in Room 4 on the second floor. The shared bathroom for this room is located 1.5 floors downstairs. The kitchen is also downstairs. Everything is reached via a narrow staircase. This is a key detail for mobility or heavy luggage.",
+        '55': "The guest is in Room 5 on the second floor. The shared bathroom for this room is located 1.5 floors downstairs. The kitchen is also downstairs. Everything is reached via a narrow staircase. This is a key detail for mobility or heavy luggage.",
+        '56': "The guest is in Room 6, a cozy top-floor loft with some low, sloping ceilings. The shared bathroom is 2.5 floors downstairs. This is a key detail for taller guests, mobility concerns, or heavy luggage.",
+        '5a': "The guest has booked Rooms 1 & 2 on the ground floor. Their private bathroom for the group is located half a floor downstairs, reached via a narrow staircase.",
+        '5b': "The guest has booked Rooms 4, 5 & 6, a private suite on the top two floors. One bedroom is a loft with low ceilings. Their private bathroom is multiple floors downstairs on the upper ground level, reached via a narrow staircase. This layout is not a good fit for anyone with mobility concerns or heavy luggage.",
+        '195vbr': "The guest has booked the entire house. The house has an original narrow staircase connecting all floors, which is relevant for groups with heavy luggage or mobility concerns. The common area is cozy and centered around the kitchen, rather than a large living room.",
+    };
+    
+    const isSharedKitchen = bookingId !== 'legacy' && !bookingId.includes('vbr');
+    
+    let context = `
+--- HIDDEN CONTEXT FOR AI ONLY ---
 
-/**
- * Builds the chatbot's context string from configuration data and guest details.
- * @param {object} content - The combined static and dynamic content object.
- * @param {object} guestDetails - Object with guest's name and stay dates.
- * @returns {string} The complete context string for the AI.
- */
-function buildChatbotContextFromConfig(content, guestDetails) {
+**Safety Commitment:**
+Our property has annual gas and electrical safety certificates. There are interlinked, mains-powered smoke alarms in every room. A fire extinguisher, fire blanket, and first aid kit are provided. Security cameras are in the entrance for safety.
+
+**General Check-in Information:**
+Check-in is anytime from 15:00. The primary method is self check-in with a personalized keypad code, so no keys are needed.
+
+**Bedroom Amenities:**
+All bedrooms include a high-quality firm mattress, an electric underblanket, full blackout curtains, a 4K Smart TV (with Disney+, Apple TV+, etc.), dimmable lighting, a powerful fan, a desk with chairs, a hairdryer, a full-length mirror, and universal adapters.
+
+**Wi-Fi:**
+The entire property has exceptionally fast Fibre 1Gbps Wi-Fi 6.
+
+**House Rules & Policies:**
+- No extra guests, parties, smoking, or pets.
+- Be respectful of our neighbours.
+- Quiet hours are strictly enforced from 10:00 PM to 8:00 AM. This is our most important rule.
+- Complimentary housekeeping (towel refresh, bathroom/kitchen tidy) is available on request. The guest must message at least one day in advance. Service is between 11am - 3pm.
+
+**Room/Booking Specific Quirks:**
+${quirks[bookingId] || "No specific quirks for this booking."}
+`;
+
+    if (isSharedKitchen) {
+        context += `
+**Shared Facilities (For this booking):**
+- **Shared Kitchen:** Located in the basement, it's cleaned to a high standard daily. Each room has a private, labeled compartment in the fridge and cupboard. Complimentary tea and instant coffee are provided. It is fully equipped with an induction hob, oven, microwave, dishwasher, and all cookware.
+- **Shared Bathroom:** Professionally cleaned daily. Features a superior shower with strong, hot water pressure and sustainable toiletries.
+`;
+    }
+    
+    context += `--- END HIDDEN CONTEXT ---`;
+    return context;
+}
+
+function buildChatbotContextFromConfig(content, guestDetails, bookingKey) {
   let contextText = '';
   const tempDiv = document.createElement('div');
 
-  // Add the guest's personalized info to the context
-  if (guestDetails && guestDetails.name) {
+  if (guestDetails && guestDetails.guestName) {
     contextText += `--- GUEST INFORMATION ---\n`;
-    contextText += `Name: ${guestDetails.name}\n`;
-    contextText += `Check-in Date: ${guestDetails.checkIn}\n`;
-    contextText += `Check-out Date: ${guestDetails.checkOut}\n\n`;
+    contextText += `Name: ${guestDetails.guestName}\n`;
+    contextText += `Check-in Date: ${guestDetails.checkInDateFormatted}\n`;
+    contextText += `Check-out Date: ${guestDetails.checkOutDateFormatted}\n\n`;
   }
 
-  const sectionOrder = ['video', 'what-not-to-bring', 'Address', 'domestic-directions', 'airport-directions', 'getting-around', 'codetimes', 'Check-in & Luggage', 'Wifi', 'heating', 'Bedroom', 'Bathroom', 'Kitchen', 'Rubbish Disposal', 'Windows', 'Laundry', 'ironing', 'troubleshooting', 'tv', 'contact', 'local-guidebook'];
+  contextText += getChatbotOnlyContext(bookingKey) + "\n\n";
+
+  const sectionOrder = ['video', 'what-not-to-bring', 'Address', 'domestic-directions', 'airport-directions', 'getting-around', 'codetimes', 'Check-in & Luggage', 'checkout', 'Wifi', 'heating', 'Bedroom', 'Bathroom', 'Kitchen', 'Rubbish Disposal', 'Windows', 'Laundry', 'ironing', 'troubleshooting', 'tv', 'contact', 'local-guidebook'];
 
   sectionOrder.forEach(key => {
     const sectionObjectKey = Object.keys(content).find(k => k.toLowerCase() === key.toLowerCase());
     if (sectionObjectKey && content[sectionObjectKey]) {
       const section = content[sectionObjectKey];
       contextText += `--- Section: ${section.title} ---\n`;
-      
-      // Strip HTML tags by rendering to a temporary, non-displayed element
       tempDiv.innerHTML = section.html;
       const plainText = tempDiv.textContent || tempDiv.innerText || "";
-      
       contextText += plainText.replace(/(\s\s)\s+/g, '$1').trim() + "\n\n";
     }
   });
 
-  const systemPrompt = "You are 'Victoria', a friendly AI assistant for the 195VBR guesthouse. You MUST base your answer ONLY on the detailed guidebook information provided below, including the guest's specific booking details. For all other questions, you should use your general knowledge. Be concise, friendly, and use Markdown for formatting links like [Link Text](URL).";
+  const systemPrompt = "You are 'Victoria', a friendly AI assistant for the 195VBR guesthouse. You MUST base your answer ONLY on the detailed guidebook information provided below, including the guest's specific booking details and the special hidden context. For all other questions, you should use your general knowledge. Be concise, friendly, and use Markdown for formatting links like [Link Text](URL).";
   
   return `${systemPrompt}\n\nRELEVANT GUIDEBOOK CONTENT:\n${contextText}`;
 }
 
-/**
- * Handles sending messages from the DESKTOP chat widget.
- */
-async function sendMessage() {
-    const userInputField = document.getElementById('user-input');
-    const inputContainer = document.getElementById('chat-input-container');
-    const userInput = userInputField.value.trim();
-
-    if (!userInput || inputContainer.classList.contains('loading')) return;
-
-    const chatBox = document.getElementById('chat-box');
-    const now = new Date();
-    const getTimeStamp = () => now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-    const userMessageHtml = `<div class="message-bubble user-message"><p>${userInput}</p></div><div class="timestamp">${getTimeStamp()}</div>`;
-    chatBox.insertAdjacentHTML('beforeend', userMessageHtml);
-    chatHistory.push({ role: 'user', content: userInput, timestamp: now.toISOString() });
-    userInputField.value = '';
-    
-    inputContainer.classList.add('loading');
-    chatBox.scrollTop = chatBox.scrollHeight;
-
-    const typingIndicatorHtml = `<div class="message-bubble bot-message typing-indicator"><span></span><span></span><span></span></div>`;
-    chatBox.insertAdjacentHTML('beforeend', typingIndicatorHtml);
-    chatBox.scrollTop = chatBox.scrollHeight;
-    const typingIndicator = chatBox.querySelector('.typing-indicator');
-    
-    const serverlessFunctionUrl = `${BACKEND_API_BASE_URL}/api/chatbot`;
-    try {
-        const response = await fetch(serverlessFunctionUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ history: chatHistory, context: chatbotContext })
-        });
-        if (!response.ok) { const errorData = await response.json(); throw new Error(errorData.error || `Network response was not ok.`); }
-        
-        typingIndicator.remove();
-        const botMessageContainer = document.createElement('div');
-        botMessageContainer.className = 'message-bubble bot-message';
-        chatBox.appendChild(botMessageContainer);
-        
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let fullResponse = '';
-        while (true) {
-            const { value, done } = await reader.read();
-            if (done) break;
-            fullResponse += decoder.decode(value, { stream: true });
-            botMessageContainer.innerHTML = marked.parse(fullResponse);
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-        
-        const botTimestamp = new Date();
-        chatHistory.push({ role: 'model', content: fullResponse, timestamp: botTimestamp.toISOString() });
-        const timestampHtml = `<div class="timestamp">${botTimestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>`;
-        chatBox.insertAdjacentHTML('beforeend', timestampHtml);
-    } catch (error) {
-        console.error('Fetch error:', error);
-        if(typingIndicator) typingIndicator.remove();
-        const errorHtml = `<div class="message-bubble bot-message"><p>Sorry, I'm having trouble connecting. Please try again later.</p></div><div class="timestamp">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>`;
-        chatBox.insertAdjacentHTML('beforeend', errorHtml);
-    } finally {
-        inputContainer.classList.remove('loading');
-        userInputField.focus(); 
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }
+function debounce(func, delay) {
+  let timeout;
+  return function(...args) {
+    const context = this;
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(context, args), delay);
+  };
 }
-
-/**
- * Initializes the chat history with a welcome message.
- */
-function addInitialBotMessage() {
-    const chatBox = document.getElementById('chat-box');
-    const welcomeMessage = `<div class="message-bubble bot-message"><p>Welcome to 195VBR! I'm Victoria, your AI assistant. Ask me anything about the guesthouse or your London trip.</p></div>`;
-    if (chatBox) {
-        chatBox.innerHTML = welcomeMessage;
-    }
-    // Initialize chat history with the first message and a timestamp
-    chatHistory = [{
-        role: 'model',
-        content: "Welcome to 195VBR! I'm Victoria, your AI assistant. Ask me anything about the guesthouse or your London trip.",
-        timestamp: new Date().toISOString()
-    }];
-}
-
-// --- Home Assistant (HA) Dashboard Functions ---
-const weatherIconMap = { 'clear-night':'clear_night', 'cloudy':'cloudy', 'fog':'foggy', 'hail':'weather_hail', 'lightning':'thunderstorm', 'lightning-rainy':'thunderstorm', 'partlycloudy':'partly_cloudy_day', 'pouring':'rainy', 'rainy':'rainy', 'snowy':'weather_snowy', 'snowy-rainy':'weather_snowy', 'sunny':'sunny', 'windy':'windy', 'windy-variant':'windy', 'exceptional':'warning' };
 
 function createDashboardCards(bookingConfig) {
     const { house, entities } = bookingConfig;
@@ -377,6 +374,47 @@ function createDashboardCards(bookingConfig) {
         slider.addEventListener('change', debouncedSetTemperature);
     });
 }
+
+async function fetchHAData(entityId, house, type = 'state') {
+  const proxyUrl = `${BACKEND_API_BASE_URL}/api/ha-proxy`;
+  const response = await fetch(`${proxyUrl}?house=${house}&entity=${entityId}&type=${type}&opaqueBookingKey=${opaqueBookingKey}`);
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(`Proxy API Error for type '${type}': ${errorData.error || response.statusText}`);
+  }
+  return response.json();
+}
+
+async function setTemperature(entityId, newTemp, house) {
+    const proxyUrl = `${BACKEND_API_BASE_URL}/api/ha-proxy`;
+    try {
+        const response = await fetch(proxyUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ house, entity: entityId, type: 'set_temperature', temperature: newTemp, opaqueBookingKey: opaqueBookingKey })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Failed to set temperature.');
+        console.log('Successfully set temperature:', data);
+        displayHomeAssistantStatus(currentBookingConfig); 
+    } catch (error) {
+        console.error('Error setting temperature:', error);
+    }
+}
+
+function handleSliderInput(event) {
+    const slider = event.currentTarget;
+    const entityId = slider.dataset.entity;
+    const container = document.getElementById(`climate-${entityId}`);
+    const display = container.querySelector('.climate-set-temp-display');
+    display.textContent = `${parseFloat(slider.value).toFixed(1)}°`;
+}
+
+const debouncedSetTemperature = debounce((event) => {
+    const slider = event.currentTarget;
+    const newTemp = parseFloat(slider.value);
+    setTemperature(slider.dataset.entity, newTemp, currentBookingConfig.house);
+}, 500);
 
 async function displayHomeAssistantStatus(bookingConfig) {
   const { house, entities } = bookingConfig;
@@ -416,15 +454,17 @@ async function displayHomeAssistantStatus(bookingConfig) {
         if (topRowContainer) topRowContainer.innerHTML = '';
       }
     } else if (key === 'climate' && guestAccessLevel === 'full') {
-        for (const [entityId, friendlyName] of Object.entries(entityValue)) {
+        const climateEntities = entityValue;
+        for (const [entityId, friendlyName] of Object.entries(climateEntities)) {
             const container = document.getElementById(`climate-${entityId}`);
             if (container) {
                 try {
                     const state = await fetchHAData(entityId, house);
                     const { current_temperature, temperature } = state.attributes;
                     container.querySelector('.climate-current-temp').textContent = `Current: ${current_temperature.toFixed(1)}°`;
-                    container.querySelector('.climate-set-temp-display').textContent = `${temperature.toFixed(1)}°`;
+                    const display = container.querySelector('.climate-set-temp-display');
                     const slider = container.querySelector('.climate-slider');
+                    display.textContent = `${temperature.toFixed(1)}°`;
                     slider.value = temperature;
                     slider.disabled = false;
                 } catch (error) {
@@ -439,8 +479,9 @@ async function displayHomeAssistantStatus(bookingConfig) {
           try {
             const state = await fetchHAData(entityValue, house);
             const statusText = state.state === 'on' ? 'Occupied' : 'Vacant';
-            statusElement.style.color = state.state === 'on' ? '#d9534f' : '#5cb85c';
+            const statusColor = state.state === 'on' ? '#d9534f' : '#5cb85c';
             statusElement.textContent = statusText;
+            statusElement.style.color = statusColor;
           } catch (error) {
             console.error(`Occupancy fetch error for ${key}:`, error);
             statusElement.textContent = 'Unavailable';
@@ -451,82 +492,71 @@ async function displayHomeAssistantStatus(bookingConfig) {
   }
 }
 
-async function fetchHAData(entityId, house, type = 'state') {
-  const proxyUrl = `${BACKEND_API_BASE_URL}/api/ha-proxy`;
-  const response = await fetch(`${proxyUrl}?house=${house}&entity=${entityId}&type=${type}&opaqueBookingKey=${opaqueBookingKey}`);
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(`Proxy API Error for type '${type}': ${errorData.error || response.statusText}`);
-  }
-  return response.json();
-}
+async function sendMessage() {
+    const userInputField = document.getElementById('user-input');
+    const inputContainer = document.getElementById('chat-input-container');
+    const userInput = userInputField.value.trim();
 
-async function setTemperature(entityId, newTemp, house) {
-    const proxyUrl = `${BACKEND_API_BASE_URL}/api/ha-proxy`;
+    if (!userInput || inputContainer.classList.contains('loading')) return;
+
+    const chatBox = document.getElementById('chat-box');
+    const now = new Date();
+    const getTimeStamp = () => now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const userMessageHtml = `<div class="message-bubble user-message"><p>${userInput}</p></div><div class="timestamp">${getTimeStamp()}</div>`;
+    chatBox.insertAdjacentHTML('beforeend', userMessageHtml);
+    chatHistory.push({ role: 'user', content: userInput, timestamp: now.toISOString() });
+    userInputField.value = '';
+    
+    inputContainer.classList.add('loading');
+    
+    chatBox.scrollTop = chatBox.scrollHeight;
+    const typingIndicatorHtml = `<div class="message-bubble bot-message typing-indicator"><span></span><span></span><span></span></div>`;
+    chatBox.insertAdjacentHTML('beforeend', typingIndicatorHtml);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    const typingIndicator = chatBox.querySelector('.typing-indicator');
+    const serverlessFunctionUrl = `${BACKEND_API_BASE_URL}/api/chatbot`;
     try {
-        const response = await fetch(proxyUrl, {
+        const response = await fetch(serverlessFunctionUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ house, entity: entityId, type: 'set_temperature', temperature: newTemp, opaqueBookingKey: opaqueBookingKey })
+            body: JSON.stringify({ history: chatHistory, context: chatbotContext })
         });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'Failed to set temperature.');
-        console.log('Successfully set temperature:', data);
-        displayHomeAssistantStatus(currentBookingConfig); 
+        if (!response.ok) { const errorData = await response.json(); throw new Error(errorData.error || `Network response was not ok.`); }
+        typingIndicator.remove();
+        const botMessageContainer = document.createElement('div');
+        botMessageContainer.className = 'message-bubble bot-message';
+        chatBox.appendChild(botMessageContainer);
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let fullResponse = '';
+        while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            fullResponse += decoder.decode(value, { stream: true });
+            botMessageContainer.innerHTML = marked.parse(fullResponse);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+        chatHistory.push({ role: 'model', content: fullResponse, timestamp: new Date().toISOString() });
+        const timestampHtml = `<div class="timestamp">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>`;
+        chatBox.insertAdjacentHTML('beforeend', timestampHtml);
     } catch (error) {
-        console.error('Error setting temperature:', error);
+        console.error('Fetch error:', error);
+        typingIndicator.remove();
+        const errorHtml = `<div class="message-bubble bot-message"><p>Sorry, I'm having trouble connecting. Please try again later.</p></div><div class="timestamp">${getTimeStamp()}</div>`;
+        chatBox.insertAdjacentHTML('beforeend', errorHtml);
+    } finally {
+        inputContainer.classList.remove('loading');
+        userInputField.focus(); 
+        chatBox.scrollTop = chatBox.scrollHeight;
     }
 }
 
-function handleSliderInput(event) {
-    const slider = event.currentTarget;
-    const container = slider.closest('.climate-entity');
-    if (container) {
-      container.querySelector('.climate-set-temp-display').textContent = `${parseFloat(slider.value).toFixed(1)}°`;
-    }
+function formatCardTitle(key, houseNumber) {
+    const title = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    return `House ${houseNumber} ${title}`;
 }
 
-const debouncedSetTemperature = debounce((event) => {
-    const slider = event.currentTarget;
-    setTemperature(slider.dataset.entity, parseFloat(slider.value), currentBookingConfig.house);
-}, 500);
-
-// --- UI and Event Handler Setup ---
-
-/**
- * Sets up the chat launcher. Redirects to chat.html on mobile, opens widget on desktop.
- */
-function setupChatToggle() {
-  const chatLauncher = document.getElementById('chat-launcher');
-  const isMobile = () => window.innerWidth <= 768;
-
-  const launchChat = (e) => {
-    e.preventDefault();
-    if (isMobile()) {
-      // Get current URL's search parameters (?booking=...etc)
-      const currentSearchParams = window.location.search;
-      // Save data to sessionStorage
-      sessionStorage.setItem('chatbotContext', chatbotContext);
-      sessionStorage.setItem('chatHistory', JSON.stringify(chatHistory));
-      // Redirect to chat.html, preserving the booking parameters
-      window.location.href = `chat.html${currentSearchParams}`;
-    } else {
-      // On desktop, use the original overlay toggle
-      document.documentElement.classList.add('chat-open');
-      document.getElementById('user-input').focus();
-    }
-  };
-
-  chatLauncher.addEventListener('click', launchChat);
-
-  // Desktop-only logic for closing the widget
-  const closeBtn = document.getElementById('chat-close');
-  if(closeBtn) {
-    closeBtn.addEventListener('click', () => {
-      document.documentElement.classList.remove('chat-open');
-    });
-  }
-}
+const weatherIconMap = { 'clear-night':'clear_night', 'cloudy':'cloudy', 'fog':'foggy', 'hail':'weather_hail', 'lightning':'thunderstorm', 'lightning-rainy':'thunderstorm', 'partlycloudy':'partly_cloudy_day', 'pouring':'rainy', 'rainy':'rainy', 'snowy':'weather_snowy', 'snowy-rainy':'weather_snowy', 'sunny':'sunny', 'windy':'windy', 'windy-variant':'windy', 'exceptional':'warning' };
 
 function setupMobileMenu() {
     const hamburgerBtn = document.getElementById('hamburger-btn');
@@ -539,30 +569,31 @@ function setupMobileMenu() {
     nav.addEventListener('click', (e) => { if (e.target.tagName === 'A') { toggleMenu(); } });
 }
 
-function setupEnterKeyListener() {
-  const userInputField = document.querySelector('#chat-widget #user-input');
-  if (userInputField) { 
-    userInputField.addEventListener('keypress', (e) => { 
-      if (e.key === 'Enter' && !e.shiftKey) { 
-        e.preventDefault(); 
-        sendMessage(); 
-      } 
-    }); 
-  }
-}
+function setupChatToggle() {
+  const chatLauncher = document.getElementById('chat-launcher');
+  const isMobile = () => window.innerWidth <= 768;
 
-// --- Helper and Content Functions ---
-function debounce(func, delay) {
-  let timeout;
-  return function(...args) {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(this, args), delay);
+  const launchChat = (e) => {
+    e.preventDefault();
+    if (isMobile()) {
+      const currentSearchParams = window.location.search;
+      sessionStorage.setItem('chatbotContext', chatbotContext);
+      sessionStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+      window.location.href = `chat.html${currentSearchParams}`;
+    } else {
+      document.documentElement.classList.add('chat-open');
+      document.getElementById('user-input').focus();
+    }
   };
-}
 
-function formatCardTitle(key, houseNumber) {
-    const title = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-    return `House ${houseNumber} ${title}`;
+  chatLauncher.addEventListener('click', launchChat);
+
+  const closeBtn = document.getElementById('chat-close');
+  if(closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      document.documentElement.classList.remove('chat-open');
+    });
+  }
 }
 
 function buildDynamicContent(keys, fragments) {
@@ -631,4 +662,21 @@ function getStaticContent() {
         html: `<h3>Food</h3><ul><li><a href="https://www.google.com/maps/search/?api=1&query=Regency+Cafe+London" target="_blank" rel="noopener">Regency Cafe</a> – traditional full English breakfast</li><li><a href="https://www.google.com/maps/search/?api=1&query=Jugged+Hare+London" target="_blank" rel="noopener">Jugged Hare</a> – great pub across the road</li><li><a href="https://www.google.com/maps/search/?api=1&query=Tachbrook+Street+Market+London" target="_blank" rel="noopener">Tachbrook Street Market</a> – local market for lunch on weekdays</li><li><a href="https://www.google.com/maps/search/?api=1&query=Kimchimama+London" target="_blank" rel="noopener">Kimchimama</a> – casual Korean food (especially fried chicken)</li><li><a href="https://www.google.com/maps/search/?api=1&query=Ben+Venuti+London" target="_blank" rel="noopener">Ben Venuti</a> – amazing Italian cafe around the corner</li><li><a href="https://www.google.com/maps/search/?api=1&query=Tozi+London" target="_blank" rel="noopener">Tozi</a> – upscale Italian restaurant nearby</li><li><a href="https://www.google.com/maps/search/?api=1&query=A+Wong+70+Wilton+Road+London" target="_blank" rel="noopener">A. Wong</a> – Michelin-starred Chinese restaurant behind the house</li><li><a href="https://www.google.com/maps/search/?api=1&query=Little+Waitrose+London" target="_blank" rel="noopener">Little Waitrose</a> – closest upmarket supermarket</li><li><a href="https://www.google.com/maps/search/?api=1&query=Sainsbury%27s+Victoria+Station" target="_blank" rel="noopener">Sainsbury's</a> – big supermarket</li><li><a href="https://www.google.com/maps/search/?api=1&query=Rippon+Cheese+London" target="_blank" rel="noopener">Rippon Cheese</a> – famous cheese store nearby</li><li><a href="https://www.google.com/maps/search/?api=1&query=Dishoom+London" target="_blank" rel="noopener">Dishoom</a> – famous Indian food (further away, book in advance)</li><li><a href="https://www.google.com/maps/search/?api=1&query=Gold+Mine+London" target="_blank" rel="noopener">Gold Mine</a> – great Peking duck (further away)</li></ul><h3>Sights</h3><ul><li>Wicked and Hamilton – Two of the world's best musicals are right on our doorstep.</li><li>St James's Park – A beautiful royal park, perfect for a stroll.</li><li>A great walk: Start at Big Ben, cross Westminster Bridge, and walk along the scenic South Bank to Tower Bridge.</li></ul>`
     }
   };
+}
+
+function setupEnterKeyListener() {
+  const userInputField = document.querySelector('#chat-widget #user-input');
+  if (userInputField) { userInputField.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }); }
+}
+
+function addInitialBotMessage() {
+    const chatBox = document.getElementById('chat-box');
+    const welcomeMessage = `<div class="message-bubble bot-message"><p>Welcome to 195VBR! I'm Victoria, your AI assistant. Ask me anything about the guesthouse or your London trip.</p></div>`;
+    chatBox.innerHTML = welcomeMessage;
+
+    chatHistory = [{
+        role: 'model',
+        content: "Welcome to 195VBR! I'm Victoria, your AI assistant. Ask me anything about the guesthouse or your London trip.",
+        timestamp: new Date().toISOString()
+    }];
 }
