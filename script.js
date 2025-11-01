@@ -367,7 +367,7 @@ function createDashboardCards(bookingConfig) {
     const dashboard = document.getElementById('ha-dashboard');
     if (!dashboard) return;
     let cardsHtml = '';
-    const entityKeys = Object.keys(entities).sort((a, b) => a === 'weather' ? -1 : b === 'weather' ? 1 : a === 'climate' ? -1 : b === 'climate' ? 1 : 0);
+    const entityKeys = Object.keys(entities).sort((a, b) => a === 'weather' ? -1 : b === 'weather' ? 1 : 0);
     
     entityKeys.forEach(key => {
         if (key === 'weather') {
@@ -380,21 +380,32 @@ function createDashboardCards(bookingConfig) {
             }
             cardsHtml += `<div class="ha-card climate-card">${climateHtml}</div>`;
         } else if (key === 'lights' && guestAccessLevel === 'full') {
-            const lightEntities = entities[key];
-            let lightHtml = '<div class="ha-card light-card"><h2>💡 Lights</h2>';
-            for (const [entityId, friendlyName] of Object.entries(lightEntities)) {
-                lightHtml += `
-                    <div class="light-entity">
-                        <span class="light-name">${friendlyName}</span>
-                        <label class="switch">
-                            <input type="checkbox" class="light-switch" data-entity="${entityId}" disabled>
-                            <span class="slider"></span>
-                        </label>
+            // NEW: Create a separate card for each light
+            for (const [entityId, friendlyName] of Object.entries(entities[key])) {
+                cardsHtml += `
+                    <div class="ha-card light-control-card" id="light-card-${entityId.replace(/\./g, '-')}">
+                        <div class="light-control-header">
+                            <span class="light-control-name">${friendlyName}</span>
+                            <label class="switch">
+                                <input type="checkbox" class="light-switch" data-entity="${entityId}" disabled>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="light-slider-group" data-controls-for="${entityId}">
+                            <div class="light-slider-row" data-control="brightness">
+                                <span class="material-symbols-outlined">brightness_medium</span>
+                                <input type="range" class="light-slider" data-type="brightness" min="0" max="255" data-entity="${entityId}" disabled>
+                                <span class="light-slider-value" data-value-for="brightness">--%</span>
+                            </div>
+                            <div class="light-slider-row" data-control="color_temp">
+                                <span class="material-symbols-outlined">thermometer</span>
+                                <input type="range" class="light-slider" data-type="color_temp" min="250" max="454" data-entity="${entityId}" disabled>
+                                <span class="light-slider-value" data-value-for="color_temp">--K</span>
+                            </div>
+                        </div>
                     </div>
                 `;
             }
-            lightHtml += '</div>';
-            cardsHtml += lightHtml;
         } else if (guestAccessLevel === 'full') {
             cardsHtml += `<div class="ha-card"><div class="ha-card-title">${formatCardTitle(key, house)}</div><div class="ha-card-status" id="ha-status-${key}">Loading...</div></div>`;
         }
@@ -414,7 +425,64 @@ function createDashboardCards(bookingConfig) {
     document.querySelectorAll('.light-switch').forEach(toggle => {
         toggle.addEventListener('change', handleLightToggle);
     });
+    
+    document.querySelectorAll('.light-slider').forEach(slider => {
+        slider.addEventListener('input', (e) => { // Real-time value display
+             const card = e.target.closest('.light-control-card');
+             const type = e.target.dataset.type;
+             const valueDisplay = card.querySelector(`[data-value-for="${type}"]`);
+             if (type === 'brightness') {
+                 valueDisplay.textContent = `${Math.round(e.target.value / 2.55)}%`;
+             } else {
+                 valueDisplay.textContent = `${Math.round(1000000 / e.target.value)}K`;
+             }
+        });
+        slider.addEventListener('change', handleLightSlider); // API call on release
+    });
 }
+
+async function handleLightToggle(event) {
+    const toggle = event.currentTarget;
+    const entityId = toggle.dataset.entity;
+    toggle.disabled = true;
+
+    try {
+        await fetch(`${BACKEND_API_BASE_URL}/api/ha-proxy`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ house: currentBookingConfig.house, entity: entityId, type: 'light_toggle', opaqueBookingKey: opaqueBookingKey })
+        });
+        // We re-fetch the full status shortly, so no need to update state manually
+    } catch (error) {
+        console.error('Error toggling light:', error);
+        toggle.checked = !toggle.checked; // Revert on failure
+    } finally {
+        setTimeout(() => displayHomeAssistantStatus(currentBookingConfig), 500); // Refresh state after a moment
+        toggle.disabled = false;
+    }
+}
+
+const handleLightSlider = debounce(async (event) => {
+    const slider = event.currentTarget;
+    const entityId = slider.dataset.entity;
+    const type = slider.dataset.type;
+    const value = slider.value;
+    
+    const apiType = type === 'brightness' ? 'light_set_brightness' : 'light_set_color_temp';
+
+    try {
+        await fetch(`${BACKEND_API_BASE_URL}/api/ha-proxy`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ house: currentBookingConfig.house, entity: entityId, type: apiType, value: value, opaqueBookingKey: opaqueBookingKey })
+        });
+    } catch (error) {
+        console.error(`Error setting light ${type}:`, error);
+    } finally {
+        setTimeout(() => displayHomeAssistantStatus(currentBookingConfig), 500);
+    }
+}, 500);
+
 
 async function fetchHAData(entityId, house, type = 'state') {
   const proxyUrl = `${BACKEND_API_BASE_URL}/api/ha-proxy`;
