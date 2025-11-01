@@ -385,11 +385,11 @@ function createDashboardCards(bookingConfig) {
                 cardsHtml += `
                     <div class="ha-card light-control-card" id="light-card-${entityId.replace(/\./g, '-')}">
                         <div class="light-control-header">
-                            <span class="light-control-name">${friendlyName}</span>
                             <label class="switch">
                                 <input type="checkbox" class="light-switch" data-entity="${entityId}" disabled>
                                 <span class="slider"></span>
                             </label>
+                            <span class="light-control-name">${friendlyName}</span>
                         </div>
                         <div class="light-slider-group" data-controls-for="${entityId}">
                             <div class="light-slider-row" data-control="brightness">
