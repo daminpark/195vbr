@@ -5,40 +5,119 @@ let guestAccessLevel = null;
 let chatbotContext = '';
 let chatHistory = [];
 let currentBookingConfig = {};
-// This global variable holds the user's key after successful validation
 let opaqueBookingKey = null; 
 
+// --- LEGACY --- Modified main entry point to handle legacy codes first
 document.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
-  opaqueBookingKey = params.get('booking'); // Store the key globally
+  opaqueBookingKey = params.get('booking');
 
-  if (!opaqueBookingKey) {
+  // 1. Check for legacy codes first
+  if (params.has('wholehome') || params.has('sharedb') || params.has('sharedk')) {
+    await buildLegacyGuidebook(params);
+    setupMobileMenu(); // Setup the menu, but nothing else
+  } 
+  // 2. If no legacy codes, proceed with the secure validation flow
+  else if (opaqueBookingKey) {
+    const validationResult = await validateAccess(opaqueBookingKey);
+    if (validationResult.success) {
+      guestAccessLevel = validationResult.access;
+      await buildGuidebook(opaqueBookingKey);
+      setupChatToggle();
+      setupEnterKeyListener();
+      addInitialBotMessage();
+      setupMobileMenu();
+    } else {
+      displayErrorPage('denied', validationResult.error);
+    }
+  } 
+  // 3. If no valid parameters are found at all, show an error
+  else {
     displayErrorPage('missing');
-    return;
-  }
-  
-  const validationResult = await validateAccess(opaqueBookingKey);
-
-  if (validationResult.success) {
-    guestAccessLevel = validationResult.access;
-    await buildGuidebook(opaqueBookingKey);
-    setupChatToggle();
-    setupEnterKeyListener();
-    addInitialBotMessage();
-    setupMobileMenu();
-  } else {
-    displayErrorPage('denied', validationResult.error);
   }
 });
 
-function debounce(func, delay) {
-  let timeout;
-  return function(...args) {
-    const context = this;
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(context, args), delay);
-  };
+
+// --- LEGACY --- New function to build the simple, non-interactive guidebooks
+async function buildLegacyGuidebook(params) {
+  const guidebookContainer = document.getElementById('guidebook-container');
+  const tocContainer = document.getElementById('table-of-contents');
+
+  // Hide elements not used on legacy pages
+  document.getElementById('chat-launcher').style.display = 'none';
+
+  try {
+    const response = await fetch('config.json');
+    if (!response.ok) throw new Error('config.json not found');
+    const config = await response.json();
+
+    let legacyContentKeys = [];
+    let pageTitle = "195VBR Guidebook";
+
+    // --- Define the content for each legacy page ---
+
+    if (params.has('wholehome')) {
+      pageTitle = "Whole Home Guide";
+      legacyContentKeys = [
+        'house193', 'house195', // Both addresses
+        'wifi193', 'wifi195',   // Both Wi-Fi networks
+        'wholeHomeLuggage',
+        'wholeHomeRubbish',
+        'hasLaundry', // Whole homes have laundry
+        'kitchenBase',
+        'windowsStandard',
+        'windowsTiltTurn'
+      ];
+    } else {
+      // Handle shared rooms, which can be combined
+      pageTitle = "Shared Rooms Guide";
+      // Start with a base of content for any shared room
+      const baseContent = ['house193', 'wifi193', 'guestLuggage'];
+      let sharedContent = new Set(baseContent); // Use a Set to avoid duplicates
+
+      if (params.has('sharedk')) {
+        ['kitchenShared', 'kitchenBase', 'noLaundry'].forEach(item => sharedContent.add(item));
+      }
+      if (params.has('sharedb')) {
+        ['bathroomShared'].forEach(item => sharedContent.add(item));
+      }
+      legacyContentKeys = Array.from(sharedContent);
+    }
+
+    // --- Build the HTML (similar to the main buildGuidebook function) ---
+    
+    const staticContent = getStaticContent();
+    const dynamicContent = buildDynamicContent(legacyContentKeys, config.contentFragments);
+    const allContent = { ...staticContent, ...dynamicContent };
+    
+    // Add header but ensure the HA dashboard div is empty and hidden
+    let fullHtml = `<header class="site-header"><img src="logo.png" alt="195VBR Guesthouse Logo" class="logo" /></header><h1>${pageTitle}</h1><div id="ha-dashboard" style="display: none;"></div>`;
+    let tocHtml = '<ul>';
+    const sectionOrder = ['Address', 'Wifi', 'Check-in & Luggage', 'Bathroom', 'Kitchen', 'Laundry', 'Rubbish Disposal', 'Windows'];
+    
+    sectionOrder.forEach(key => {
+      const sectionObjectKey = Object.keys(allContent).find(k => k.toLowerCase() === key.toLowerCase());
+      if (sectionObjectKey && allContent[sectionObjectKey]) {
+        const section = allContent[sectionObjectKey];
+        const sectionId = section.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        fullHtml += `<section id="${sectionId}"><h2>${section.emoji} ${section.title}</h2>${section.html}</section>`;
+        tocHtml += `<li><a href="#${sectionId}">${section.emoji} ${section.title}</a></li>`;
+      }
+    });
+
+    tocHtml += '</ul>';
+    guidebookContainer.innerHTML = fullHtml;
+    tocContainer.innerHTML = tocHtml;
+    
+  } catch (error) {
+    console.error("Error building legacy guidebook:", error);
+    displayErrorPage('denied', `Could not load guidebook configuration. ${error.message}`);
+  }
 }
+
+
+// (The rest of the file from displayErrorPage downwards is exactly the same as before)
+// ... PASTE ALL THE OTHER FUNCTIONS HERE ...
 
 function displayErrorPage(type, message = '') {
   const guidebookContainer = document.getElementById('guidebook-container');
@@ -111,59 +190,48 @@ async function buildGuidebook(opaqueBookingKey) {
   }
 }
 
-// --- REPLACE the createDashboardCards function ---
+function debounce(func, delay) {
+  let timeout;
+  return function(...args) {
+    const context = this;
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(context, args), delay);
+  };
+}
+
 function createDashboardCards(bookingConfig) {
     const { house, entities } = bookingConfig;
     const dashboard = document.getElementById('ha-dashboard');
     if (!dashboard) return;
-
     let cardsHtml = '';
     const entityKeys = Object.keys(entities).sort((a, b) => a === 'weather' ? -1 : b === 'weather' ? 1 : 0);
-
     entityKeys.forEach(key => {
         if (key === 'weather') {
             cardsHtml += `<div class="ha-card weather-card" id="ha-card-weather"><div class="weather-top-row" id="ha-weather-top-row">Loading Weather...</div><div class="weather-forecast" id="ha-weather-daily"></div></div>`;
         } else if (key === 'climate' && guestAccessLevel === 'full') {
-            const climateEntities = entities[key]; // This is now an object
+            const climateEntities = entities[key];
             let climateHtml = '';
-
-            // Loop through the object: { "entity_id": "Friendly Name" }
             for (const [entityId, friendlyName] of Object.entries(climateEntities)) {
-                climateHtml += `
-                    <div class="climate-entity" id="climate-${entityId}">
-                        <div class="climate-name">${friendlyName}</div>
-                        <div class="climate-current-temp">Current: --°</div>
-                        <div class="climate-set-temp-display">--°</div>
-                        <div class="climate-slider-container">
-                            <input type="range" min="14" max="24" step="0.5" class="climate-slider" data-entity="${entityId}" disabled>
-                        </div>
-                    </div>`;
+                climateHtml += `<div class="climate-entity" id="climate-${entityId}"><div class="climate-name">${friendlyName}</div><div class="climate-current-temp">Current: --°</div><div class="climate-set-temp-display">--°</div><div class="climate-slider-container"><input type="range" min="14" max="24" step="0.5" class="climate-slider" data-entity="${entityId}" disabled></div></div>`;
             }
             cardsHtml += `<div class="ha-card climate-card">${climateHtml}</div>`;
         } else if (guestAccessLevel === 'full') {
             cardsHtml += `<div class="ha-card"><div class="ha-card-title">${formatCardTitle(key, house)}</div><div class="ha-card-status" id="ha-status-${key}">Loading...</div></div>`;
         }
     });
-  
     if (!cardsHtml.trim()) {
         dashboard.style.display = 'none';
     } else {
         dashboard.innerHTML = cardsHtml;
     }
-
-    // Add debounced event listeners for the new sliders
     document.querySelectorAll('.climate-slider').forEach(slider => {
-        // Update the display instantly as the user slides
         slider.addEventListener('input', handleSliderInput);
-        // Send the API command only after the user has stopped sliding for 500ms
         slider.addEventListener('change', debouncedSetTemperature);
     });
 }
 
-// --- THIS IS THE CORRECTED FUNCTION ---
 async function fetchHAData(entityId, house, type = 'state') {
   const proxyUrl = `${BACKEND_API_BASE_URL}/api/ha-proxy`;
-  // It now correctly sends the opaqueBookingKey with every GET request for authorization.
   const response = await fetch(`${proxyUrl}?house=${house}&entity=${entityId}&type=${type}&opaqueBookingKey=${opaqueBookingKey}`);
   if (!response.ok) {
     const errorData = await response.json();
@@ -189,7 +257,6 @@ async function setTemperature(entityId, newTemp, house) {
     }
 }
 
-// --- ADD these two NEW functions ---
 function handleSliderInput(event) {
     const slider = event.currentTarget;
     const entityId = slider.dataset.entity;
@@ -198,13 +265,11 @@ function handleSliderInput(event) {
     display.textContent = `${parseFloat(slider.value).toFixed(1)}°`;
 }
 
-// Create a debounced version of our API call function
 const debouncedSetTemperature = debounce((event) => {
     const slider = event.currentTarget;
     const newTemp = parseFloat(slider.value);
     setTemperature(slider.dataset.entity, newTemp, currentBookingConfig.house);
-}, 500); // 500ms delay
-
+}, 500);
 
 async function displayHomeAssistantStatus(bookingConfig) {
   const { house, entities } = bookingConfig;
@@ -266,11 +331,9 @@ async function displayHomeAssistantStatus(bookingConfig) {
             }
         }
     } else if (guestAccessLevel === 'full') {
-        // --- THIS IS THE RESTORED LOGIC ---
         const statusElement = document.getElementById(`ha-status-${key}`);
         if (statusElement) {
           try {
-            // The entityValue is the string ID, e.g., "binary_sensor.bathroom_a_occupancy"
             const state = await fetchHAData(entityValue, house);
             const statusText = state.state === 'on' ? 'Occupied' : 'Vacant';
             const statusColor = state.state === 'on' ? '#d9534f' : '#5cb85c';
@@ -286,7 +349,6 @@ async function displayHomeAssistantStatus(bookingConfig) {
   }
 }
 
-// (The rest of the file is unchanged)
 async function sendMessage() {
     const userInputField = document.getElementById('user-input');
     const sendBtn = document.getElementById('send-btn');
