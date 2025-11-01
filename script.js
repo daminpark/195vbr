@@ -556,11 +556,31 @@ async function fetchHAData(entityId, house, type = 'state') {
 }
 
 function updateCardFromPush(data) {
-    const { entity_id, state, attributes } = data;
+    let { entity_id, state, attributes } = data; // Use 'let' to allow modification
+
+    // FIX: Check if attributes is a string and parse it into an object if necessary.
+    if (typeof attributes === 'string') {
+        try {
+            // This is a workaround for attributes being sent as a Python dict string.
+            // 1. Replace all single quotes with double quotes to make it valid JSON.
+            // 2. Replace Python-specific object notations like <...> with a simple string.
+            const jsonString = attributes
+                .replace(/'/g, '"')
+                .replace(/<[^>]+>/g, '"(object)"');
+
+            // 3. Parse the sanitized string into a usable object.
+            attributes = JSON.parse(jsonString);
+        } catch (e) {
+            console.error("Could not parse attributes string from push update:", data.attributes);
+            // If parsing fails, exit the function to prevent crashing.
+            return;
+        }
+    }
 
     if (entity_id.startsWith('climate.')) {
         const container = document.getElementById(`climate-${entity_id}`);
         if (container) {
+            // This line will now work correctly because 'attributes' is an object.
             container.querySelector('.climate-current-temp').textContent = `Current: ${attributes.current_temperature.toFixed(1)}°`;
             const display = container.querySelector('.climate-set-temp-display');
             const slider = container.querySelector('.climate-slider');
@@ -617,6 +637,7 @@ function updateCardFromPush(data) {
         }
     }
 }
+
 
 async function displayHomeAssistantStatus(bookingConfig) {
   const { house, entities } = bookingConfig;
