@@ -773,6 +773,31 @@ async function displayHomeAssistantStatus(bookingConfig) {
         }
     }
   }
+  pingAllLights(bookingConfig); // Trigger the live health check
+}
+
+async function pingAllLights(bookingConfig) {
+  const { house, entities } = bookingConfig;
+  if (!house || !entities || !entities.lights) return;
+
+  console.log("Pinging all lights for live status...");
+
+  for (const entityId of Object.keys(entities.lights)) {
+    try {
+      await fetch(`${BACKEND_API_BASE_URL}/api/ha-proxy`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          house: house,
+          entity: entityId,
+          type: 'ping_light', // This matches the type we added to ha-proxy.js
+          opaqueBookingKey: opaqueBookingKey
+        })
+      });
+    } catch (error) {
+      console.error(`Error pinging light ${entityId}:`, error);
+    }
+  }
 }
 
 // --- CHATBOT & UI SETUP FUNCTIONS ---
