@@ -520,9 +520,21 @@ body.chat-page #chat-input-container {
   justify-content: flex-start; /* Align items to the start */
 }
 
-/* --- DEPRECATE the old chat close button by hiding it --- */
-#chat-close {
-  display: none;
+/* --- Adjust chat close button visibility --- */
+#chat-header #chat-close {
+  display: block; /* Ensure it's visible by default on desktop */
+}
+
+/* Inside the main mobile media query */
+@media (max-width: 768px) {
+  /* ... other mobile styles are already here ... */
+
+  /* HIDE the close button ONLY on mobile, where it's not needed */
+  #chat-header #chat-close {
+    display: none;
+  }
+  
+  /* ... other mobile styles continue ... */
 }
 
 /* --- Add these styles for the new input container to style.css --- */
