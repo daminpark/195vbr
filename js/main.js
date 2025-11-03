@@ -19,8 +19,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   AppState.opaqueBookingKey = params.get('booking');
 
   // --- LOGIC ROUTER (Corrected Order) ---
-
-  // 1. Check for the most specific and secure key first: ?booking=...
   if (AppState.opaqueBookingKey) {
     const validationResult = await validateAccess(AppState.opaqueBookingKey);
     if (validationResult.success) {
@@ -32,40 +30,28 @@ document.addEventListener('DOMContentLoaded', async () => {
       displayErrorPage('denied', validationResult.error);
     }
   } 
-  // 2. Next, check for the old, specific legacy keys: ?wholehome, ?sharedb, ?sharedk
   else if (params.has('wholehome') || params.has('sharedb') || params.has('sharedk')) {
     await buildLegacyGuidebook(params);
     setupChatInterface();
   }
-  // 3. Finally, check for the new generic legacy key pattern: ?{key} (e.g., ?31)
-  // This checks if there is a query string that does NOT contain an "=" sign.
   else if (searchString.length > 1 && !searchString.includes('=')) {
     const simpleBookingKey = searchString.substring(1);
     await buildSimpleGuidebook(simpleBookingKey);
     setupChatInterface();
   } 
-  // 4. If none of the above match, it's an invalid link.
   else {
     displayErrorPage('missing');
   }
 
-  // Common UI setup for all guidebook versions that successfully render
   if (document.getElementById('guidebook-container').innerHTML.trim()) {
     setupMobileMenu();
   }
 });
 
-
-/**
- * Initializes all chatbot-related UI elements and event listeners.
- */
 function setupChatInterface() {
   const sendBtn = document.getElementById('send-btn');
   if (sendBtn) {
-    sendBtn.addEventListener('mousedown', (e) => {
-      e.preventDefault(); // Prevents focus loss on mobile
-      sendMessage();
-    });
+    sendBtn.addEventListener('mousedown', (e) => { e.preventDefault(); sendMessage(); });
   }
   setupChatToggle();
   setupEnterKeyListener();
@@ -74,24 +60,15 @@ function setupChatInterface() {
 
 // --- GUIDEBOOK BUILDER FUNCTIONS ---
 
-/**
- * Builds the full, secure guidebook for validated guests.
- * @param {string} opaqueBookingKey - The secure, validated booking key.
- * @param {object} guestDetails - The details returned from the validation API.
- */
 async function buildGuidebook(opaqueBookingKey, guestDetails) {
   try {
     const config = await getConfig();
     const bookingKey = opaqueBookingKey.split('-')[0];
     AppState.currentBookingConfig = config.bookings[bookingKey];
     if (!AppState.currentBookingConfig) throw new Error(`Booking key "${bookingKey}" not found.`);
-
     const allContent = generatePageContent(AppState.currentBookingConfig.content, guestDetails, config.contentFragments);
     AppState.chatbotContext = buildChatbotContext(allContent, guestDetails, bookingKey);
-    
-    renderPage(allContent, guestDetails); // Renders HTML to the page
-    
-    // Initialize Home Assistant dashboard and real-time updates
+    renderPage(allContent, guestDetails);
     if (AppState.currentBookingConfig.house && AppState.currentBookingConfig.entities) {
       initializePusher(AppState.currentBookingConfig.house);
       createDashboardCards(AppState.currentBookingConfig);
@@ -103,40 +80,23 @@ async function buildGuidebook(opaqueBookingKey, guestDetails) {
   }
 }
 
-/**
- * Builds a simplified, public version of the guidebook with weather but no controls.
- * @param {string} bookingKey - The simple booking key (e.g., "31").
- */
 async function buildSimpleGuidebook(bookingKey) {
   try {
     const config = await getConfig();
     AppState.currentBookingConfig = config.bookings[bookingKey];
     if (!AppState.currentBookingConfig) throw new Error(`Public booking key "${bookingKey}" not found.`);
-
-    // Generate content without personalized details
     const allContent = generatePageContent(AppState.currentBookingConfig.content, {}, config.contentFragments);
     AppState.chatbotContext = buildChatbotContext(allContent, {}, bookingKey);
-
-    renderPage(allContent); // Render with a generic welcome
-
-    // Initialize only the weather part of the dashboard
+    renderPage(allContent);
+    // MODIFICATION: Simply hide the dashboard for these links.
     const dashboard = document.getElementById('ha-dashboard');
-    if (AppState.currentBookingConfig.house && AppState.currentBookingConfig.entities.weather) {
-      dashboard.innerHTML = createWeatherCardHtml();
-      fetchWeatherData(AppState.currentBookingConfig.entities.weather, AppState.currentBookingConfig.house, null);
-    } else if (dashboard) {
-      dashboard.style.display = 'none';
-    }
+    if (dashboard) dashboard.style.display = 'none';
   } catch (error) {
     console.error("Error building simple guidebook:", error);
     displayErrorPage('denied', `Could not load guidebook. ${error.message}`);
   }
 }
 
-/**
- * Builds the oldest legacy guidebook based on URL parameters.
- * @param {URLSearchParams} params - The URL search parameters.
- */
 async function buildLegacyGuidebook(params) {
   try {
     const config = await getConfig();
@@ -146,23 +106,22 @@ async function buildLegacyGuidebook(params) {
 
     if (params.has('wholehome')) {
       pageTitle = "Whole Home Guide";
-      ['house193', 'house195', 'wifi193', 'wifi195', 'wholeHomeLuggage', 'wholeHomeRubbish', 'hasLaundry', 'kitchenBase', 'windowsStandard', 'windowsTiltTurn']
-        .forEach(item => legacyContentKeys.add(item));
+      ['house193', 'house195', 'wifi193', 'wifi195', 'wholeHomeLuggage', 'wholeHomeRubbish', 'hasLaundry', 'kitchenBase', 'windowsStandard', 'windowsTiltTurn'].forEach(item => legacyContentKeys.add(item));
     } else {
       pageTitle = "Private Room Guide";
       ['house193', 'wifi193', 'guestLuggage'].forEach(item => legacyContentKeys.add(item));
-      if (params.has('sharedk')) {
-        ['kitchenShared', 'kitchenBase', 'noLaundry'].forEach(item => legacyContentKeys.add(item));
-      }
-      if (params.has('sharedb')) {
-        ['bathroomShared'].forEach(item => legacyContentKeys.add(item));
-      }
+      if (params.has('sharedk')) { ['kitchenShared', 'kitchenBase', 'noLaundry'].forEach(item => legacyContentKeys.add(item)); }
+      if (params.has('sharedb')) { ['bathroomShared'].forEach(item => legacyContentKeys.add(item)); }
     }
     
     const allContent = generatePageContent(Array.from(legacyContentKeys), {}, config.contentFragments, true);
     AppState.chatbotContext = buildChatbotContext(allContent, {}, 'legacy');
     renderPage(allContent, {}, pageTitle);
     
+    // MODIFICATION: Explicitly hide the dashboard for old legacy links too.
+    const dashboard = document.getElementById('ha-dashboard');
+    if (dashboard) dashboard.style.display = 'none';
+
   } catch (error) {
     console.error("Error building legacy guidebook:", error);
     displayErrorPage('denied', `Could not load guidebook. ${error.message}`);
