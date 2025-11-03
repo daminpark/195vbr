@@ -40,8 +40,13 @@ function renderPage(allContent, guestDetails = {}, legacyTitle = null) {
   let tocHtml = '<ul>';
   const sectionOrder = ['video', 'what-not-to-bring', 'Address', 'domestic-directions', 'airport-directions', 'getting-around', 'codetimes', 'Check-in & Luggage', 'checkout', 'Wifi', 'heating', 'lights-note', 'Bedroom', 'Bathroom', 'Kitchen', 'Rubbish Disposal', 'Windows', 'Laundry', 'ironing', 'troubleshooting', 'tv', 'contact', 'local-guidebook'];
   
-  sectionOrder.forEach(key => {
-    const sectionObjectKey = Object.keys(allContent).find(k => k.toLowerCase() === key.toLowerCase());
+  // --- THIS IS THE CORRECTED LOGIC ---
+  sectionOrder.forEach(titleKey => {
+    // Find the key of the content object whose 'title' property matches the titleKey from our ordered list.
+    const sectionObjectKey = Object.keys(allContent).find(
+      key => allContent[key].title && allContent[key].title.toLowerCase() === titleKey.toLowerCase()
+    );
+
     if (sectionObjectKey && allContent[sectionObjectKey]) {
       const section = allContent[sectionObjectKey];
       const sectionId = section.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
@@ -49,6 +54,7 @@ function renderPage(allContent, guestDetails = {}, legacyTitle = null) {
       tocHtml += `<li><a href="#${sectionId}">${section.emoji} ${section.title}</a></li>`;
     }
   });
+  // --- END OF CORRECTION ---
 
   tocHtml += '</ul>';
   guidebookContainer.innerHTML = fullHtml;
@@ -133,7 +139,9 @@ function setupEnterKeyListener() {
   }
 }
 
-
+/**
+ * Adds the initial welcome message and suggestion chips to the chatbox.
+ */
 function addInitialBotMessage() {
     const chatBox = document.getElementById('chat-box');
     
@@ -156,22 +164,15 @@ function addInitialBotMessage() {
         timestamp: new Date().toISOString()
     }];
 
-    // --- ROBUST CLICK HANDLER ---
+    // ROBUST CLICK HANDLER
     const suggestionsContainer = document.getElementById('suggestions-container');
     if (suggestionsContainer) {
         suggestionsContainer.addEventListener('click', (e) => {
             if (e.target.classList.contains('suggestion-chip')) {
-                // 1. Get the text from the clicked button
                 const promptText = e.target.textContent;
-                
-                // 2. Find the main user input field and the send button
                 const userInputField = document.getElementById('user-input');
                 const sendBtn = document.getElementById('send-btn');
-                
-                // 3. Set the input field's value to the prompt text
                 userInputField.value = promptText;
-                
-                // 4. Programmatically click the main send button to trigger the sendMessage function
                 sendBtn.click();
             }
         });
