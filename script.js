@@ -461,7 +461,13 @@ function createDashboardCards(bookingConfig) {
     }
 
     document.querySelectorAll('.climate-slider').forEach(slider => {
-        slider.addEventListener('input', handleSliderInput);
+        // Replace the old line with this block
+        slider.addEventListener('change', (event) => {
+          // We capture the element reference immediately...
+          const sliderElement = event.currentTarget;
+          // ...and pass the element itself to the debounced function.
+          handleLightSlider(sliderElement);
+        });
         slider.addEventListener('change', (event) => {
             const currentSlider = event.currentTarget;
             const newTemp = parseFloat(currentSlider.value);
@@ -528,8 +534,8 @@ async function handleLightToggle(event) {
     }
 }
 
-const handleLightSlider = debounce(async (event) => {
-    const slider = event.currentTarget;
+const handleLightSlider = debounce(async (slider) => { // Now receives the slider element directly
+    // The 'slider' variable is now guaranteed to be the HTML element.
     const entityId = slider.dataset.entity;
     const type = slider.dataset.type;
     const value = slider.value;
