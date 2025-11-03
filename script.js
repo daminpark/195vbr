@@ -577,8 +577,17 @@ async function handleLightToggle(event) {
     }
 }
 
-const handleLightSlider = debounce(async (event) => { // <--- The 'event' parameter is back
-    const slider = event.currentTarget; // This line will now work correctly
+const handleLightSlider = debounce(async function(event) {
+    // We now use `this` to refer to the slider element.
+    // The `debounce` function is designed to preserve this context correctly.
+    const slider = this;
+
+    // A safety check in case something goes wrong
+    if (!slider || !slider.dataset) {
+        console.error("Could not identify the slider element inside handleLightSlider.");
+        return;
+    }
+
     const entityId = slider.dataset.entity;
     const type = slider.dataset.type;
     const value = slider.value;
