@@ -74,6 +74,9 @@ function displayErrorPage(type, message = '') {
   guidebookContainer.innerHTML = errorHtml;
 }
 
+/**
+ * Sets up the hamburger menu for mobile devices.
+ */
 function setupMobileMenu() {
     const hamburgerBtn = document.getElementById('hamburger-btn');
     const nav = document.getElementById('table-of-contents');
@@ -85,6 +88,9 @@ function setupMobileMenu() {
     nav.addEventListener('click', (e) => { if (e.target.tagName === 'A') { toggleMenu(); } });
 }
 
+/**
+ * Configures the chat launcher to either open the widget or navigate to the chat page.
+ */
 function setupChatToggle() {
   const chatLauncher = document.getElementById('chat-launcher');
   const isMobile = () => window.innerWidth <= 768;
@@ -112,6 +118,9 @@ function setupChatToggle() {
   }
 }
 
+/**
+ * Adds an event listener to the chat input field to send a message on Enter key press.
+ */
 function setupEnterKeyListener() {
   const userInputField = document.querySelector('#chat-widget #user-input');
   if (userInputField) { 
@@ -124,14 +133,48 @@ function setupEnterKeyListener() {
   }
 }
 
+/**
+ * Adds the initial welcome message and suggestion chips to the chatbox.
+ */
 function addInitialBotMessage() {
     const chatBox = document.getElementById('chat-box');
-    const welcomeMessage = `<div class="message-bubble bot-message"><p>Welcome! I'm Victoria, your AI assistant. Ask me anything about the guesthouse or your London trip.</p></div>`;
-    chatBox.innerHTML = welcomeMessage;
+    
+    // The welcome message from the AI
+    const welcomeMessageHtml = `
+        <div class="message-bubble bot-message">
+            <p>Welcome! I'm Victoria, your AI assistant. Ask me anything about the guesthouse or your London trip.</p>
+        </div>`;
+    
+    // The HTML for the suggestion buttons
+    const suggestionsHtml = `
+        <div class="suggestions-container" id="suggestions-container">
+            <button class="suggestion-chip">What's the Wi-Fi password?</button>
+            <button class="suggestion-chip">How do I check out?</button>
+            <button class="suggestion-chip">How does the heating work?</button>
+        </div>
+    `;
 
+    // Add everything to the chat box
+    chatBox.innerHTML = welcomeMessageHtml + suggestionsHtml;
+
+    // Set up the initial chat history
     AppState.chatHistory = [{
         role: 'model',
         content: "Welcome! I'm Victoria, your AI assistant. Ask me anything about the guesthouse or your London trip.",
         timestamp: new Date().toISOString()
     }];
+
+    // Add a listener to handle clicks on the suggestion chips
+    const suggestionsContainer = document.getElementById('suggestions-container');
+    if (suggestionsContainer) {
+        suggestionsContainer.addEventListener('click', (e) => {
+            // Check if a button was clicked
+            if (e.target.classList.contains('suggestion-chip')) {
+                const promptText = e.target.textContent;
+                // Hide the suggestions after one is clicked, before sending the message
+                suggestionsContainer.style.display = 'none';
+                sendMessage(promptText); // Send the button's text as a message
+            }
+        });
+    }
 }

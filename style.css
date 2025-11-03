@@ -772,3 +772,30 @@ input:disabled + .slider {
 .light-control-card.is-refreshing .light-refresh-btn {
   pointer-events: none; /* Disable clicking while refreshing */
 }
+
+/* --- 9. CHATBOT SUGGESTION CHIPS --- */
+
+.suggestions-container {
+  display: flex;
+  flex-wrap: wrap; /* Allows buttons to wrap to the next line on small screens */
+  gap: 8px; /* Space between buttons */
+  justify-content: flex-start; /* Align buttons to the left */
+  padding: 5px 0 10px 0; /* Some spacing around the container */
+  max-width: 100%;
+}
+
+.suggestion-chip {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 16px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.suggestion-chip:hover {
+  background-color: #f0f0f0;
+  border-color: #aaa;
+}
