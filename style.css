@@ -514,10 +514,14 @@ body.chat-page #chat-input-container {
 }
 
 #chat-header {
+  background-color: var(--primary-color);
+  color: var(--text-color-light);
+  padding: 10px 15px;
   display: flex;
-  align-items: center; /* Vertically align items */
-  gap: 15px; /* Add space between the back button and title */
-  justify-content: flex-start; /* Align items to the start */
+  justify-content: space-between; /* This is the key change */
+  align-items: center;
+  font-weight: bold;
+  flex-shrink: 0; /* Prevents header from shrinking */
 }
 
 /* --- Adjust chat close button visibility --- */
