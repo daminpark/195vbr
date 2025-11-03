@@ -548,9 +548,7 @@ async function handleLightToggle(event) {
     }
 }
 
-const handleLightSlider = debounce(async (event) => {
-    // We now receive the 'event' object directly and reliably.
-    const slider = event.currentTarget; 
+const handleLightSlider = async (slider) => { // No debounce wrapper here
     const entityId = slider.dataset.entity;
     const type = slider.dataset.type;
     const value = slider.value;
@@ -564,7 +562,7 @@ const handleLightSlider = debounce(async (event) => {
     } catch (error) {
         console.error(`Error setting light ${type}:`, error);
     }
-}, 500);
+};
 
 async function fetchHAData(entityId, house, type = 'state') {
   const proxyUrl = `${BACKEND_API_BASE_URL}/api/ha-proxy`;
@@ -928,13 +926,6 @@ async function sendMessage() {
     }
 }
 
-function handleSliderInput(event) {
-    const slider = event.currentTarget;
-    const entityId = slider.dataset.entity;
-    const container = document.getElementById(`climate-${entityId}`);
-    const display = container.querySelector('.climate-set-temp-display');
-    display.textContent = `${parseFloat(slider.value).toFixed(1)}°`;
-}
 
 function formatCardTitle(key, houseNumber) {
     const title = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
