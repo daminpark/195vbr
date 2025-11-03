@@ -15,14 +15,12 @@ const AppState = {
 // --- PRIMARY EVENT LISTENER ---
 document.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
+  const searchString = window.location.search;
   AppState.opaqueBookingKey = params.get('booking');
-  let simpleBookingKey = null;
 
-  if (!AppState.opaqueBookingKey && window.location.search.length > 1 && !params.keys().next().value) {
-    simpleBookingKey = window.location.search.substring(1);
-  }
+  // --- LOGIC ROUTER (Corrected Order) ---
 
-  // --- LOGIC ROUTER ---
+  // 1. Check for the most specific and secure key first: ?booking=...
   if (AppState.opaqueBookingKey) {
     const validationResult = await validateAccess(AppState.opaqueBookingKey);
     if (validationResult.success) {
@@ -34,28 +32,38 @@ document.addEventListener('DOMContentLoaded', async () => {
       displayErrorPage('denied', validationResult.error);
     }
   } 
-  else if (simpleBookingKey) {
-    await buildSimpleGuidebook(simpleBookingKey);
-    setupChatInterface();
-  }
+  // 2. Next, check for the old, specific legacy keys: ?wholehome, ?sharedb, ?sharedk
   else if (params.has('wholehome') || params.has('sharedb') || params.has('sharedk')) {
     await buildLegacyGuidebook(params);
     setupChatInterface();
+  }
+  // 3. Finally, check for the new generic legacy key pattern: ?{key} (e.g., ?31)
+  // This checks if there is a query string that does NOT contain an "=" sign.
+  else if (searchString.length > 1 && !searchString.includes('=')) {
+    const simpleBookingKey = searchString.substring(1);
+    await buildSimpleGuidebook(simpleBookingKey);
+    setupChatInterface();
   } 
+  // 4. If none of the above match, it's an invalid link.
   else {
     displayErrorPage('missing');
   }
 
+  // Common UI setup for all guidebook versions that successfully render
   if (document.getElementById('guidebook-container').innerHTML.trim()) {
     setupMobileMenu();
   }
 });
 
+
+/**
+ * Initializes all chatbot-related UI elements and event listeners.
+ */
 function setupChatInterface() {
   const sendBtn = document.getElementById('send-btn');
   if (sendBtn) {
     sendBtn.addEventListener('mousedown', (e) => {
-      e.preventDefault();
+      e.preventDefault(); // Prevents focus loss on mobile
       sendMessage();
     });
   }
@@ -66,6 +74,11 @@ function setupChatInterface() {
 
 // --- GUIDEBOOK BUILDER FUNCTIONS ---
 
+/**
+ * Builds the full, secure guidebook for validated guests.
+ * @param {string} opaqueBookingKey - The secure, validated booking key.
+ * @param {object} guestDetails - The details returned from the validation API.
+ */
 async function buildGuidebook(opaqueBookingKey, guestDetails) {
   try {
     const config = await getConfig();
@@ -76,8 +89,9 @@ async function buildGuidebook(opaqueBookingKey, guestDetails) {
     const allContent = generatePageContent(AppState.currentBookingConfig.content, guestDetails, config.contentFragments);
     AppState.chatbotContext = buildChatbotContext(allContent, guestDetails, bookingKey);
     
-    renderPage(allContent, guestDetails);
+    renderPage(allContent, guestDetails); // Renders HTML to the page
     
+    // Initialize Home Assistant dashboard and real-time updates
     if (AppState.currentBookingConfig.house && AppState.currentBookingConfig.entities) {
       initializePusher(AppState.currentBookingConfig.house);
       createDashboardCards(AppState.currentBookingConfig);
@@ -89,17 +103,23 @@ async function buildGuidebook(opaqueBookingKey, guestDetails) {
   }
 }
 
+/**
+ * Builds a simplified, public version of the guidebook with weather but no controls.
+ * @param {string} bookingKey - The simple booking key (e.g., "31").
+ */
 async function buildSimpleGuidebook(bookingKey) {
   try {
     const config = await getConfig();
     AppState.currentBookingConfig = config.bookings[bookingKey];
     if (!AppState.currentBookingConfig) throw new Error(`Public booking key "${bookingKey}" not found.`);
 
+    // Generate content without personalized details
     const allContent = generatePageContent(AppState.currentBookingConfig.content, {}, config.contentFragments);
     AppState.chatbotContext = buildChatbotContext(allContent, {}, bookingKey);
 
-    renderPage(allContent);
+    renderPage(allContent); // Render with a generic welcome
 
+    // Initialize only the weather part of the dashboard
     const dashboard = document.getElementById('ha-dashboard');
     if (AppState.currentBookingConfig.house && AppState.currentBookingConfig.entities.weather) {
       dashboard.innerHTML = createWeatherCardHtml();
@@ -113,6 +133,10 @@ async function buildSimpleGuidebook(bookingKey) {
   }
 }
 
+/**
+ * Builds the oldest legacy guidebook based on URL parameters.
+ * @param {URLSearchParams} params - The URL search parameters.
+ */
 async function buildLegacyGuidebook(params) {
   try {
     const config = await getConfig();
