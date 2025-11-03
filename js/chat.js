@@ -6,38 +6,28 @@ let chatbotContext = '';
 let chatHistory = [];
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Get the booking parameters from the URL
+    // 1. Get parameters and set back button
     const searchParams = new URLSearchParams(window.location.search);
     const bookingKey = searchParams.get('booking');
-
-    // 2. Set the "Back to Guidebook" link
     const backBtn = document.getElementById('chat-back-btn');
-    if (bookingKey) {
-        backBtn.href = `index.html?booking=${bookingKey}`;
-    } else {
-        // Fallback for simple legacy URLs (e.g., /?31)
-        const simpleKey = window.location.search;
-        backBtn.href = `index.html${simpleKey}`;
-    }
+    backBtn.href = bookingKey ? `index.html?booking=${bookingKey}` : `index.html${window.location.search}`;
 
-    // 3. Retrieve data from sessionStorage
+    // 2. Retrieve data from sessionStorage
     chatbotContext = sessionStorage.getItem('chatbotContext');
     const storedHistory = sessionStorage.getItem('chatHistory');
 
     if (!chatbotContext || !storedHistory) {
-        document.getElementById('chat-box').innerHTML = 
-            '<p style="padding: 1rem; text-align: center; position: absolute; bottom: 0;">Could not load chat session. Please return to the guidebook and try again.</p>';
+        document.getElementById('chat-box').innerHTML = '<p style="padding: 1rem; text-align: center; position: absolute; bottom: 0;">Could not load chat session. Please return to the guidebook and try again.</p>';
         document.getElementById('chat-input-container').style.display = 'none';
         return;
     }
 
     chatHistory = JSON.parse(storedHistory);
-
-    // 4. Populate the chat box with existing history (in REVERSE order)
     const chatBox = document.getElementById('chat-box');
     let messagesHtml = '';
     const getTimeStamp = (date) => new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
+    // 3. Populate chat box with history
     for (let i = chatHistory.length - 1; i >= 0; i--) {
         const msg = chatHistory[i];
         if (msg.role === 'user') {
@@ -48,12 +38,37 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     chatBox.innerHTML = messagesHtml;
 
+    // --- THIS IS THE KEY FIX FOR MOBILE ---
+    // 4. If it's a new chat, add the suggestion buttons
+    if (chatHistory.length === 1 && chatHistory[0].role === 'model') {
+        const suggestionsHtml = `
+            <div class="suggestions-container" id="suggestions-container">
+                <button class="suggestion-chip">What's the Wi-Fi password?</button>
+                <button class="suggestion-chip">How do I check out?</button>
+                <button class="suggestion-chip">How does the heating work?</button>
+            </div>
+        `;
+        // Insert suggestions right after the first message bubble
+        chatBox.querySelector('.bot-message').insertAdjacentHTML('afterend', suggestionsHtml);
+
+        const suggestionsContainer = document.getElementById('suggestions-container');
+        if (suggestionsContainer) {
+            suggestionsContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('suggestion-chip')) {
+                    suggestionsContainer.style.display = 'none';
+                    sendMessageStandalone(e.target.textContent);
+                }
+            });
+        }
+    }
+    // --- END OF MOBILE FIX ---
+
     // 5. Set up event listeners
     const sendBtn = document.getElementById('send-btn');
     const userInputField = document.getElementById('user-input');
 
     sendBtn.addEventListener('mousedown', (e) => {
-        e.preventDefault(); // Keep keyboard open
+        e.preventDefault();
         sendMessageStandalone();
     });
 
@@ -71,28 +86,39 @@ document.addEventListener('DOMContentLoaded', () => {
 /**
  * Sends a message from the standalone chat page.
  */
-async function sendMessageStandalone() {
+/**
+ * Sends a message from the standalone chat page.
+ * @param {string|null} [promptText=null] - Pre-defined text from a suggestion button.
+ */
+async function sendMessageStandalone(promptText = null) {
     const userInputField = document.getElementById('user-input');
     const inputContainer = document.getElementById('chat-input-container');
-    const userInput = userInputField.value.trim();
+    const userInput = promptText ?? userInputField.value.trim();
 
     if (!userInput || inputContainer.classList.contains('loading')) return;
+
+    // Hide suggestions if they are still visible
+    const suggestionsContainer = document.getElementById('suggestions-container');
+    if (suggestionsContainer) {
+        suggestionsContainer.style.display = 'none';
+    }
 
     const chatBox = document.getElementById('chat-box');
     const now = new Date();
     const getTimeStamp = () => now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     
-    // Add user message to UI and history
     const userMessageHtml = `<div class="message-bubble user-message"><p>${userInput}</p></div><div class="timestamp">${getTimeStamp()}</div>`;
     chatBox.insertAdjacentHTML('afterbegin', userMessageHtml);
     
     chatHistory.push({ role: 'user', content: userInput, timestamp: now.toISOString() });
     sessionStorage.setItem('chatHistory', JSON.stringify(chatHistory));
-    userInputField.value = '';
+    
+    if (!promptText) {
+        userInputField.value = '';
+    }
     
     inputContainer.classList.add('loading');
 
-    // Add typing indicator
     const typingIndicatorHtml = `<div class="message-bubble bot-message typing-indicator"><span></span><span></span><span></span></div>`;
     chatBox.insertAdjacentHTML('afterbegin', typingIndicatorHtml);
     const typingIndicator = chatBox.querySelector('.typing-indicator');

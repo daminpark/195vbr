@@ -139,13 +139,7 @@ function setupEnterKeyListener() {
 function addInitialBotMessage() {
     const chatBox = document.getElementById('chat-box');
     
-    // The welcome message from the AI
-    const welcomeMessageHtml = `
-        <div class="message-bubble bot-message">
-            <p>Welcome! I'm Victoria, your AI assistant. Ask me anything about the guesthouse or your London trip.</p>
-        </div>`;
-    
-    // The HTML for the suggestion buttons
+    const welcomeMessageHtml = `<div class="message-bubble bot-message"><p>Welcome! I'm Victoria, your AI assistant. Ask me anything about the guesthouse or your London trip.</p></div>`;
     const suggestionsHtml = `
         <div class="suggestions-container" id="suggestions-container">
             <button class="suggestion-chip">What's the Wi-Fi password?</button>
@@ -154,10 +148,8 @@ function addInitialBotMessage() {
         </div>
     `;
 
-    // Add everything to the chat box
     chatBox.innerHTML = welcomeMessageHtml + suggestionsHtml;
 
-    // Set up the initial chat history
     AppState.chatHistory = [{
         role: 'model',
         content: "Welcome! I'm Victoria, your AI assistant. Ask me anything about the guesthouse or your London trip.",
@@ -168,12 +160,9 @@ function addInitialBotMessage() {
     const suggestionsContainer = document.getElementById('suggestions-container');
     if (suggestionsContainer) {
         suggestionsContainer.addEventListener('click', (e) => {
-            // Check if a button was clicked
             if (e.target.classList.contains('suggestion-chip')) {
-                const promptText = e.target.textContent;
-                // Hide the suggestions after one is clicked, before sending the message
-                suggestionsContainer.style.display = 'none';
-                sendMessage(promptText); // Send the button's text as a message
+                // The only job of the click handler is to get the text and send it.
+                sendMessage(e.target.textContent);
             }
         });
     }
