@@ -133,18 +133,18 @@ function setupEnterKeyListener() {
   }
 }
 
-/**
- * Adds the initial welcome message and suggestion chips to the chatbox.
- */
+
 function addInitialBotMessage() {
     const chatBox = document.getElementById('chat-box');
     
     const welcomeMessageHtml = `<div class="message-bubble bot-message"><p>Welcome! I'm Victoria, your AI assistant. Ask me anything about the guesthouse or your London trip.</p></div>`;
+    
+    // Updated prompt text
     const suggestionsHtml = `
         <div class="suggestions-container" id="suggestions-container">
-            <button class="suggestion-chip">What's the Wi-Fi password?</button>
-            <button class="suggestion-chip">How do I check out?</button>
-            <button class="suggestion-chip">How does the heating work?</button>
+            <button class="suggestion-chip">Can I check in early?</button>
+            <button class="suggestion-chip">What room am I in?</button>
+            <button class="suggestion-chip">How do I get in?</button>
         </div>
     `;
 
@@ -156,13 +156,23 @@ function addInitialBotMessage() {
         timestamp: new Date().toISOString()
     }];
 
-    // Add a listener to handle clicks on the suggestion chips
+    // --- ROBUST CLICK HANDLER ---
     const suggestionsContainer = document.getElementById('suggestions-container');
     if (suggestionsContainer) {
         suggestionsContainer.addEventListener('click', (e) => {
             if (e.target.classList.contains('suggestion-chip')) {
-                // The only job of the click handler is to get the text and send it.
-                sendMessage(e.target.textContent);
+                // 1. Get the text from the clicked button
+                const promptText = e.target.textContent;
+                
+                // 2. Find the main user input field and the send button
+                const userInputField = document.getElementById('user-input');
+                const sendBtn = document.getElementById('send-btn');
+                
+                // 3. Set the input field's value to the prompt text
+                userInputField.value = promptText;
+                
+                // 4. Programmatically click the main send button to trigger the sendMessage function
+                sendBtn.click();
             }
         });
     }

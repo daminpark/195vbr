@@ -1,69 +1,68 @@
 // js/chat.js
 
-// This file is dedicated to the logic for the standalone chat.html page.
-
 let chatbotContext = '';
 let chatHistory = [];
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Get parameters and set back button
+    // 1. Setup
     const searchParams = new URLSearchParams(window.location.search);
     const bookingKey = searchParams.get('booking');
     const backBtn = document.getElementById('chat-back-btn');
     backBtn.href = bookingKey ? `index.html?booking=${bookingKey}` : `index.html${window.location.search}`;
 
-    // 2. Retrieve data from sessionStorage
     chatbotContext = sessionStorage.getItem('chatbotContext');
     const storedHistory = sessionStorage.getItem('chatHistory');
 
     if (!chatbotContext || !storedHistory) {
-        document.getElementById('chat-box').innerHTML = '<p style="padding: 1rem; text-align: center; position: absolute; bottom: 0;">Could not load chat session. Please return to the guidebook and try again.</p>';
+        document.getElementById('chat-box').innerHTML = '<p style="padding: 1rem; text-align: center;">Could not load chat session.</p>';
         document.getElementById('chat-input-container').style.display = 'none';
         return;
     }
 
     chatHistory = JSON.parse(storedHistory);
     const chatBox = document.getElementById('chat-box');
-    let messagesHtml = '';
+    chatBox.innerHTML = ''; // Clear the chatbox before populating
     const getTimeStamp = (date) => new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    // 3. Populate chat box with history
-    for (let i = chatHistory.length - 1; i >= 0; i--) {
-        const msg = chatHistory[i];
+    // --- CORRECTED MOBILE RENDERING LOOP ---
+    // 2. Populate chat box by iterating normally and adding each message to the top.
+    // This preserves the [Message] -> [Timestamp] visual order in a reversed column.
+    chatHistory.forEach(msg => {
+        let messageHtml = '';
         if (msg.role === 'user') {
-            messagesHtml += `<div class="message-bubble user-message"><p>${msg.content}</p></div><div class="timestamp">${getTimeStamp(msg.timestamp)}</div>`;
+            messageHtml = `<div class="message-bubble user-message"><p>${msg.content}</p></div><div class="timestamp">${getTimeStamp(msg.timestamp)}</div>`;
         } else if (msg.role === 'model') {
-            messagesHtml += `<div class="message-bubble bot-message">${marked.parse(msg.content)}</div><div class="timestamp">${getTimeStamp(msg.timestamp)}</div>`;
+            messageHtml = `<div class="message-bubble bot-message">${marked.parse(msg.content)}</div><div class="timestamp">${getTimeStamp(msg.timestamp)}</div>`;
         }
-    }
-    chatBox.innerHTML = messagesHtml;
+        chatBox.insertAdjacentHTML('afterbegin', messageHtml);
+    });
 
-    // --- THIS IS THE KEY FIX FOR MOBILE ---
-    // 4. If it's a new chat, add the suggestion buttons
+    // 3. If it's a new chat, add the suggestion buttons
     if (chatHistory.length === 1 && chatHistory[0].role === 'model') {
         const suggestionsHtml = `
             <div class="suggestions-container" id="suggestions-container">
-                <button class="suggestion-chip">What's the Wi-Fi password?</button>
-                <button class="suggestion-chip">How do I check out?</button>
-                <button class="suggestion-chip">How does the heating work?</button>
+                <button class="suggestion-chip">Can I check in early?</button>
+                <button class="suggestion-chip">What room am I in?</button>
+                <button class="suggestion-chip">How do I get in?</button>
             </div>
         `;
-        // Insert suggestions right after the first message bubble
-        chatBox.querySelector('.bot-message').insertAdjacentHTML('afterend', suggestionsHtml);
+        // In a reversed column, 'beforeend' places items visually at the top.
+        // We add it after the message/timestamp pairs have been inserted.
+        chatBox.insertAdjacentHTML('beforeend', suggestionsHtml);
 
         const suggestionsContainer = document.getElementById('suggestions-container');
         if (suggestionsContainer) {
             suggestionsContainer.addEventListener('click', (e) => {
                 if (e.target.classList.contains('suggestion-chip')) {
-                    suggestionsContainer.style.display = 'none';
-                    sendMessageStandalone(e.target.textContent);
+                    const userInputField = document.getElementById('user-input');
+                    userInputField.value = e.target.textContent;
+                    sendMessageStandalone(); // Call send function directly
                 }
             });
         }
     }
-    // --- END OF MOBILE FIX ---
 
-    // 5. Set up event listeners
+    // 4. Set up event listeners
     const sendBtn = document.getElementById('send-btn');
     const userInputField = document.getElementById('user-input');
 
@@ -82,22 +81,17 @@ document.addEventListener('DOMContentLoaded', () => {
     userInputField.focus();
 });
 
-
 /**
  * Sends a message from the standalone chat page.
  */
-/**
- * Sends a message from the standalone chat page.
- * @param {string|null} [promptText=null] - Pre-defined text from a suggestion button.
- */
-async function sendMessageStandalone(promptText = null) {
+async function sendMessageStandalone() {
     const userInputField = document.getElementById('user-input');
     const inputContainer = document.getElementById('chat-input-container');
-    const userInput = promptText ?? userInputField.value.trim();
+    const userInput = userInputField.value.trim();
 
     if (!userInput || inputContainer.classList.contains('loading')) return;
 
-    // Hide suggestions if they are still visible
+    // Always hide suggestions when a message is sent
     const suggestionsContainer = document.getElementById('suggestions-container');
     if (suggestionsContainer) {
         suggestionsContainer.style.display = 'none';
@@ -112,16 +106,12 @@ async function sendMessageStandalone(promptText = null) {
     
     chatHistory.push({ role: 'user', content: userInput, timestamp: now.toISOString() });
     sessionStorage.setItem('chatHistory', JSON.stringify(chatHistory));
-    
-    if (!promptText) {
-        userInputField.value = '';
-    }
+    userInputField.value = '';
     
     inputContainer.classList.add('loading');
 
     const typingIndicatorHtml = `<div class="message-bubble bot-message typing-indicator"><span></span><span></span><span></span></div>`;
     chatBox.insertAdjacentHTML('afterbegin', typingIndicatorHtml);
-    const typingIndicator = chatBox.querySelector('.typing-indicator');
 
     try {
         const response = await fetch(`${BACKEND_API_BASE_URL}/api/chatbot`, {
@@ -131,7 +121,7 @@ async function sendMessageStandalone(promptText = null) {
         });
         if (!response.ok) throw new Error('Network response was not ok.');
 
-        typingIndicator.remove();
+        chatBox.querySelector('.typing-indicator').parentElement.remove();
         
         const tempBotContainer = document.createElement('div');
         chatBox.insertAdjacentElement('afterbegin', tempBotContainer);
@@ -160,7 +150,9 @@ async function sendMessageStandalone(promptText = null) {
 
     } catch (error) {
         console.error('Fetch error:', error);
-        if (typingIndicator) typingIndicator.remove();
+        if (chatBox.querySelector('.typing-indicator')) {
+            chatBox.querySelector('.typing-indicator').parentElement.remove();
+        }
         const errorHtml = `<div class="message-bubble bot-message"><p>Sorry, I'm having trouble connecting.</p></div>`;
         chatBox.insertAdjacentHTML('afterbegin', errorHtml);
     } finally {
