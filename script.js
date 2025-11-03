@@ -577,8 +577,8 @@ async function handleLightToggle(event) {
     }
 }
 
-const handleLightSlider = debounce(async (event) => {
-    const slider = event.currentTarget;
+const handleLightSlider = debounce(async (event) => { // <--- The 'event' parameter is back
+    const slider = event.currentTarget; // This line will now work correctly
     const entityId = slider.dataset.entity;
     const type = slider.dataset.type;
     const value = slider.value;
