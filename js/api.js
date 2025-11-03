@@ -1,6 +1,6 @@
 // js/api.js
 
-/**
+/*
  * Fetches and parses the main config.json file.
  * @returns {Promise<object>} The configuration object.
  */
