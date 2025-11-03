@@ -556,6 +556,11 @@ async function handleLightToggle(event) {
     const toggle = event.currentTarget;
     const entityId = toggle.dataset.entity;
     toggle.disabled = true;
+
+    // Proactively ping the light at the same time we send the command.
+    // We don't wait for the ping's result, we just fire it off.
+    pingSingleLight(entityId, currentBookingConfig.house);
+
     try {
         await fetch(`${BACKEND_API_BASE_URL}/api/ha-proxy`, {
             method: 'POST',
@@ -564,17 +569,24 @@ async function handleLightToggle(event) {
         });
     } catch (error) {
         console.error('Error toggling light:', error);
+        // If the command fails, the real-time update from the ping will handle the UI.
+        // We can optionally revert the toggle here for faster visual feedback.
         toggle.checked = !toggle.checked;
     } finally {
         toggle.disabled = false;
     }
 }
 
-const handleLightSlider = async (slider) => { // No debounce wrapper here
+const handleLightSlider = debounce(async (event) => {
+    const slider = event.currentTarget;
     const entityId = slider.dataset.entity;
     const type = slider.dataset.type;
     const value = slider.value;
     const apiType = type === 'brightness' ? 'light_set_brightness' : 'light_set_color_temp';
+
+    // Proactively ping the light when the slider value is changed.
+    pingSingleLight(entityId, currentBookingConfig.house);
+
     try {
         await fetch(`${BACKEND_API_BASE_URL}/api/ha-proxy`, {
             method: 'POST',
@@ -583,8 +595,9 @@ const handleLightSlider = async (slider) => { // No debounce wrapper here
         });
     } catch (error) {
         console.error(`Error setting light ${type}:`, error);
+        // The real-time update from the ping will handle any UI state correction if the light is offline.
     }
-};
+}, 500);
 
 async function fetchHAData(entityId, house, type = 'state') {
   const proxyUrl = `${BACKEND_API_BASE_URL}/api/ha-proxy`;
