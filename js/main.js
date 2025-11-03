@@ -1,7 +1,6 @@
 // js/main.js
 
 // --- GLOBAL STATE ---
-// We define a global object to hold our application's state.
 const AppState = {
   guestAccessLevel: null,
   chatbotContext: '',
@@ -19,53 +18,44 @@ document.addEventListener('DOMContentLoaded', async () => {
   AppState.opaqueBookingKey = params.get('booking');
   let simpleBookingKey = null;
 
-  // Detect simple booking keys like "?31"
   if (!AppState.opaqueBookingKey && window.location.search.length > 1 && !params.keys().next().value) {
     simpleBookingKey = window.location.search.substring(1);
   }
 
   // --- LOGIC ROUTER ---
   if (AppState.opaqueBookingKey) {
-    // Handle secure, validated bookings
     const validationResult = await validateAccess(AppState.opaqueBookingKey);
     if (validationResult.success) {
       AppState.guestAccessLevel = validationResult.access;
       AppState.guestInfo = validationResult;
       await buildGuidebook(AppState.opaqueBookingKey, AppState.guestInfo);
-      setupChatInterface(); // Setup chatbot for this view
+      setupChatInterface();
     } else {
       displayErrorPage('denied', validationResult.error);
     }
   } 
   else if (simpleBookingKey) {
-    // Handle new public legacy bookings (e.g., /?31)
     await buildSimpleGuidebook(simpleBookingKey);
-    setupChatInterface(); // Setup chatbot for this view
+    setupChatInterface();
   }
   else if (params.has('wholehome') || params.has('sharedb') || params.has('sharedk')) {
-    // Handle old legacy bookings (e.g., /?sharedb)
     await buildLegacyGuidebook(params);
-    setupChatInterface(); // Setup chatbot for this view
+    setupChatInterface();
   } 
   else {
-    // No valid key found
     displayErrorPage('missing');
   }
 
-  // Common UI setup for all guidebook versions
   if (document.getElementById('guidebook-container').innerHTML.trim()) {
     setupMobileMenu();
   }
 });
 
-/**
- * Initializes all chatbot-related UI elements and event listeners.
- */
 function setupChatInterface() {
   const sendBtn = document.getElementById('send-btn');
   if (sendBtn) {
     sendBtn.addEventListener('mousedown', (e) => {
-      e.preventDefault(); // Prevents focus loss on mobile
+      e.preventDefault();
       sendMessage();
     });
   }
@@ -76,24 +66,18 @@ function setupChatInterface() {
 
 // --- GUIDEBOOK BUILDER FUNCTIONS ---
 
-/**
- * Builds the full, secure guidebook for validated guests.
- * @param {string} opaqueBookingKey - The secure, validated booking key.
- * @param {object} guestDetails - The details returned from the validation API.
- */
 async function buildGuidebook(opaqueBookingKey, guestDetails) {
   try {
     const config = await getConfig();
     const bookingKey = opaqueBookingKey.split('-')[0];
     AppState.currentBookingConfig = config.bookings[bookingKey];
-    if (!AppState.currentBookingConfig) throw new Error(`Booking key "${bookingKey}" not found in config.json.`);
+    if (!AppState.currentBookingConfig) throw new Error(`Booking key "${bookingKey}" not found.`);
 
     const allContent = generatePageContent(AppState.currentBookingConfig.content, guestDetails, config.contentFragments);
     AppState.chatbotContext = buildChatbotContext(allContent, guestDetails, bookingKey);
     
-    renderPage(allContent, guestDetails); // Renders HTML to the page
+    renderPage(allContent, guestDetails);
     
-    // Initialize Home Assistant dashboard and real-time updates
     if (AppState.currentBookingConfig.house && AppState.currentBookingConfig.entities) {
       initializePusher(AppState.currentBookingConfig.house);
       createDashboardCards(AppState.currentBookingConfig);
@@ -101,27 +85,21 @@ async function buildGuidebook(opaqueBookingKey, guestDetails) {
     }
   } catch (error) {
     console.error("Error building secure guidebook:", error);
-    displayErrorPage('denied', `Could not load guidebook configuration. ${error.message}`);
+    displayErrorPage('denied', `Could not load guidebook. ${error.message}`);
   }
 }
 
-/**
- * Builds a simplified, public version of the guidebook with weather but no controls.
- * @param {string} bookingKey - The simple booking key (e.g., "31").
- */
 async function buildSimpleGuidebook(bookingKey) {
   try {
     const config = await getConfig();
     AppState.currentBookingConfig = config.bookings[bookingKey];
-    if (!AppState.currentBookingConfig) throw new Error(`Public booking key "${bookingKey}" not found in config.json.`);
+    if (!AppState.currentBookingConfig) throw new Error(`Public booking key "${bookingKey}" not found.`);
 
-    // Generate content without personalized details
     const allContent = generatePageContent(AppState.currentBookingConfig.content, {}, config.contentFragments);
     AppState.chatbotContext = buildChatbotContext(allContent, {}, bookingKey);
 
-    renderPage(allContent); // Render with a generic welcome
+    renderPage(allContent);
 
-    // Initialize only the weather part of the dashboard
     const dashboard = document.getElementById('ha-dashboard');
     if (AppState.currentBookingConfig.house && AppState.currentBookingConfig.entities.weather) {
       dashboard.innerHTML = createWeatherCardHtml();
@@ -131,14 +109,10 @@ async function buildSimpleGuidebook(bookingKey) {
     }
   } catch (error) {
     console.error("Error building simple guidebook:", error);
-    displayErrorPage('denied', `Could not load guidebook configuration. ${error.message}`);
+    displayErrorPage('denied', `Could not load guidebook. ${error.message}`);
   }
 }
 
-/**
- * Builds the oldest legacy guidebook based on URL parameters.
- * @param {URLSearchParams} params - The URL search parameters.
- */
 async function buildLegacyGuidebook(params) {
   try {
     const config = await getConfig();
@@ -163,11 +137,10 @@ async function buildLegacyGuidebook(params) {
     
     const allContent = generatePageContent(Array.from(legacyContentKeys), {}, config.contentFragments, true);
     AppState.chatbotContext = buildChatbotContext(allContent, {}, 'legacy');
-
     renderPage(allContent, {}, pageTitle);
     
   } catch (error) {
     console.error("Error building legacy guidebook:", error);
-    displayErrorPage('denied', `Could not load guidebook configuration. ${error.message}`);
+    displayErrorPage('denied', `Could not load guidebook. ${error.message}`);
   }
 }
