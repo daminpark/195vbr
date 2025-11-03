@@ -56,9 +56,6 @@ function buildChatbotContext(content, guestDetails, bookingKey) {
   return `${systemPrompt}\n\nRELEVANT GUIDEBOOK CONTENT:\n${contextText}`;
 }
 
-
-// --- All other content functions from the original script.js are placed below ---
-
 function buildDynamicContent(keys, fragments) {
   const content = {};
   keys.forEach(key => {
@@ -74,6 +71,7 @@ function buildDynamicContent(keys, fragments) {
   return content;
 }
 
+// --- THIS IS THE MISSING FUNCTION THAT HAS BEEN RESTORED ---
 function getDynamicPersonalizedContent(guestDetails) {
     if (!guestDetails || !guestDetails.checkInDateISO) return {};
     const checkInDate = new Date(guestDetails.checkInDateISO);
@@ -96,6 +94,7 @@ function getDynamicPersonalizedContent(guestDetails) {
         }
     };
 }
+// --- END OF RESTORED FUNCTION ---
 
 function getChatbotOnlyContext(bookingId) {
     const groundFloorLuggageQuirk = "The guest is in a ground floor room. While their room is easily accessible, they should be aware that the luggage storage cupboard (Cupboard V) is downstairs, reached by a narrow staircase. This is something to keep in mind if they plan to store heavy bags.";
