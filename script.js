@@ -391,14 +391,10 @@ function buildChatbotContextFromConfig(content, guestDetails, bookingKey) {
 
 function debounce(func, delay) {
   let timeout;
-  // This function now returns the configured event handler.
-  return function(...args) {
-    const context = this; // 'this' will be the element the event fired on
+  return function(...args) { // <-- This line is the key change
+    const context = this;
     clearTimeout(timeout);
-    timeout = setTimeout(() => {
-      // We call the function with the element context, but no event args
-      func.call(context); 
-    }, delay);
+    timeout = setTimeout(() => func.apply(context, args), delay); // <-- And this line
   };
 }
 
@@ -493,23 +489,44 @@ function createDashboardCards(bookingConfig) {
         toggle.addEventListener('change', handleLightToggle);
     });
     
+// --- THIS IS THE NEW, BULLETPROOF SLIDER LOGIC ---
     document.querySelectorAll('.light-slider').forEach(slider => {
+        // Create a specific, debounced function FOR THIS SLIDER ONLY.
+        const debouncedSliderChange = debounce(async (value) => {
+            const entityId = slider.dataset.entity;
+            const type = slider.dataset.type;
+            const apiType = type === 'brightness' ? 'light_set_brightness' : 'light_set_color_temp';
+
+            // Proactively ping the light.
+            pingSingleLight(entityId, currentBookingConfig.house);
+
+            try {
+                await fetch(`${BACKEND_API_BASE_URL}/api/ha-proxy`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ house: currentBookingConfig.house, entity: entityId, type: apiType, value: value, opaqueBookingKey: opaqueBookingKey })
+                });
+            } catch (error) {
+                console.error(`Error setting light ${type}:`, error);
+            }
+        }, 500);
+
+        // This listener handles the visual update immediately.
         slider.addEventListener('input', (e) => {
-             const card = e.target.closest('.light-control-card');
-             const type = e.target.dataset.type;
-             const valueDisplay = card.querySelector(`[data-value-for="${type}"]`);
-             if (type === 'brightness') {
-                 valueDisplay.textContent = `${Math.round(e.target.value / 2.55)}%`;
-             } else {
-                 valueDisplay.textContent = `${Math.round(1000000 / e.target.value)}K`;
-             }
+            const card = e.target.closest('.light-control-card');
+            const type = e.target.dataset.type;
+            const valueDisplay = card.querySelector(`[data-value-for="${type}"]`);
+            if (type === 'brightness') {
+                valueDisplay.textContent = `${Math.round(e.target.value / 2.55)}%`;
+            } else {
+                valueDisplay.textContent = `${Math.round(1000000 / e.target.value)}K`;
+            }
         });
 
-        // Debounced API call on 'change' event
-        slider.addEventListener('change', debounce(function() {
-            // 'this' refers to the slider element
-            handleLightSlider(this); // Pass the element directly
-        }, 500));
+        // This listener triggers the debounced API call after the user stops moving the slider.
+        slider.addEventListener('change', (e) => {
+            debouncedSliderChange(e.target.value);
+        });
     });
 
     // This goes at the end of the createDashboardCards function
@@ -577,36 +594,6 @@ async function handleLightToggle(event) {
     }
 }
 
-const handleLightSlider = debounce(async function(event) {
-    // We now use `this` to refer to the slider element.
-    // The `debounce` function is designed to preserve this context correctly.
-    const slider = this;
-
-    // A safety check in case something goes wrong
-    if (!slider || !slider.dataset) {
-        console.error("Could not identify the slider element inside handleLightSlider.");
-        return;
-    }
-
-    const entityId = slider.dataset.entity;
-    const type = slider.dataset.type;
-    const value = slider.value;
-    const apiType = type === 'brightness' ? 'light_set_brightness' : 'light_set_color_temp';
-
-    // Proactively ping the light when the slider value is changed.
-    pingSingleLight(entityId, currentBookingConfig.house);
-
-    try {
-        await fetch(`${BACKEND_API_BASE_URL}/api/ha-proxy`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ house: currentBookingConfig.house, entity: entityId, type: apiType, value: value, opaqueBookingKey: opaqueBookingKey })
-        });
-    } catch (error) {
-        console.error(`Error setting light ${type}:`, error);
-        // The real-time update from the ping will handle any UI state correction if the light is offline.
-    }
-}, 500);
 
 async function fetchHAData(entityId, house, type = 'state') {
   const proxyUrl = `${BACKEND_API_BASE_URL}/api/ha-proxy`;
