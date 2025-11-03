@@ -191,6 +191,7 @@ html.chat-open #chat-widget {
   margin-bottom: 2rem;
   border-bottom: 1px solid var(--border-color);
   padding-bottom: 2rem;
+  margin-top: 2rem;
 }
 
 .ha-card {
@@ -214,6 +215,10 @@ html.chat-open #chat-widget {
   font-size: 1.75rem;
   font-weight: bold;
   transition: color 0.3s ease-in-out;
+  flex-grow: 1; /* Allows it to take up available vertical space */
+  display: flex;
+  align-items: center; /* Vertically centers the text */
+  justify-content: center; /* Horizontally centers the text */
 }
 
 /* ---------------------------------------------------
