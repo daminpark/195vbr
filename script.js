@@ -608,16 +608,17 @@ async function fetchHAData(entityId, house, type = 'state') {
 function updateCardFromPush(data) {
     let { entity_id, state, attributes } = data; 
 
-    // This block now handles a pre-formatted JSON string from Home Assistant
     if (typeof attributes === 'string') {
         try {
-            // New, more aggressive cleanup to remove Python-specific object representations
+            // This aggressive cleanup is what will finally solve the problem.
             const cleanString = attributes
-                .replace(/<[^>]+>/g, 'null') // Replace <...> with null
-                .replace(/\bNone\b/g, 'null')   // Replace Python None with null
-                .replace(/\bTrue\b/g, 'true')     // Replace Python True with true
-                .replace(/\bFalse\b/g, 'false')   // Replace Python False with false
-                .replace(/'/g, '"');          // Replace single quotes with double quotes
+                .replace(/<[^>]+>/g, 'null')    // Replace <...> with null
+                .replace(/\bNone\b/g, 'null')      // Replace Python None with null
+                .replace(/\bTrue\b/g, 'true')      // Replace Python True with true
+                .replace(/\bFalse\b/g, 'false')    // Replace Python False with false
+                .replace(/\(/g, '[')               // Replace tuple ( with array [
+                .replace(/\)/g, ']')               // Replace tuple ) with array ]
+                .replace(/'/g, '"');             // Replace single quotes with double quotes
 
             attributes = JSON.parse(cleanString);
         } catch (e) {
