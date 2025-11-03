@@ -391,11 +391,13 @@ function buildChatbotContextFromConfig(content, guestDetails, bookingKey) {
 
 function debounce(func, delay) {
   let timeout;
+  // This function now returns the configured event handler.
   return function(...args) {
-    const context = this;
+    const context = this; // 'this' will be the element the event fired on
     clearTimeout(timeout);
     timeout = setTimeout(() => {
-      func.apply(context, args);
+      // We call the function with the element context, but no event args
+      func.call(context); 
     }, delay);
   };
 }
@@ -463,13 +465,23 @@ function createDashboardCards(bookingConfig) {
     }
 
     document.querySelectorAll('.climate-slider').forEach(slider => {
-        // Revert to this simpler, more direct line
-        slider.addEventListener('change', handleLightSlider);
-        slider.addEventListener('change', (event) => {
+        // NEW: Live preview on 'input' event
+        slider.addEventListener('input', (event) => {
             const currentSlider = event.currentTarget;
-            const newTemp = parseFloat(currentSlider.value);
-            debouncedSetTemperature(currentSlider.dataset.entity, newTemp, currentBookingConfig.house);
+            const entityId = currentSlider.dataset.entity;
+            const container = document.getElementById(`climate-${entityId}`);
+            if (container) {
+                const display = container.querySelector('.climate-set-temp-display');
+                display.textContent = `${parseFloat(currentSlider.value).toFixed(1)}°`;
+            }
         });
+
+        // Debounced API call on 'change' event (when user lets go)
+        slider.addEventListener('change', debounce(function() {
+            // 'this' refers to the slider element because of our new debounce function
+            const newTemp = parseFloat(this.value);
+            setTemperature(this.dataset.entity, newTemp, currentBookingConfig.house);
+        }, 500));
     });
 
     document.querySelectorAll('.light-switch').forEach(toggle => {
@@ -487,7 +499,12 @@ function createDashboardCards(bookingConfig) {
                  valueDisplay.textContent = `${Math.round(1000000 / e.target.value)}K`;
              }
         });
-        slider.addEventListener('change', handleLightSlider);
+
+        // Debounced API call on 'change' event
+        slider.addEventListener('change', debounce(function() {
+            // 'this' refers to the slider element
+            handleLightSlider(this); // Pass the element directly
+        }, 500));
     });
 }
 
