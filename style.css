@@ -718,3 +718,41 @@ input:disabled + .slider {
 .light-control-card.is-unavailable .light-unavailable-notice {
   display: flex;
 }
+
+/* --- Styles for Light Refresh Button --- */
+.light-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Space between refresh button and toggle */
+}
+
+.light-refresh-btn {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d;
+}
+
+.light-refresh-btn:hover {
+  background-color: rgba(0,0,0,0.05);
+  color: #333;
+}
+
+/* Animation for the spinning icon */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.light-control-card.is-refreshing .light-refresh-btn .material-symbols-outlined {
+  animation: spin 1s linear infinite;
+}
+
+.light-control-card.is-refreshing .light-refresh-btn {
+  pointer-events: none; /* Disable clicking while refreshing */
+}

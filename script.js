@@ -424,14 +424,19 @@ function createDashboardCards(bookingConfig) {
         } else if (key === 'lights' && guestAccessLevel === 'full') {
             for (const [entityId, friendlyName] of Object.entries(entities[key])) {
                 cardsHtml += `
-                    <div class="ha-card light-control-card" id="light-card-${entityId.replace(/\./g, '-')}">
+                    <div class="ha-card light-control-card" id="light-card-${entityId.replace(/\./g, '-')}" data-entity-id="${entityId}">
                         <div class="light-controls-wrapper">
                             <div class="light-control-header">
                                 <span class="light-control-name">${friendlyName}</span>
-                                <label class="switch">
-                                    <input type="checkbox" class="light-switch" data-entity="${entityId}" disabled>
-                                    <span class="slider"></span>
-                                </label>
+                                <div class="light-header-controls">
+                                    <button class="light-refresh-btn" aria-label="Refresh status">
+                                        <span class="material-symbols-outlined">refresh</span>
+                                    </button>
+                                    <label class="switch">
+                                        <input type="checkbox" class="light-switch" data-entity="${entityId}" disabled>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
                             </div>
                             <div class="light-slider-group" data-controls-for="${entityId}">
                                 <div class="light-slider-row" data-control="brightness">
@@ -505,6 +510,23 @@ function createDashboardCards(bookingConfig) {
             // 'this' refers to the slider element
             handleLightSlider(this); // Pass the element directly
         }, 500));
+    });
+
+    // This goes at the end of the createDashboardCards function
+    document.querySelectorAll('.light-refresh-btn').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const card = e.currentTarget.closest('.light-control-card');
+            if (card && !card.classList.contains('is-refreshing')) {
+                const entityId = card.dataset.entityId;
+                card.classList.add('is-refreshing');
+                pingSingleLight(entityId, currentBookingConfig.house);
+
+                // Remove the refreshing state after 4 seconds to prevent it getting stuck
+                setTimeout(() => {
+                    card.classList.remove('is-refreshing');
+                }, 4000);
+            }
+        });
     });
 }
 
@@ -839,6 +861,23 @@ async function displayHomeAssistantStatus(bookingConfig) {
     }
   }
   pingAllLights(bookingConfig);
+}
+
+async function pingSingleLight(entityId, house) {
+  try {
+    await fetch(`${BACKEND_API_BASE_URL}/api/ha-proxy`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        house: house,
+        entity: entityId,
+        type: 'ping_light',
+        opaqueBookingKey: opaqueBookingKey
+      })
+    });
+  } catch (error) {
+    console.error(`Error pinging light ${entityId}:`, error);
+  }
 }
 
 async function pingAllLights(bookingConfig) {
