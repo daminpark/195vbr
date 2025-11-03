@@ -640,8 +640,37 @@ function updateCardFromPush(data) {
 async function displayHomeAssistantStatus(bookingConfig) {
   const { house, entities } = bookingConfig;
   if (!house || !entities) return;
+
+  // --- BATCH FETCH LOGIC ---
+  // 1. Gather all entity IDs we need (excluding weather) into one array.
+  let entitiesToFetch = [];
+  for (const [key, entityValue] of Object.entries(entities)) {
+    if (key === 'climate' || key === 'lights') {
+      entitiesToFetch.push(...Object.keys(entityValue));
+    } else if (key !== 'weather') {
+      entitiesToFetch.push(entityValue);
+    }
+  }
+  
+  let allStates = {};
+  try {
+    // 2. Make a SINGLE network request to get all states at once.
+    const proxyUrl = `${BACKEND_API_BASE_URL}/api/ha-proxy`;
+    const response = await fetch(`${proxyUrl}?house=${house}&type=batch_states&entities=${entitiesToFetch.join(',')}&opaqueBookingKey=${opaqueBookingKey}`);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Batch State Fetch Error: ${errorData.error || response.statusText}`);
+    }
+    allStates = await response.json();
+  } catch (error) {
+    console.error("Failed to fetch batch entity states:", error);
+    // If the batch fails, we can't populate the cards, so we might show an error or just stop.
+  }
+
+  // --- POPULATE CARDS FROM LOCAL DATA (No more network requests in this loop!) ---
   for (const [key, entityValue] of Object.entries(entities)) {
     if (key === 'weather') {
+      // Weather forecast logic remains the same as it uses special service calls
       try {
         const [currentState, hourlyForecast, dailyForecast] = await Promise.all([
             fetchHAData(entityValue, house, 'state'),
@@ -676,31 +705,28 @@ async function displayHomeAssistantStatus(bookingConfig) {
       }
     } else if (key === 'climate' && guestAccessLevel === 'full') {
         const climateEntities = entityValue;
-        for (const [entityId, friendlyName] of Object.entries(climateEntities)) {
+        for (const entityId of Object.keys(climateEntities)) {
             const container = document.getElementById(`climate-${entityId}`);
-            if (container) {
-                try {
-                    const state = await fetchHAData(entityId, house);
-                    const { current_temperature, temperature } = state.attributes;
-                    container.querySelector('.climate-current-temp').textContent = `Current: ${current_temperature.toFixed(1)}°`;
-                    const display = container.querySelector('.climate-set-temp-display');
-                    const slider = container.querySelector('.climate-slider');
-                    display.textContent = `${temperature.toFixed(1)}°`;
-                    slider.value = temperature;
-                    slider.disabled = false;
-                } catch (error) {
-                    console.error(`Climate fetch error for ${entityId}:`, error);
-                    container.querySelector('.climate-current-temp').textContent = 'Status unavailable';
-                }
+            const state = allStates[entityId]; // Get state from our pre-fetched data
+            if (container && state) {
+                const { current_temperature, temperature } = state.attributes;
+                container.querySelector('.climate-current-temp').textContent = `Current: ${current_temperature.toFixed(1)}°`;
+                const display = container.querySelector('.climate-set-temp-display');
+                const slider = container.querySelector('.climate-slider');
+                display.textContent = `${temperature.toFixed(1)}°`;
+                slider.value = temperature;
+                slider.disabled = false;
+            } else if (container) {
+                container.querySelector('.climate-current-temp').textContent = 'Status unavailable';
             }
         }
     } else if (key === 'lights' && guestAccessLevel === 'full') {
         for (const entityId of Object.keys(entityValue)) {
             const card = document.getElementById(`light-card-${entityId.replace(/\./g, '-')}`);
+            const state = allStates[entityId]; // Get state from our pre-fetched data
             if (!card) continue;
             
-            try {
-                const state = await fetchHAData(entityId, house);
+            if (state) {
                 if (state.state === 'unavailable') {
                     card.classList.add('is-unavailable');
                 } else {
@@ -751,29 +777,25 @@ async function displayHomeAssistantStatus(bookingConfig) {
                         sliderGroup.style.display = 'none';
                     }
                 }
-            } catch (error) {
-                console.error(`Light fetch error for ${entityId}:`, error);
+            } else {
                 card.classList.add('is-unavailable');
             }
         }
     } else if (guestAccessLevel === 'full') {
         const statusElement = document.getElementById(`ha-status-${key}`);
-        if (statusElement) {
-          try {
-            const state = await fetchHAData(entityValue, house);
-            const statusText = state.state === 'on' ? 'Occupied' : 'Vacant';
-            const statusColor = state.state === 'on' ? '#d9534f' : '#5cb85c';
-            statusElement.textContent = statusText;
-            statusElement.style.color = statusColor;
-          } catch (error) {
-            console.error(`Occupancy fetch error for ${key}:`, error);
-            statusElement.textContent = 'Unavailable';
-            statusElement.style.color = 'gray';
-          }
+        const state = allStates[entityValue]; // Get state from our pre-fetched data
+        if (statusElement && state) {
+          const statusText = state.state === 'on' ? 'Occupied' : 'Vacant';
+          const statusColor = state.state === 'on' ? '#d9534f' : '#5cb85c';
+          statusElement.textContent = statusText;
+          statusElement.style.color = statusColor;
+        } else if (statusElement) {
+          statusElement.textContent = 'Unavailable';
+          statusElement.style.color = 'gray';
         }
     }
   }
-  pingAllLights(bookingConfig); // Trigger the live health check
+  pingAllLights(bookingConfig);
 }
 
 async function pingAllLights(bookingConfig) {
