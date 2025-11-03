@@ -606,27 +606,30 @@ async function fetchHAData(entityId, house, type = 'state') {
 }
 
 function updateCardFromPush(data) {
-    // First, we must parse the attributes, as this is where the new log data is stored.
     let { entity_id, state, attributes } = data; 
+
+    // This block now handles a pre-formatted JSON string from Home Assistant
     if (typeof attributes === 'string') {
         try {
-            const jsonString = attributes
-                .replace(/'/g, '"')
-                .replace(/<[^>]+>/g, '"(object)"')
-                .replace(/\bTrue\b/g, 'true')
-                .replace(/\bFalse\b/g, 'false')
-                .replace(/\bNone\b/g, 'null');
-            attributes = JSON.parse(jsonString);
+            // New, more aggressive cleanup to remove Python-specific object representations
+            const cleanString = attributes
+                .replace(/<[^>]+>/g, 'null') // Replace <...> with null
+                .replace(/\bNone\b/g, 'null')   // Replace Python None with null
+                .replace(/\bTrue\b/g, 'true')     // Replace Python True with true
+                .replace(/\bFalse\b/g, 'false')   // Replace Python False with false
+                .replace(/'/g, '"');          // Replace single quotes with double quotes
+
+            attributes = JSON.parse(cleanString);
         } catch (e) {
-            console.error("Could not parse attributes string from push update:", data.attributes);
-            attributes = {}; 
+            console.error("Could not parse attributes string from push update:", attributes);
+            attributes = {}; // Fallback to an empty object on parsing error
         }
     }
+
     if (!attributes || typeof attributes !== 'object') {
         attributes = {};
     }
 
-    // --- THIS IS THE NEW LOGGING LOGIC ---
     // Check if this is a log message instead of a state update.
     if (attributes.type === 'log') {
         const logStyle = "font-weight: bold; color: #4f4f4f;";
@@ -643,15 +646,13 @@ function updateCardFromPush(data) {
             default:
                 console.log(`%c[HA LOG]%c ${attributes.message}`, logStyle, "");
         }
-        return; // Stop processing here, it was only a log.
+        return; 
     }
-    // --- END OF LOGGING LOGIC ---
-
 
     // If it wasn't a log, proceed with the normal state update logic.
     if (entity_id.startsWith('climate.')) {
         const container = document.getElementById(`climate-${entity_id}`);
-        if (container) {
+        if (container && attributes.current_temperature !== undefined) {
             container.querySelector('.climate-current-temp').textContent = `Current: ${attributes.current_temperature.toFixed(1)}°`;
             const display = container.querySelector('.climate-set-temp-display');
             const slider = container.querySelector('.climate-slider');
