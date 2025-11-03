@@ -556,25 +556,49 @@ async function fetchHAData(entityId, house, type = 'state') {
 }
 
 function updateCardFromPush(data) {
+    // First, we must parse the attributes, as this is where the new log data is stored.
     let { entity_id, state, attributes } = data; 
-
     if (typeof attributes === 'string') {
         try {
-            // FIX: Add replacements for Python booleans (True/False) and None.
             const jsonString = attributes
                 .replace(/'/g, '"')
                 .replace(/<[^>]+>/g, '"(object)"')
-                .replace(/\bTrue\b/g, 'true')   // Convert Python True to JSON true
-                .replace(/\bFalse\b/g, 'false') // Convert Python False to JSON false
-                .replace(/\bNone\b/g, 'null');    // Convert Python None to JSON null
-
+                .replace(/\bTrue\b/g, 'true')
+                .replace(/\bFalse\b/g, 'false')
+                .replace(/\bNone\b/g, 'null');
             attributes = JSON.parse(jsonString);
         } catch (e) {
             console.error("Could not parse attributes string from push update:", data.attributes);
-            return; 
+            attributes = {}; 
         }
     }
+    if (!attributes || typeof attributes !== 'object') {
+        attributes = {};
+    }
 
+    // --- THIS IS THE NEW LOGGING LOGIC ---
+    // Check if this is a log message instead of a state update.
+    if (attributes.type === 'log') {
+        const logStyle = "font-weight: bold; color: #4f4f4f;";
+        switch (attributes.level) {
+            case 'info':
+                console.info(`%c[HA INFO]%c ${attributes.message}`, logStyle, "");
+                break;
+            case 'warn':
+                console.warn(`%c[HA WARN]%c ${attributes.message}`, logStyle, "");
+                break;
+            case 'success':
+                console.log(`%c[HA SUCCESS]%c ${attributes.message}`, "font-weight: bold; color: green;", "");
+                break;
+            default:
+                console.log(`%c[HA LOG]%c ${attributes.message}`, logStyle, "");
+        }
+        return; // Stop processing here, it was only a log.
+    }
+    // --- END OF LOGGING LOGIC ---
+
+
+    // If it wasn't a log, proceed with the normal state update logic.
     if (entity_id.startsWith('climate.')) {
         const container = document.getElementById(`climate-${entity_id}`);
         if (container) {
