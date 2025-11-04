@@ -33,25 +33,31 @@ function buildChatbotContext(content, guestDetails, bookingKey) {
   if (guestDetails && guestDetails.guestName) {
     contextText += `--- GUEST INFORMATION ---\n`;
     contextText += `Name: ${guestDetails.guestName}\n`;
-    contextText += `Check-in Date: ${guestDetails.checkInDateFormatted}\n`;
-    contextText += `Check-out Date: ${guestDetails.checkOutDateFormatted}\n\n`;
+    // **MODIFICATION: Format dates here for the AI, in English, for clarity**
+    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const checkInDateFormatted = new Date(guestDetails.checkInDateISO).toLocaleDateString('en-GB', dateOptions);
+    const checkOutDateFormatted = new Date(guestDetails.checkOutDateISO).toLocaleDateString('en-GB', dateOptions);
+    contextText += `Check-in Date: ${checkInDateFormatted}\n`;
+    contextText += `Check-out Date: ${checkOutDateFormatted}\n\n`;
   }
 
   contextText += getChatbotOnlyContext(bookingKey) + "\n\n";
 
+  // **MODIFICATION: Use the English titles for matching, as they are the constant identifiers**
   const sectionOrder = ['What not to bring', 'Address', 'Domestic directions', 'Airport directions', 'Getting around', 'Lock info', 'Check-in & Luggage', 'Check-out', 'Wifi', 'Heating and Cooling', 'A Note on Light Controls', 'Bedroom', 'Bathroom', 'Kitchen', 'Rubbish Disposal', 'Windows', 'Laundry', 'Iron & Ironing Mat', 'Troubleshooting', 'TV', 'Contact', 'Local Guidebook'];
 
-  sectionOrder.forEach(key => {
-    // Find the content object by its title property
+  sectionOrder.forEach(englishTitle => {
+    // Find the content object by its English title property
     const sectionObjectKey = Object.keys(content).find(
-      k => content[k].title && content[k].title.toLowerCase() === key.toLowerCase()
+      k => content[k].title && content[k].title.toLowerCase() === englishTitle.toLowerCase()
     );
     
     if (sectionObjectKey && content[sectionObjectKey]) {
       const section = content[sectionObjectKey];
-      contextText += `--- Section: ${section.title} ---\n`;
-      tempDiv.innerHTML = section.html;
-
+      // **MODIFICATION: The HTML is now translated, so we use it directly**
+      tempDiv.innerHTML = section.html; 
+      
+      // The rest of the logic for extracting video links remains the same
       const iframes = tempDiv.querySelectorAll('iframe');
       iframes.forEach(iframe => {
         const title = iframe.title || 'Instructional Video';
@@ -61,13 +67,15 @@ function buildChatbotContext(content, guestDetails, bookingKey) {
         videoInfoNode.textContent = `(A video guide for "${title}" is available at this URL: ${videoUrl})`;
         tempDiv.appendChild(videoInfoNode);
       });
-
+      
+      const translatedTitle = t('content_titles.' + section.title.toLowerCase().replace(/[^a-z0-9]+/g, '_'));
+      contextText += `--- Section: ${translatedTitle} ---\n`;
       const plainText = tempDiv.textContent || tempDiv.innerText || "";
       contextText += plainText.replace(/(\s\s)\s+/g, '$1').trim() + "\n\n";
     }
   });
 
-  const systemPrompt = "You are 'Victoria', a friendly AI assistant for the 195VBR guesthouse. You MUST base your answer ONLY on the detailed guidebook information provided below, including the guest's specific booking details and the special hidden context. IMPORTANT: When a user asks for a video, you MUST provide the direct URL to the specific video if one is mentioned in the context for that topic. For all other questions, you should use your general knowledge. Be concise, friendly, and use Markdown for formatting links like [Link Text](URL).";
+  const systemPrompt = `You are 'Victoria', a friendly AI assistant for the 195VBR guesthouse. You MUST base your answer ONLY on the detailed guidebook information provided below, which is in the user's language (${I18nState.langName}). This includes the guest's specific booking details and the special hidden context. IMPORTANT: When a user asks for a video, you MUST provide the direct URL to the specific video if one is mentioned in the context for that topic. For all other questions, you should use your general knowledge. Be concise, friendly, and use Markdown for formatting links like [Link Text](URL).`;
   
   return `${systemPrompt}\n\nRELEVANT GUIDEBOOK CONTENT:\n${contextText}`;
 }
@@ -81,7 +89,8 @@ function buildDynamicContent(keys, fragments) {
         const emoji = { "Address": "🏘️", "Wifi": "🛜", "Bedroom": "🛏️", "Bathroom": "🛁", "Kitchen": "🍳", "Windows": "🪟", "Laundry": "🧺", "Check-in & Luggage": "🧳", "Rubbish Disposal": "🗑️", "Check-out": "👋", "Heating and Cooling": "🌡️", "A Note on Light Controls": "🔌"}[fragment.title] || 'ℹ️';
         content[fragment.title] = { title: fragment.title, emoji: emoji, html: '' };
       }
-      content[fragment.title].html += fragment.html;
+      // **MODIFICATION: Use t() to translate the HTML key from config.json**
+      content[fragment.title].html += t(fragment.html);
     }
   });
   return content;
@@ -90,6 +99,7 @@ function buildDynamicContent(keys, fragments) {
 function getDynamicPersonalizedContent(guestDetails, bookingKey) {
     if (!guestDetails || !guestDetails.checkInDateISO) return {};
     
+    // This function creates static content keys, so we will translate them in `getStaticContent`
     const personalizedContent = {};
     const checkInDate = new Date(guestDetails.checkInDateISO);
     const checkOutDate = new Date(guestDetails.checkOutDateISO);
@@ -97,32 +107,33 @@ function getDynamicPersonalizedContent(guestDetails, bookingKey) {
     dayBeforeCheckIn.setDate(checkInDate.getDate() - 1);
     const dayBeforeCheckOut = new Date(checkOutDate);
     dayBeforeCheckOut.setDate(checkOutDate.getDate() - 1);
-    const dateOptions = { weekday: 'long', month: 'long', day: 'numeric' };
-    const dayBeforeCheckInFormatted = dayBeforeCheckIn.toLocaleDateString('en-GB', dateOptions);
-    const dayBeforeCheckOutFormatted = dayBeforeCheckOut.toLocaleDateString('en-GB', dateOptions);
 
+    // We will pass these ISO dates to the static content and format/translate them there
     const isWholeHome = bookingKey && bookingKey.includes('vbr');
-    let luggageHtml = '';
-
-    if (isWholeHome) {
-        luggageHtml = `<p><strong>Self Check-in:</strong> From 15:00 onwards on ${guestDetails.checkInDateFormatted}.</p><p><strong>Luggage Storage:</strong> If you require luggage storage outside of check-in/out times, please message us. Depending on availability, you may be able to store bags in the front room (Room 1).</p>`;
-    } else {
-        // --- BUG FIX: Updated the early check-in text to manage guest expectations ---
-        luggageHtml = `<p><strong>Self Check-in:</strong> From 15:00 onwards on ${guestDetails.checkInDateFormatted}.</p><p><strong>Early Luggage Drop-off:</strong> From 11:00, you can use your front door code to access Cupboard V downstairs.</p><p>If you need to store bags before 11:00, please send us a message at the earliest the day before your arrival (on ${dayBeforeCheckInFormatted}), and if we can accommodate it, we're happy to.</p><p><strong>Early Check-in:</strong> I am not automatically updated on when specific rooms are ready, however you are welcome to check for yourselves from midday onwards. If you see one of our cleaning team, feel free to ask them as well. Please only leave your belongings inside the room if it is completely finished; otherwise, please use Cupboard V for storage.</p><p>This video shows the full process:</p><div class="video-container"><iframe src="https://www.youtube.com/embed/rlUbHfWcN0s" title="How to Get In, Check-In & Drop Luggage" allowfullscreen></iframe></div>`;
-    }
-
+    
+    let luggageHtmlKey = isWholeHome ? 'content_html.wholeHomeLuggage' : 'content_html.checkinStaticDetailed';
+    
+    // These keys now point to translations. The actual content is built in getStaticContent.
+    // For personalized content, we pass the raw data to be formatted by the translation strings.
     personalizedContent['guestLuggage'] = {
         title: "Check-in & Luggage", emoji: "🧳",
-        html: luggageHtml
+        html: t(luggageHtmlKey, {
+            checkInDateFormatted: new Date(guestDetails.checkInDateISO).toLocaleDateString(I18nState.currentLanguage, { weekday: 'long', month: 'long', day: 'numeric' }),
+            dayBeforeCheckInFormatted: dayBeforeCheckIn.toLocaleDateString(I18nState.currentLanguage, { weekday: 'long', month: 'long', day: 'numeric' })
+        })
     };
     
     personalizedContent['checkout'] = {
         title: "Check-out", emoji: "👋",
-        html: `<p>Check-out is at <strong>11:00 AM on ${guestDetails.checkOutDateFormatted}</strong>.</p><p>You don't need to worry about any cleaning; our team will handle everything.</p><p>If you need to store your luggage 🧳 after you check out, you are welcome to use Cupboard V downstairs. Your existing entry code will continue to work for the front door and the cupboard until 14:00. If you need to arrange a later pick-up, please send us a message (ideally by ${dayBeforeCheckOutFormatted}) to check for availability. We need to confirm because the house may be privately booked by a new group from 15:00, and for their privacy and security, access won't be possible after their check-in time.</p><p>⚠️ <strong>A quick but important request:</strong> Please be sure to take all your belongings from the room by 11am. Our cleaning team works on a tight schedule and will clear the room completely for our next guests.</p>`
+        html: t('content_html.checkoutStaticDetailed', {
+            checkOutDateFormatted: new Date(guestDetails.checkOutDateISO).toLocaleDateString(I18nState.currentLanguage, { weekday: 'long', month: 'long', day: 'numeric' }),
+            dayBeforeCheckOutFormatted: dayBeforeCheckOut.toLocaleDateString(I18nState.currentLanguage, { weekday: 'long', month: 'long', day: 'numeric' })
+        })
     };
 
     return personalizedContent;
 }
+
 
 function getChatbotOnlyContext(bookingId) {
     const groundFloorLuggageQuirk = "The guest is in a ground floor room. While their room is easily accessible, they should be aware that the luggage storage cupboard (Cupboard V) is downstairs, reached by a narrow staircase. This is something to keep in mind if they plan to store heavy bags.";
@@ -145,15 +156,15 @@ function getChatbotOnlyContext(bookingId) {
 
 function getStaticContent() {
   return {
-    'what-not-to-bring': { title: 'What not to bring', emoji: '🚫', html: `<p>We provide a variety of amenities so you can pack light! Here are some things you <em>don’t</em> need to bring:</p><ul><li><strong>Towels & Linens:</strong> Fresh bath towels and bed linens are provided.</li><li><strong>Toiletries:</strong> Shampoo, conditioner, body wash, and hand soap are available.</li><li><strong>Hair Dryers:</strong> Each bedroom has a hairdryer.</li><li><strong>Adapters:</strong> Rooms have universal adapters on each side of the bed.</li><li><strong>Extra Blankets:</strong> All beds include an electric under-blanket.</li></ul>` },
-    'domestic-directions': { title: 'Domestic directions', emoji: '🚶', html: `<p><strong>By Train/Tube:</strong> We are ~7 minutes from <strong>London Victoria Station</strong>. Exit towards Victoria Street/Vauxhall Bridge Road, turn left, and walk ~5–7 minutes. The house will be on your left.</p><p><strong>By Coach:</strong> From Victoria Coach Station, it’s a ~10 minute walk.</p><p><strong>By Car/Taxi:</strong> We do not have on-site parking. Please check <a href="https://en.parkopedia.com/" target="_blank" rel="noopener noreferrer">Parkopedia</a> for public garages.</p>` },
-    'airport-directions': { title: 'Airport directions', emoji: '✈️', html: `<p>Book buses at <a href="https://www.nationalexpress.com" target="_blank" rel="noopener noreferrer">National Express</a> and trains at <a href="https://www.thetrainline.com" target="_blank" rel="noopener noreferrer">The Trainline</a>.</p><p><strong>Gatwick (LGW):</strong> Take a Southern Rail train directly to Victoria (~35 mins). It's cheaper and only slightly slower than the Gatwick Express.</p><p><strong>Heathrow (LHR):</strong> Take the Piccadilly line (dark blue) and change at Hammersmith for a District line (green) train to Victoria (~50 mins total).</p><p><strong>Stansted (STN):</strong> Take the train to Tottenham Hale, then switch to the Victoria line (light blue) to Victoria Station. You cannot use contactless from Stansted.</p><p><strong>Luton (LTN):</strong> Take the train from Luton Airport Parkway to London St. Pancras (~40 mins), then the Victoria line to Victoria (~15 mins).</p>` },
-    'getting-around': { title: 'Getting around', emoji: '🚇', html: `<p>Public transport is excellent. Victoria Station is ~7 minutes away. The <strong>24 bus</strong> stop near the house offers a scenic route through central London.</p><p>Use a contactless card for Tube/bus fares (they cap daily). London is very walkable, and you can also take a <strong>Thames river bus</strong> from Westminster Pier.</p>` },
-    'codetimes': { title: 'Lock info', emoji: '*️⃣', html: `<p><strong>How to unlock:</strong> Press your palm to the black screen to activate the keypad. See the video playlist for a demonstration.</p><p><strong>Front door & Luggage (Cupboard V):</strong> Your code is valid from 11:00 on check-in day until 14:00 on check-out day.</p><p><strong>Bedroom/Bathroom/Kitchen:</strong> Your code is valid from 15:00 on check-in day until 11:00 on check-out day.</p><p><strong>Locking from inside:</strong> This video shows how to lock your bedroom door from the inside for privacy.</p><div class="video-container"><iframe src="https://www.youtube.com/embed/7orX7Wh_g1U" title="How to lock door from inside" allowfullscreen></iframe></div>` },
-    'ironing': { title: 'Iron & Ironing Mat', emoji: '👕', html: `<p>An iron and a portable ironing mat can be found in the kitchen. The mat can be placed on a table or other firm surface for use. Please return both items to the kitchen when you are finished.</p>` },
-    'troubleshooting': { title: 'Troubleshooting', emoji: '🛠️', html: `<p>If your digital door lock runs out of batteries, this video shows the simple replacement process:</p><div class="video-container"><iframe src="https://www.youtube.com/embed/8Zofre6A7ns" title="How to replace door lock batteries" allowfullscreen></iframe></div>` },
-    'contact': { title: 'Contact', emoji: '☎️', html: `<p>For any questions, please check with our AI assistant, Victoria, first. For other matters, message us through your booking platform.</p><p><strong>*FOR EMERGENCIES ONLY*</strong>, please WhatsApp call +44 7443 618207. If there is no answer, try +44 7383 298999.</p>` },
-    'tv': { title: 'TV', emoji: '📺', html: `<p>Each bedroom has a Smart 4K TV with Disney+, Apple TV+, Amazon Prime Video, BBC iPlayer, and more. If a service is logged out or malfunctions, please contact us and we can log you in remotely.</p>` },
-    'local-guidebook': { title: 'Local Guidebook', emoji: '📍', html: `<h3>Food</h3><ul><li><a href="https://www.google.com/maps/search/?api=1&query=Regency+Cafe+London" target="_blank" rel="noopener">Regency Cafe</a> – traditional full English breakfast</li><li><a href="https://www.google.com/maps/search/?api=1&query=Jugged+Hare+London" target="_blank" rel="noopener">Jugged Hare</a> – great pub across the road</li><li><a href="https://www.google.com/maps/search/?api=1&query=Tachbrook+Street+Market+London" target="_blank" rel="noopener">Tachbrook Street Market</a> – local market for lunch on weekdays</li><li><a href="https://www.google.com/maps/search/?api=1&query=Kimchimama+London" target="_blank" rel="noopener">Kimchimama</a> – casual Korean food (especially fried chicken)</li><li><a href="https://www.google.com/maps/search/?api=1&query=Ben+Venuti+London" target="_blank" rel="noopener">Ben Venuti</a> – amazing Italian cafe around the corner</li><li><a href="https://www.google.com/maps/search/?api=1&query=Tozi+London" target="_blank" rel="noopener">Tozi</a> – upscale Italian restaurant nearby</li><li><a href="https://www.google.com/maps/search/?api=1&query=A+Wong+70+Wilton+Road+London" target="_blank" rel="noopener">A. Wong</a> – Michelin-starred Chinese restaurant behind the house</li><li><a href="https://www.google.com/maps/search/?api=1&query=Little+Waitrose+London" target="_blank" rel="noopener">Little Waitrose</a> – closest upmarket supermarket</li><li><a href="https://www.google.com/maps/search/?api=1&query=Sainsbury%27s+Victoria+Station" target="_blank" rel="noopener">Sainsbury's</a> – big supermarket</li><li><a href="https://www.google.com/maps/search/?api=1&query=Rippon+Cheese+London" target="_blank" rel="noopener">Rippon Cheese</a> – famous cheese store nearby</li><li><a href="https://www.google.com/maps/search/?api=1&query=Dishoom+London" target="_blank" rel="noopener">Dishoom</a> – famous Indian food (further away, book in advance)</li><li><a href="https://www.google.com/maps/search/?api=1&query=Gold+Mine+London" target="_blank" rel="noopener">Gold Mine</a> – great Peking duck (further away)</li></ul><h3>Sights</h3><ul><li>Wicked and Hamilton – Two of the world's best musicals are right on our doorstep.</li><li>St James's Park – A beautiful royal park, perfect for a stroll.</li><li>A great walk: Start at Big Ben, cross Westminster Bridge, and walk along the scenic South Bank to Tower Bridge.</li></ul>` }
+    'what-not-to-bring': { title: 'What not to bring', emoji: '🚫', html: t('static_html.what_not_to_bring') },
+    'domestic-directions': { title: 'Domestic directions', emoji: '🚶', html: t('static_html.domestic_directions') },
+    'airport-directions': { title: 'Airport directions', emoji: '✈️', html: t('static_html.airport_directions') },
+    'getting-around': { title: 'Getting around', emoji: '🚇', html: t('static_html.getting_around') },
+    'codetimes': { title: 'Lock info', emoji: '*️⃣', html: t('static_html.codetimes') },
+    'ironing': { title: 'Iron & Ironing Mat', emoji: '👕', html: t('static_html.ironing') },
+    'troubleshooting': { title: 'Troubleshooting', emoji: '🛠️', html: t('static_html.troubleshooting') },
+    'contact': { title: 'Contact', emoji: '☎️', html: t('static_html.contact') },
+    'tv': { title: 'TV', emoji: '📺', html: t('static_html.tv') },
+    'local-guidebook': { title: 'Local Guidebook', emoji: '📍', html: t('static_html.local_guidebook') }
   };
 }

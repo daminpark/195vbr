@@ -1,41 +1,41 @@
 {
   "contentFragments": {
-    "house193": { "title": "Address", "html": "<p>193 Vauxhall Bridge Road<br>Pimlico, London<br>SW1V 1ER</p>" },
-    "house195": { "title": "Address", "html": "<p>195 Vauxhall Bridge Road<br>Pimlico, London<br>SW1V 1ER</p>" },
-    "wifi193": { "title": "Wifi", "html": "<p>Network Name (SSID): <strong>193</strong><br>Password: <strong>12345671</strong></p>" },
-    "wifi195": { "title": "Wifi", "html": "<p>Network Name (SSID): <strong>195</strong><br>Password: <strong>09876543</strong></p>" },
-    "room1": { "title": "Bedroom", "html": "<p>Your room number is: 1.</p>" },
-    "room2": { "title": "Bedroom", "html": "<p>Your room number is: 2.</p>" },
-    "room3": { "title": "Bedroom", "html": "<p>Your room number is: 3.</p>" },
-    "room4": { "title": "Bedroom", "html": "<p>Your room number is: 4.</p>" },
-    "room5": { "title": "Bedroom", "html": "<p>Your room number is: 5.</p>" },
-    "room6": { "title": "Bedroom", "html": "<p>Your room number is: 6.</p>" },
-    "rooma": { "title": "Bedroom", "html": "<p>You have booked Rooms 1 & 2.</p>" },
-    "roomb": { "title": "Bedroom", "html": "<p>You have booked Rooms 4, 5 & 6.</p>" },
-    "wholeHomeBedroomsDetailed": { "title": "Bedroom", "html": "<p>The house has the following bedrooms:</p><ul><li><strong>Ground Floor:</strong> Rooms 1 & 2.</li><li><strong>First Floor:</strong> Room 3.</li><li><strong>Second Floor:</strong> Rooms 4 & 5.</li><li><strong>Third Floor (Loft):</strong> Room 6.</li><li><strong>Basement:</strong> A bonus room (Room 0) with a single bed is attached to the kitchen.</li></ul>" },
-    "storageUnderBed": { "title": "Bedroom", "html": "<p>You can create more space by storing luggage under the bed, as shown in this video:</p><div class=\"video-container\"><iframe src=\"https://www.youtube.com/embed/3Ejpyf4MYTI\" title=\"Luggage storage under bed\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe></div>" },
-    "storageInBed": { "title": "Bedroom", "html": "<p>This bed frame has a lift-up mattress with significant storage space inside, as shown in this video:</p><div class=\"video-container\"><iframe src=\"https://www.youtube.com/embed/VoFABSMLII8\" title=\"Luggage storage inside bed\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe></div>" },
-    "wholeHomeBathrooms": { "title": "Bathroom", "html": "<p>There are three bathrooms available for your use:</p><ul><li><strong>Bathroom A:</strong> Located on the ground floor.</li><li><strong>Bathroom B:</strong> Located on the second floor.</li><li><strong>Bathroom C:</strong> This is an en-suite bathroom located inside Room 3 on the first floor.</li></ul>" },
-    "bathroomA": { "title": "Bathroom", "html": "<p>Your assigned bathroom is labelled 'A'.</p>" },
-    "bathroomB": { "title": "Bathroom", "html": "<p>Your assigned bathroom is labelled 'B'.</p>" },
-    "bathroomC": { "title": "Bathroom", "html": "<p>Your private bathroom is the en-suite inside your room.</p>" },
-    "bathroomShared": { "title": "Bathroom", "html": "<p>This is a shared bathroom. Please be considerate of other guests:</p><ul><li><strong>Use Your Assigned Compartment:</strong> Store your toiletries in your numbered space.</li><li><strong>Keep it Tidy:</strong> Please leave the bathroom clean for the next person.</li><li><strong>Be Mindful of Time:</strong> Limit use to ~15 minutes, especially during peak morning hours.</li></ul>" },
-    "bathroomPrivate": { "title": "Bathroom", "html": "<p>This bathroom is private for your exclusive use.</p>" },
-    "kitchenShared": { "title": "Kitchen", "html": "<p>The shared kitchen is located in the basement, through the door marked 'K'. Please:</p><ul><li><strong>Use Assigned Storage:</strong> Each room has a numbered space in the fridge and cabinets.</li><li><strong>Clean As You Go:</strong> Place used dishes in the dishwasher. Staff will run it when full.</li></ul>" },
-    "kitchenPrivate": { "title": "Kitchen", "html": "<p>The kitchen is private for your group's exclusive use.</p>" },
-    "kitchenBase": { "title": "Kitchen", "html": "<p><strong>Shared Supplies:</strong> Help yourself to complimentary tea and coffee, as well as basic condiments and spices.</p><p><strong>Rubbish:</strong> The large metal bin is for recycling. General waste goes in the black bin.</p><p>Here are video guides for the appliances:</p><ul><li><strong>Induction Stove:</strong><div class=\"video-container\"><iframe src=\"https://www.youtube.com/embed/_ZepccyHD_o\" title=\"How to use induction stove\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe></div></li><li><strong>Microwave:</strong><div class=\"video-container\"><iframe src=\"https://www.youtube.com/embed/Qs9o7G8MvjI\" title=\"How to use microwave\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe></div></li></ul>" },
-    "windowsStandard": { "title": "Windows", "html": "<p>The window can be opened by pressing the button on the handle and turning it upwards.</p>" },
-    "windowsTiltTurn": { "title": "Windows", "html": "<p>These are \"tilt and turn\" windows. This video demonstrates how to open them for ventilation (tilt) or fully (turn):</p><div class=\"video-container\"><iframe src=\"https://www.youtube.com/embed/uqOEIZtq_wI\" title=\"How to use tilt-and-turn windows\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe></div>" },
-    "noLaundry": { "title": "Laundry", "html": "<p>There are no guest-accessible washing machines on-site. A highly-rated local launderette is <a href=\"https://maps.app.goo.gl/uYuoqcrG3xC3Q2Nz8\" target=\"_blank\" rel=\"noopener noreferrer\">True Colours Launderette</a>.</p><p>Towels are not changed daily. For fresh towels (max. once every 2 days), please leave used ones outside your door by 11:00am.</p>" },
-    "hasLaundry": { "title": "Laundry", "html": "<p>The washing machine is available for your use. It is located in the basement. This video provides access and usage instructions:</p><div class=\"video-container\"><iframe src=\"https://www.youtube.com/embed/hLV62ekup-E\" title=\"How to use washing machine\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe></div>" },
-    "wholeHomeLuggage": { "title": "Check-in & Luggage", "html": "<p><strong>Self Check-in:</strong> From 15:00 onwards.</p><p><strong>Luggage Storage:</strong> If you require luggage storage outside of check-in/out times, please message us. Depending on availability, you may be able to store bags in the front room (Room 1).</p>" },
-    "checkoutStatic": { "title": "Check-out", "html": "<p>Check-out is at <strong>11:00 AM</strong>.</p><p>You don't need to worry about any cleaning; our team will handle everything.</p><p>⚠️ <strong>A quick but important request:</strong> Please be sure to take all your belongings from the room by 11am. Our cleaning team works on a tight schedule and will clear the room completely for our next guests.</p>" },
-    "checkinStaticDetailed": { "title": "Check-in & Luggage", "html": "<p><strong>Self Check-in:</strong> From 15:00 onwards on your day of arrival.</p><p><strong>Early Luggage Drop-off:</strong> From 11:00, you can use a front door code to access Cupboard V downstairs.</p><p><strong>Early Check-in:</strong> We don't receive live updates on when individual rooms are ready, but you are welcome to check for yourself from midday onwards, or to ask a cleaner if you see them on-site. ⚠️ <strong>Please do not leave your belongings in the room unless it is completely finished.</strong> Our team operates on a tight schedule and may mistake your items for a previous guest's, which could result in them being disposed of. An occupied room also prevents our team from cleaning to our high standards. If your room is not yet ready, please use the secure luggage storage (Cupboard V) downstairs.</p><p>This video shows the full process:</p><div class=\"video-container\"><iframe src=\"https://www.youtube.com/embed/rlUbHfWcN0s\" title=\"How to Get In, Check-In & Drop Luggage\" allowfullscreen></iframe></div>" },
-    "checkoutStaticDetailed": { "title": "Check-out", "html": "<p>Check-out is at <strong>11:00 AM</strong>.</p><p>You don't need to worry about any cleaning; our team will handle everything.</p><p>If you need to store your luggage 🧳 after you check out, you are welcome to use Cupboard V downstairs. An entry code will work for the front door and the cupboard until 14:00. If you need to arrange a later pick-up, please send us a message to check for availability.</p><p>⚠️ <strong>A quick but important request:</strong> Please be sure to take all your belongings from the room by 11am. Our cleaning team works on a tight schedule and will clear the room completely for our next guests.</p>" },
-    "heatingBase": { "title": "Heating and Cooling", "html": "<p>You can control the temperature in your room using the valve (TRV) on your radiator.</p><p><strong>Cooling:</strong> We do not have air conditioning. We recommend keeping the window and curtains closed during sunny days and opening them in the evening.</p>" },
-    "heatingSmartAddon": { "title": "Heating and Cooling", "html": "<p>For bookings with smart home controls, you can also adjust this from the dashboard on this page.</p>" },
-    "lightsNote": { "title": "A Note on Light Controls", "html": "<p>Please note that these smart lights can only be controlled from this app when the physical light switch on the wall is in the 'ON' position. If a light is unresponsive, please check that its corresponding wall switch is turned on first.</p>" },
-    "wholeHomeRubbish": { "title": "Rubbish Disposal", "html": "<p>Rubbish bags can be left on the pavement outside the front door, in front of the black fencing. The council collects it daily from this location.</p>" }
+    "house193": { "title": "Address", "html": "content_html.house193" },
+    "house195": { "title": "Address", "html": "content_html.house195" },
+    "wifi193": { "title": "Wifi", "html": "content_html.wifi193" },
+    "wifi195": { "title": "Wifi", "html": "content_html.wifi195" },
+    "room1": { "title": "Bedroom", "html": "content_html.room1" },
+    "room2": { "title": "Bedroom", "html": "content_html.room2" },
+    "room3": { "title": "Bedroom", "html": "content_html.room3" },
+    "room4": { "title": "Bedroom", "html": "content_html.room4" },
+    "room5": { "title": "Bedroom", "html": "content_html.room5" },
+    "room6": { "title": "Bedroom", "html": "content_html.room6" },
+    "rooma": { "title": "Bedroom", "html": "content_html.rooma" },
+    "roomb": { "title": "Bedroom", "html": "content_html.roomb" },
+    "wholeHomeBedroomsDetailed": { "title": "Bedroom", "html": "content_html.wholeHomeBedroomsDetailed" },
+    "storageUnderBed": { "title": "Bedroom", "html": "content_html.storageUnderBed" },
+    "storageInBed": { "title": "Bedroom", "html": "content_html.storageInBed" },
+    "wholeHomeBathrooms": { "title": "Bathroom", "html": "content_html.wholeHomeBathrooms" },
+    "bathroomA": { "title": "Bathroom", "html": "content_html.bathroomA" },
+    "bathroomB": { "title": "Bathroom", "html": "content_html.bathroomB" },
+    "bathroomC": { "title": "Bathroom", "html": "content_html.bathroomC" },
+    "bathroomShared": { "title": "Bathroom", "html": "content_html.bathroomShared" },
+    "bathroomPrivate": { "title": "Bathroom", "html": "content_html.bathroomPrivate" },
+    "kitchenShared": { "title": "Kitchen", "html": "content_html.kitchenShared" },
+    "kitchenPrivate": { "title": "Kitchen", "html": "content_html.kitchenPrivate" },
+    "kitchenBase": { "title": "Kitchen", "html": "content_html.kitchenBase" },
+    "windowsStandard": { "title": "Windows", "html": "content_html.windowsStandard" },
+    "windowsTiltTurn": { "title": "Windows", "html": "content_html.windowsTiltTurn" },
+    "noLaundry": { "title": "Laundry", "html": "content_html.noLaundry" },
+    "hasLaundry": { "title": "Laundry", "html": "content_html.hasLaundry" },
+    "wholeHomeLuggage": { "title": "Check-in & Luggage", "html": "content_html.wholeHomeLuggage" },
+    "checkoutStatic": { "title": "Check-out", "html": "content_html.checkoutStatic" },
+    "checkinStaticDetailed": { "title": "Check-in & Luggage", "html": "content_html.checkinStaticDetailed" },
+    "checkoutStaticDetailed": { "title": "Check-out", "html": "content_html.checkoutStaticDetailed" },
+    "heatingBase": { "title": "Heating and Cooling", "html": "content_html.heatingBase" },
+    "heatingSmartAddon": { "title": "Heating and Cooling", "html": "content_html.heatingSmartAddon" },
+    "lightsNote": { "title": "A Note on Light Controls", "html": "content_html.lightsNote" },
+    "wholeHomeRubbish": { "title": "Rubbish Disposal", "html": "content_html.wholeHomeRubbish" }
   },
   "bookings": {
     "31": { 
@@ -45,10 +45,8 @@
         "weather": "weather.forecast_home", 
         "bathroom_a": "binary_sensor.bathroom_a_occupancy", 
         "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.3_1_trv": "Room 1 Radiator"},
-        "lights": {
-          "light.3_1_lights": "Room 1 Main Lights"
-        }
+        "climate": {"climate.3_1_trv": "ha_entity_names.room1_radiator"},
+        "lights": { "light.3_1_lights": "ha_entity_names.room1_main_lights" }
       }
     },
     "32": {
@@ -58,10 +56,8 @@
         "weather": "weather.forecast_home", 
         "bathroom_a": "binary_sensor.bathroom_a_occupancy", 
         "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.3_2_trv": "Room 2 Radiator"},
-        "lights": {
-          "light.3_2_lights": "Room 2 Main Lights"
-        }
+        "climate": {"climate.3_2_trv": "ha_entity_names.room2_radiator"},
+        "lights": { "light.3_2_lights": "ha_entity_names.room2_main_lights" }
       }
     },
     "33": {
@@ -70,11 +66,11 @@
       "entities": { 
         "weather": "weather.forecast_home", 
         "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.3_c_trv": "Bathroom C Radiator", "climate.3_3_trv": "Room 3 Radiator"},
+        "climate": {"climate.3_c_trv": "ha_entity_names.bathroomC_radiator", "climate.3_3_trv": "ha_entity_names.room3_radiator"},
         "lights": {
-          "light.3_3_lights": "Room 3 Main Lights",
-          "light.3_3_lamp": "Room 3 Bedside Lamp",
-          "light.3_c_lights": "Bathroom Lights"
+          "light.3_3_lights": "ha_entity_names.room3_main_lights",
+          "light.3_3_lamp": "ha_entity_names.room3_bedside_lamp",
+          "light.3_c_lights": "ha_entity_names.bathroom_lights"
         }
       }
     },
@@ -85,10 +81,10 @@
         "weather": "weather.forecast_home", 
         "bathroom_b": "binary_sensor.bathroom_b_occupancy", 
         "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.3_4_trv": "Room 4 Radiator"},
+        "climate": {"climate.3_4_trv": "ha_entity_names.room4_radiator"},
         "lights": {
-          "light.3_4_lights": "Room 4 Main Lights",
-          "light.3_4_lamp": "Room 4 Bedside Lamp"
+          "light.3_4_lights": "ha_entity_names.room4_main_lights",
+          "light.3_4_lamp": "ha_entity_names.room4_bedside_lamp"
         }
       }
     },
@@ -99,10 +95,8 @@
         "weather": "weather.forecast_home", 
         "bathroom_b": "binary_sensor.bathroom_b_occupancy", 
         "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.3_5_trv": "Room 5 Radiator"},
-        "lights": {
-          "light.3_5_lights": "Room 5 Main Lights"
-        }
+        "climate": {"climate.3_5_trv": "ha_entity_names.room5_radiator"},
+        "lights": { "light.3_5_lights": "ha_entity_names.room5_main_lights" }
       }
     },
     "36": {
@@ -112,10 +106,8 @@
         "weather": "weather.forecast_home", 
         "bathroom_b": "binary_sensor.bathroom_b_occupancy", 
         "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.3_6_trv": "Room 6 Radiator"},
-        "lights": {
-          "light.3_6_lights": "Room 6 Main Lights"
-        }
+        "climate": {"climate.3_6_trv": "ha_entity_names.room6_radiator"},
+        "lights": { "light.3_6_lights": "ha_entity_names.room6_main_lights" }
       }
     },
     "3a": {
@@ -124,10 +116,10 @@
       "entities": { 
         "weather": "weather.forecast_home", 
         "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.3_1_trv": "Room 1 Radiator", "climate.3_2_trv": "Room 2 Radiator"},
+        "climate": {"climate.3_1_trv": "ha_entity_names.room1_radiator", "climate.3_2_trv": "ha_entity_names.room2_radiator"},
         "lights": {
-          "light.3_1_lights": "Room 1 Main Lights",
-          "light.3_2_lights": "Room 2 Main Lights"
+          "light.3_1_lights": "ha_entity_names.room1_main_lights",
+          "light.3_2_lights": "ha_entity_names.room2_main_lights"
         }
       }
     },
@@ -137,12 +129,12 @@
       "entities": { 
         "weather": "weather.forecast_home", 
         "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.3_4_trv": "Room 4 Radiator", "climate.3_5_trv": "Room 5 Radiator", "climate.3_6_trv": "Room 6 Radiator"},
+        "climate": {"climate.3_4_trv": "ha_entity_names.room4_radiator", "climate.3_5_trv": "ha_entity_names.room5_radiator", "climate.3_6_trv": "ha_entity_names.room6_radiator"},
         "lights": {
-          "light.3_4_lights": "Room 4 Main Lights",
-          "light.3_4_lamp": "Room 4 Bedside Lamp",
-          "light.3_5_lights": "Room 5 Main Lights",
-          "light.3_6_lights": "Room 6 Main Lights"
+          "light.3_4_lights": "ha_entity_names.room4_main_lights",
+          "light.3_4_lamp": "ha_entity_names.room4_bedside_lamp",
+          "light.3_5_lights": "ha_entity_names.room5_main_lights",
+          "light.3_6_lights": "ha_entity_names.room6_main_lights"
         }
       }
     },
@@ -153,10 +145,8 @@
         "weather": "weather.forecast_home", 
         "bathroom_a": "binary_sensor.bathroom_a_occupancy", 
         "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.5_1_trv": "Room 1 Radiator"},
-        "lights": {
-          "light.5_1_lights": "Room 1 Main Lights"
-        }
+        "climate": {"climate.5_1_trv": "ha_entity_names.room1_radiator"},
+        "lights": { "light.5_1_lights": "ha_entity_names.room1_main_lights" }
       }
     },
     "52": {
@@ -166,10 +156,8 @@
         "weather": "weather.forecast_home", 
         "bathroom_a": "binary_sensor.bathroom_a_occupancy", 
         "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.5_2_trv": "Room 2 Radiator"},
-        "lights": {
-          "light.5_2_lights": "Room 2 Main Lights"
-        }
+        "climate": {"climate.5_2_trv": "ha_entity_names.room2_radiator"},
+        "lights": { "light.5_2_lights": "ha_entity_names.room2_main_lights" }
       }
     },
     "53": {
@@ -178,11 +166,11 @@
       "entities": { 
         "weather": "weather.forecast_home", 
         "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.5_c_trv": "Bathroom C Radiator", "climate.5_3_trv": "Room 3 Radiator"},
+        "climate": {"climate.5_c_trv": "ha_entity_names.bathroomC_radiator", "climate.5_3_trv": "ha_entity_names.room3_radiator"},
         "lights": {
-          "light.5_3_lights": "Room 3 Main Lights",
-          "light.5_3_lamp": "Room 3 Bedside Lamp",
-          "light.5_c_lights": "Bathroom Lights"
+          "light.5_3_lights": "ha_entity_names.room3_main_lights",
+          "light.5_3_lamp": "ha_entity_names.room3_bedside_lamp",
+          "light.5_c_lights": "ha_entity_names.bathroom_lights"
         }
       }
     },
@@ -193,10 +181,10 @@
         "weather": "weather.forecast_home", 
         "bathroom_b": "binary_sensor.bathroom_b_occupancy", 
         "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.5_4_trv": "Room 4 Radiator"},
+        "climate": {"climate.5_4_trv": "ha_entity_names.room4_radiator"},
         "lights": {
-          "light.5_4_lights": "Room 4 Main Lights",
-          "light.5_4_lamp": "Room 4 Bedside Lamp"
+          "light.5_4_lights": "ha_entity_names.room4_main_lights",
+          "light.5_4_lamp": "ha_entity_names.room4_bedside_lamp"
         }
       }
     },
@@ -207,10 +195,8 @@
         "weather": "weather.forecast_home", 
         "bathroom_b": "binary_sensor.bathroom_b_occupancy", 
         "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.5_5_trv": "Room 5 Radiator"},
-        "lights": {
-          "light.5_5_lights": "Room 5 Main Lights"
-        }
+        "climate": {"climate.5_5_trv": "ha_entity_names.room5_radiator"},
+        "lights": { "light.5_5_lights": "ha_entity_names.room5_main_lights" }
       }
     },
     "56": {
@@ -220,10 +206,8 @@
         "weather": "weather.forecast_home", 
         "bathroom_b": "binary_sensor.bathroom_b_occupancy", 
         "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.5_6_trv": "Room 6 Radiator"},
-        "lights": {
-          "light.5_6_lights": "Room 6 Main Lights"
-        }
+        "climate": {"climate.5_6_trv": "ha_entity_names.room6_radiator"},
+        "lights": { "light.5_6_lights": "ha_entity_names.room6_main_lights" }
       }
     },
     "5a": {
@@ -232,10 +216,10 @@
       "entities": { 
         "weather": "weather.forecast_home", 
         "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.5_1_trv": "Room 1 Radiator", "climate.5_2_trv": "Room 2 Radiator"},
+        "climate": {"climate.5_1_trv": "ha_entity_names.room1_radiator", "climate.5_2_trv": "ha_entity_names.room2_radiator"},
         "lights": {
-          "light.5_1_lights": "Room 1 Main Lights",
-          "light.5_2_lights": "Room 2 Main Lights"
+          "light.5_1_lights": "ha_entity_names.room1_main_lights",
+          "light.5_2_lights": "ha_entity_names.room2_main_lights"
         }
       }
     },
@@ -245,12 +229,12 @@
       "entities": { 
         "weather": "weather.forecast_home", 
         "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.5_4_trv": "Room 4 Radiator", "climate.5_5_trv": "Room 5 Radiator", "climate.5_6_trv": "Room 6 Radiator"},
+        "climate": {"climate.5_4_trv": "ha_entity_names.room4_radiator", "climate.5_5_trv": "ha_entity_names.room5_radiator", "climate.5_6_trv": "ha_entity_names.room6_radiator"},
         "lights": {
-          "light.5_4_lights": "Room 4 Main Lights",
-          "light.5_4_lamp": "Room 4 Bedside Lamp",
-          "light.5_5_lights": "Room 5 Main Lights",
-          "light.5_6_lights": "Room 6 Main Lights"
+          "light.5_4_lights": "ha_entity_names.room4_main_lights",
+          "light.5_4_lamp": "ha_entity_names.room4_bedside_lamp",
+          "light.5_5_lights": "ha_entity_names.room5_main_lights",
+          "light.5_6_lights": "ha_entity_names.room6_main_lights"
         }
       }
     },
@@ -259,17 +243,17 @@
       "house": "193", 
       "entities": { 
         "weather": "weather.forecast_home", 
-        "climate": {"climate.3_1_trv": "Room 1 Radiator", "climate.3_2_trv": "Room 2 Radiator", "climate.3_3_trv": "Room 3 Radiator", "climate.3_c_trv": "Bathroom C Radiator", "climate.3_4_trv": "Room 4 Radiator", "climate.3_5_trv": "Room 5 Radiator", "climate.3_6_trv": "Room 6 Radiator"},
+        "climate": {"climate.3_1_trv": "ha_entity_names.room1_radiator", "climate.3_2_trv": "ha_entity_names.room2_radiator", "climate.3_3_trv": "ha_entity_names.room3_radiator", "climate.3_c_trv": "ha_entity_names.bathroomC_radiator", "climate.3_4_trv": "ha_entity_names.room4_radiator", "climate.3_5_trv": "ha_entity_names.room5_radiator", "climate.3_6_trv": "ha_entity_names.room6_radiator"},
         "lights": {
-          "light.3_1_lights": "Room 1 Lights",
-          "light.3_2_lights": "Room 2 Lights",
-          "light.3_3_lights": "Room 3 Lights",
-          "light.3_3_lamp": "Room 3 Lamp",
-          "light.3_c_lights": "Bathroom C Lights",
-          "light.3_4_lights": "Room 4 Lights",
-          "light.3_4_lamp": "Room 4 Lamp",
-          "light.3_5_lights": "Room 5 Lights",
-          "light.3_6_lights": "Room 6 Lights"
+          "light.3_1_lights": "ha_entity_names.room1_lights",
+          "light.3_2_lights": "ha_entity_names.room2_lights",
+          "light.3_3_lights": "ha_entity_names.room3_lights",
+          "light.3_3_lamp": "ha_entity_names.room3_lamp",
+          "light.3_c_lights": "ha_entity_names.bathroomC_lights",
+          "light.3_4_lights": "ha_entity_names.room4_lights",
+          "light.3_4_lamp": "ha_entity_names.room4_lamp",
+          "light.3_5_lights": "ha_entity_names.room5_lights",
+          "light.3_6_lights": "ha_entity_names.room6_lights"
         }
       }
     },
@@ -278,17 +262,17 @@
       "house": "195", 
       "entities": { 
         "weather": "weather.forecast_home", 
-        "climate": {"climate.5_1_trv": "Room 1 Radiator", "climate.5_2_trv": "Room 2 Radiator", "climate.5_3_trv": "Room 3 Radiator", "climate.5_c_trv": "Bathroom C Radiator", "climate.5_4_trv": "Room 4 Radiator", "climate.5_5_trv": "Room 5 Radiator", "climate.5_6_trv": "Room 6 Radiator"},
+        "climate": {"climate.5_1_trv": "ha_entity_names.room1_radiator", "climate.5_2_trv": "ha_entity_names.room2_radiator", "climate.5_3_trv": "ha_entity_names.room3_radiator", "climate.5_c_trv": "ha_entity_names.bathroomC_radiator", "climate.5_4_trv": "ha_entity_names.room4_radiator", "climate.5_5_trv": "ha_entity_names.room5_radiator", "climate.5_6_trv": "ha_entity_names.room6_radiator"},
         "lights": {
-          "light.5_1_lights": "Room 1 Lights",
-          "light.5_2_lights": "Room 2 Lights",
-          "light.5_3_lights": "Room 3 Lights",
-          "light.5_3_lamp": "Room 3 Lamp",
-          "light.5_c_lights": "Bathroom C Lights",
-          "light.5_4_lights": "Room 4 Lights",
-          "light.5_4_lamp": "Room 4 Lamp",
-          "light.5_5_lights": "Room 5 Lights",
-          "light.5_6_lights": "Room 6 Lights"
+          "light.5_1_lights": "ha_entity_names.room1_lights",
+          "light.5_2_lights": "ha_entity_names.room2_lights",
+          "light.5_3_lights": "ha_entity_names.room3_lights",
+          "light.5_3_lamp": "ha_entity_names.room3_lamp",
+          "light.5_c_lights": "ha_entity_names.bathroomC_lights",
+          "light.5_4_lights": "ha_entity_names.room4_lights",
+          "light.5_4_lamp": "ha_entity_names.room4_lamp",
+          "light.5_5_lights": "ha_entity_names.room5_lights",
+          "light.5_6_lights": "ha_entity_names.room6_lights"
         }
       }
     }

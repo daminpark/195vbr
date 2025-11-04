@@ -61,19 +61,21 @@ function createDashboardCards(bookingConfig) {
         } else if (key === 'climate' && AppState.guestAccessLevel === 'full') {
             const climateEntities = entities[key];
             let climateHtml = '';
-            for (const [entityId, friendlyName] of Object.entries(climateEntities)) {
-                climateHtml += `<div class="climate-entity" id="climate-${entityId}"><div class="climate-name">${friendlyName}</div><div class="climate-current-temp">Current: --°</div><div class="climate-set-temp-display">--°</div><div class="climate-slider-container"><input type="range" min="14" max="24" step="0.5" class="climate-slider" data-entity="${entityId}" disabled></div></div>`;
+            for (const [entityId, nameKey] of Object.entries(climateEntities)) {
+                const friendlyName = t(nameKey);
+                climateHtml += `<div class="climate-entity" id="climate-${entityId}"><div class="climate-name">${friendlyName}</div><div class="climate-current-temp">${t('ha_dashboard.current_temp_prefix')}: --°</div><div class="climate-set-temp-display">--°</div><div class="climate-slider-container"><input type="range" min="14" max="24" step="0.5" class="climate-slider" data-entity="${entityId}" disabled></div></div>`;
             }
             cardsHtml += `<div class="ha-card climate-card">${climateHtml}</div>`;
         } else if (key === 'lights' && AppState.guestAccessLevel === 'full') {
-            for (const [entityId, friendlyName] of Object.entries(entities[key])) {
+            for (const [entityId, nameKey] of Object.entries(entities[key])) {
+                const friendlyName = t(nameKey);
                 cardsHtml += `
                     <div class="ha-card light-control-card" id="light-card-${entityId.replace(/\./g, '-')}" data-entity-id="${entityId}">
                         <div class="light-controls-wrapper">
                             <div class="light-control-header">
                                 <span class="light-control-name">${friendlyName}</span>
                                 <div class="light-header-controls">
-                                    <button class="light-refresh-btn" aria-label="Refresh status">
+                                    <button class="light-refresh-btn" aria-label="${t('ha_dashboard.light_refresh_aria')}">
                                         <span class="material-symbols-outlined">refresh</span>
                                     </button>
                                     <label class="switch">
@@ -97,14 +99,15 @@ function createDashboardCards(bookingConfig) {
                         </div>
                         <div class="light-unavailable-notice">
                             <span class="material-symbols-outlined">power_off</span>
-                            <span>Power is off at the wall switch.</span>
+                            <span>${t('ha_dashboard.light_unavailable')}</span>
                         </div>
                     </div>
                 `;
             }
         } else if (AppState.guestAccessLevel === 'full') {
-            const cardTitle = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-            cardsHtml += `<div class="ha-card"><div class="ha-card-title">House ${bookingConfig.house} ${cardTitle}</div><div class="ha-card-status" id="ha-status-${key}">Loading...</div></div>`;
+            const cardTitleKey = `content_titles.${key}`;
+            const cardTitle = t(cardTitleKey, {}, 'en'); // Use english title for consistency
+            cardsHtml += `<div class="ha-card"><div class="ha-card-title">${cardTitle}</div><div class="ha-card-status" id="ha-status-${key}">Loading...</div></div>`;
         }
     });
 
@@ -114,8 +117,7 @@ function createDashboardCards(bookingConfig) {
         dashboard.innerHTML = cardsHtml;
     }
 
-    // --- ADD EVENT LISTENERS ---
-
+    // EVENT LISTENERS remain the same, as they are logic-based
     document.querySelectorAll('.climate-slider').forEach(slider => {
         slider.addEventListener('input', (event) => {
             const currentSlider = event.currentTarget;
@@ -185,7 +187,7 @@ function createDashboardCards(bookingConfig) {
  * @returns {string} HTML string for the weather card.
  */
 function createWeatherCardHtml() {
-  return `<div class="ha-card weather-card" id="ha-card-weather"><div class="weather-top-row" id="ha-weather-top-row">Loading Weather...</div><div class="weather-forecast" id="ha-weather-daily"></div></div>`;
+  return `<div class="ha-card weather-card" id="ha-card-weather"><div class="weather-top-row" id="ha-weather-top-row">${t('ha_dashboard.weather_loading')}</div><div class="weather-forecast" id="ha-weather-daily"></div></div>`;
 }
 
 /**
@@ -228,13 +230,13 @@ async function displayHomeAssistantStatus(bookingConfig) {
             const container = document.getElementById(`climate-${entityId}`);
             const state = allStates[entityId];
             if (container && state) {
-                container.querySelector('.climate-current-temp').textContent = `Current: ${state.attributes.current_temperature.toFixed(1)}°`;
+                container.querySelector('.climate-current-temp').textContent = `${t('ha_dashboard.current_temp_prefix')}: ${state.attributes.current_temperature.toFixed(1)}°`;
                 container.querySelector('.climate-set-temp-display').textContent = `${state.attributes.temperature.toFixed(1)}°`;
                 const slider = container.querySelector('.climate-slider');
                 slider.value = state.attributes.temperature;
                 slider.disabled = false;
             } else if (container) {
-                container.querySelector('.climate-current-temp').textContent = 'Status unavailable';
+                container.querySelector('.climate-current-temp').textContent = t('ha_dashboard.occupancy_unavailable');
             }
         }
     } else if (key === 'lights' && AppState.guestAccessLevel === 'full') {
@@ -288,10 +290,10 @@ async function displayHomeAssistantStatus(bookingConfig) {
         const statusElement = document.getElementById(`ha-status-${key}`);
         const state = allStates[entityValue];
         if (statusElement && state) {
-          statusElement.textContent = state.state === 'on' ? 'Occupied' : 'Vacant';
+          statusElement.textContent = state.state === 'on' ? t('ha_dashboard.occupancy_occupied') : t('ha_dashboard.occupancy_vacant');
           statusElement.style.color = state.state === 'on' ? '#d9534f' : '#5cb85c';
         } else if (statusElement) {
-          statusElement.textContent = 'Unavailable';
+          statusElement.textContent = t('ha_dashboard.occupancy_unavailable');
           statusElement.style.color = 'gray';
         }
     }
@@ -314,9 +316,9 @@ async function fetchWeatherData(entityId, house, currentOpaqueBookingKey) {
     ]);
     const topRowContainer = document.getElementById('ha-weather-top-row');
     if (topRowContainer) {
-        let topRowHtml = `<div class="weather-item current-weather-item"><div class="weather-item-label">Now</div><span class="weather-item-icon material-symbols-outlined">${weatherIconMap[currentState.state] || 'sunny'}</span><div class="weather-item-temp">${Math.round(currentState.attributes.temperature)}°</div></div>`;
+        let topRowHtml = `<div class="weather-item current-weather-item"><div class="weather-item-label">${t('ha_dashboard.weather_now')}</div><span class="weather-item-icon material-symbols-outlined">${weatherIconMap[currentState.state] || 'sunny'}</span><div class="weather-item-temp">${Math.round(currentState.attributes.temperature)}°</div></div>`;
         hourlyForecast.slice(1, 5).forEach(hour => {
-            const time = new Date(hour.datetime).toLocaleTimeString('en-US', { hour: 'numeric', hour12: false });
+            const time = new Date(hour.datetime).toLocaleTimeString(I18nState.currentLanguage, { hour: 'numeric', hour12: false });
             topRowHtml += `<div class="weather-item"><div class="weather-item-label">${time}</div><span class="weather-item-icon material-symbols-outlined">${weatherIconMap[hour.condition] || 'sunny'}</span><div class="weather-item-temp">${Math.round(hour.temperature)}°</div></div>`;
         });
         topRowContainer.innerHTML = topRowHtml;
@@ -325,7 +327,7 @@ async function fetchWeatherData(entityId, house, currentOpaqueBookingKey) {
     if (dailyContainer) {
         let dailyHtml = '';
         dailyForecast.slice(0, 4).forEach((day, index) => {
-            const dayName = index === 0 ? 'Today' : new Date(day.datetime).toLocaleDateString('en-US', { weekday: 'short' });
+            const dayName = index === 0 ? t('ha_dashboard.weather_today') : new Date(day.datetime).toLocaleDateString(I18nState.currentLanguage, { weekday: 'short' });
             dailyHtml += `<div class="forecast-day"><div class="forecast-day-name">${dayName}</div><span class="forecast-day-icon material-symbols-outlined">${weatherIconMap[day.condition] || 'sunny'}</span><div class="forecast-day-temp">${Math.round(day.temperature)}°<span class="forecast-day-temp-low">${Math.round(day.templow)}°</span></div></div>`;
         });
         dailyContainer.innerHTML = dailyHtml;
@@ -334,7 +336,7 @@ async function fetchWeatherData(entityId, house, currentOpaqueBookingKey) {
     console.error('Full weather fetch error:', error);
     const topRowContainer = document.getElementById('ha-weather-top-row');
     const dailyContainer = document.getElementById('ha-weather-daily');
-    const errorMessage = '<p style="font-size: 0.8rem; color: gray; text-align: center; width: 100%;">Weather data unavailable.</p>';
+    const errorMessage = `<p style="font-size: 0.8rem; color: gray; text-align: center; width: 100%;">${t('ha_dashboard.weather_unavailable')}</p>`;
     if (dailyContainer) dailyContainer.innerHTML = errorMessage;
     if (topRowContainer) topRowContainer.innerHTML = '';
   }
@@ -371,7 +373,7 @@ function updateCardFromPush(data) {
     if (entity_id.startsWith('climate.')) {
         const container = document.getElementById(`climate-${entity_id}`);
         if (container && attributes.current_temperature !== undefined) {
-            container.querySelector('.climate-current-temp').textContent = `Current: ${attributes.current_temperature.toFixed(1)}°`;
+            container.querySelector('.climate-current-temp').textContent = `${t('ha_dashboard.current_temp_prefix')}: ${attributes.current_temperature.toFixed(1)}°`;
             const display = container.querySelector('.climate-set-temp-display');
             const slider = container.querySelector('.climate-slider');
             display.textContent = `${attributes.temperature.toFixed(1)}°`;
@@ -384,7 +386,7 @@ function updateCardFromPush(data) {
         if (entityKey) {
             const statusElement = document.getElementById(`ha-status-${entityKey}`);
             if (statusElement) {
-                statusElement.textContent = state === 'on' ? 'Occupied' : 'Vacant';
+                statusElement.textContent = state === 'on' ? t('ha_dashboard.occupancy_occupied') : t('ha_dashboard.occupancy_vacant');
                 statusElement.style.color = state === 'on' ? '#d9534f' : '#5cb85c';
             }
         }
