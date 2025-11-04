@@ -104,12 +104,16 @@ async function buildLegacyGuidebook(params) {
     const staticContent = getStaticContent();
     let legacyContentKeys = new Set(Object.keys(staticContent));
 
+    // Add generic check-in and check-out to all legacy pages
+    legacyContentKeys.add('wholeHomeLuggage');
+    legacyContentKeys.add('checkoutStatic');
+
     if (params.has('wholehome')) {
       pageTitle = "Whole Home Guide";
-      ['house193', 'house195', 'wifi193', 'wifi195', 'wholeHomeLuggage', 'wholeHomeRubbish', 'hasLaundry', 'kitchenBase', 'windowsStandard', 'windowsTiltTurn'].forEach(item => legacyContentKeys.add(item));
+      ['house193', 'house195', 'wifi193', 'wifi195', 'wholeHomeRubbish', 'hasLaundry', 'kitchenBase', 'windowsStandard', 'windowsTiltTurn'].forEach(item => legacyContentKeys.add(item));
     } else {
       pageTitle = "Private Room Guide";
-      ['house193', 'wifi193', 'guestLuggage'].forEach(item => legacyContentKeys.add(item));
+      ['house193', 'wifi193'].forEach(item => legacyContentKeys.add(item));
       if (params.has('sharedk')) { ['kitchenShared', 'kitchenBase', 'noLaundry'].forEach(item => legacyContentKeys.add(item)); }
       if (params.has('sharedb')) { ['bathroomShared'].forEach(item => legacyContentKeys.add(item)); }
     }

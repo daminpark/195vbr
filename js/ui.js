@@ -12,7 +12,10 @@ function renderPage(allContent, guestDetails = {}, legacyTitle = null) {
 
   let welcomeHtml = '';
   if (legacyTitle) {
-    welcomeHtml = `<h1>${legacyTitle}</h1>`;
+    welcomeHtml = `
+      <h1>${legacyTitle}</h1>
+      <p>This is a general guidebook. It contains helpful information for your stay. You can also ask our AI assistant, Victoria, any questions you may have.</p>
+    `;
   } else if (guestDetails.guestFirstName) {
     const now = new Date();
     const checkInDate = new Date(guestDetails.checkInDateISO);
