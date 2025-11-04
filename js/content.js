@@ -39,7 +39,6 @@ function buildChatbotContext(content, guestDetails, bookingKey) {
 
   contextText += getChatbotOnlyContext(bookingKey) + "\n\n";
 
-  // --- BUG FIX: Removed the Instructional Video Playlist to prevent it from being a fallback for the AI ---
   const sectionOrder = ['What not to bring', 'Address', 'Domestic directions', 'Airport directions', 'Getting around', 'Lock info', 'Check-in & Luggage', 'Check-out', 'Wifi', 'Heating and Cooling', 'A Note on Light Controls', 'Bedroom', 'Bathroom', 'Kitchen', 'Rubbish Disposal', 'Windows', 'Laundry', 'Iron & Ironing Mat', 'Troubleshooting', 'TV', 'Contact', 'Local Guidebook'];
 
   sectionOrder.forEach(key => {
@@ -68,7 +67,8 @@ function buildChatbotContext(content, guestDetails, bookingKey) {
     }
   });
 
-  const systemPrompt = "You are 'Victoria', a friendly AI assistant for the 195VBR guesthouse. You MUST base your answer ONLY on the detailed guidebook information provided below, including the guest's specific booking details and the special hidden context. IMPORTANT: When a user asks for a video, you MUST provide the direct URL to the specific video if one is mentioned in the context for that topic. You should ONLY mention the general 'Instructional Video Playlist' as a fallback if no specific video is available. For all other questions, you should use your general knowledge. Be concise, friendly, and use Markdown for formatting links like [Link Text](URL).";
+  // --- BUG FIX: Removed the fallback instruction about the playlist ---
+  const systemPrompt = "You are 'Victoria', a friendly AI assistant for the 195VBR guesthouse. You MUST base your answer ONLY on the detailed guidebook information provided below, including the guest's specific booking details and the special hidden context. IMPORTANT: When a user asks for a video, you MUST provide the direct URL to the specific video if one is mentioned in the context for that topic. For all other questions, you should use your general knowledge. Be concise, friendly, and use Markdown for formatting links like [Link Text](URL).";
   
   return `${systemPrompt}\n\nRELEVANT GUIDEBOOK CONTENT:\n${contextText}`;
 }
@@ -144,8 +144,8 @@ function getChatbotOnlyContext(bookingId) {
 }
 
 function getStaticContent() {
+  // --- BUG FIX: Removed the 'video' entry entirely ---
   return {
-    'video': { title: 'Instructional Video Playlist', emoji: '🎬', html: `<p>This playlist contains all the instructional videos from this guide in one convenient location.</p><a href="https://www.youtube.com/playlist?list=PL7olRlH5yDt4Zk_2CIS9fRnkYmC9gkcDh" target="_blank" rel="noopener noreferrer">Link to Full YouTube Playlist</a>` },
     'what-not-to-bring': { title: 'What not to bring', emoji: '🚫', html: `<p>We provide a variety of amenities so you can pack light! Here are some things you <em>don’t</em> need to bring:</p><ul><li><strong>Towels & Linens:</strong> Fresh bath towels and bed linens are provided.</li><li><strong>Toiletries:</strong> Shampoo, conditioner, body wash, and hand soap are available.</li><li><strong>Hair Dryers:</strong> Each bedroom has a hairdryer.</li><li><strong>Adapters:</strong> Rooms have universal adapters on each side of the bed.</li><li><strong>Extra Blankets:</strong> All beds include an electric under-blanket.</li></ul>` },
     'domestic-directions': { title: 'Domestic directions', emoji: '🚶', html: `<p><strong>By Train/Tube:</strong> We are ~7 minutes from <strong>London Victoria Station</strong>. Exit towards Victoria Street/Vauxhall Bridge Road, turn left, and walk ~5–7 minutes. The house will be on your left.</p><p><strong>By Coach:</strong> From Victoria Coach Station, it’s a ~10 minute walk.</p><p><strong>By Car/Taxi:</strong> We do not have on-site parking. Please check <a href="https://en.parkopedia.com/" target="_blank" rel="noopener noreferrer">Parkopedia</a> for public garages.</p>` },
     'airport-directions': { title: 'Airport directions', emoji: '✈️', html: `<p>Book buses at <a href="https://www.nationalexpress.com" target="_blank" rel="noopener noreferrer">National Express</a> and trains at <a href="https://www.thetrainline.com" target="_blank" rel="noopener noreferrer">The Trainline</a>.</p><p><strong>Gatwick (LGW):</strong> Take a Southern Rail train directly to Victoria (~35 mins). It's cheaper and only slightly slower than the Gatwick Express.</p><p><strong>Heathrow (LHR):</strong> Take the Piccadilly line (dark blue) and change at Hammersmith for a District line (green) train to Victoria (~50 mins total).</p><p><strong>Stansted (STN):</strong> Take the train to Tottenham Hale, then switch to the Victoria line (light blue) to Victoria Station. You cannot use contactless from Stansted.</p><p><strong>Luton (LTN):</strong> Take the train from Luton Airport Parkway to London St. Pancras (~40 mins), then the Victoria line to Victoria (~15 mins).</p>` },
