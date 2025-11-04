@@ -66,7 +66,7 @@ async function buildGuidebook(opaqueBookingKey, guestDetails) {
     const bookingKey = opaqueBookingKey.split('-')[0];
     AppState.currentBookingConfig = config.bookings[bookingKey];
     if (!AppState.currentBookingConfig) throw new Error(`Booking key "${bookingKey}" not found.`);
-    const allContent = generatePageContent(AppState.currentBookingConfig.content, guestDetails, config.contentFragments);
+    const allContent = generatePageContent(AppState.currentBookingConfig.content, guestDetails, config.contentFragments, bookingKey);
     AppState.chatbotContext = buildChatbotContext(allContent, guestDetails, bookingKey);
     renderPage(allContent, guestDetails);
     if (AppState.currentBookingConfig.house && AppState.currentBookingConfig.entities) {
@@ -85,7 +85,7 @@ async function buildSimpleGuidebook(bookingKey) {
     const config = await getConfig();
     AppState.currentBookingConfig = config.bookings[bookingKey];
     if (!AppState.currentBookingConfig) throw new Error(`Public booking key "${bookingKey}" not found.`);
-    const allContent = generatePageContent(AppState.currentBookingConfig.content, {}, config.contentFragments);
+    const allContent = generatePageContent(AppState.currentBookingConfig.content, {}, config.contentFragments, bookingKey);
     AppState.chatbotContext = buildChatbotContext(allContent, {}, bookingKey);
     renderPage(allContent);
     // MODIFICATION: Simply hide the dashboard for these links.
@@ -114,7 +114,7 @@ async function buildLegacyGuidebook(params) {
       if (params.has('sharedb')) { ['bathroomShared'].forEach(item => legacyContentKeys.add(item)); }
     }
     
-    const allContent = generatePageContent(Array.from(legacyContentKeys), {}, config.contentFragments, true);
+    const allContent = generatePageContent(Array.from(legacyContentKeys), {}, config.contentFragments, 'legacy', true);
     AppState.chatbotContext = buildChatbotContext(allContent, {}, 'legacy');
     renderPage(allContent, {}, pageTitle);
     

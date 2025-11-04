@@ -19,8 +19,8 @@ function renderPage(allContent, guestDetails = {}, legacyTitle = null) {
     const isDuringStay = now >= checkInDate;
     const welcomeHeader = isDuringStay ? `Welcome, ${guestDetails.guestFirstName}'s group!` : `Hi ${guestDetails.guestFirstName}'s group!`;
     const welcomeMessage = isDuringStay 
-      ? `Welcome to our guidebook, where you can find information, chat with our AI assistant, and see and control your room's heating.`
-      : `Your booking is confirmed for these dates. Please have a look through the guidebook, where you'll find key information and our AI assistant. During your stay, this page will also let you see and control your room's heating.`;
+      ? `Welcome to our guidebook, where you can find information, chat with our AI assistant, and see and control your room's heating and lighting.`
+      : `Your booking is confirmed for these dates. Please have a look through the guidebook, where you'll find key information and our AI assistant. During your stay, this page will also let you see and control your room's heating and lighting.`;
       
     welcomeHtml = `
       <section id="welcome">
@@ -38,11 +38,9 @@ function renderPage(allContent, guestDetails = {}, legacyTitle = null) {
 
   let fullHtml = `${welcomeHtml}<div id="ha-dashboard"></div>`;
   let tocHtml = '<ul>';
-  
-  // --- THIS IS THE CORRECTED LOGIC ---
-  // The sectionOrder array has been updated to use the correct titles, fixing the lookup issue.
   const sectionOrder = ['Instructional Video Playlist', 'What not to bring', 'Address', 'Domestic directions', 'Airport directions', 'Getting around', 'Lock info', 'Check-in & Luggage', 'Check-out', 'Wifi', 'Heating and Cooling', 'A Note on Light Controls', 'Bedroom', 'Bathroom', 'Kitchen', 'Rubbish Disposal', 'Windows', 'Laundry', 'Iron & Ironing Mat', 'Troubleshooting', 'TV', 'Contact', 'Local Guidebook'];
   
+  // --- THIS IS THE CORRECTED LOGIC ---
   sectionOrder.forEach(titleKey => {
     // Find the key of the content object whose 'title' property matches the titleKey from our ordered list.
     const sectionObjectKey = Object.keys(allContent).find(

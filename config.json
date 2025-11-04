@@ -28,7 +28,6 @@
     "windowsTiltTurn": { "title": "Windows", "html": "<p>These are \"tilt and turn\" windows. This video demonstrates how to open them for ventilation (tilt) or fully (turn):</p><div class=\"video-container\"><iframe src=\"https://www.youtube.com/embed/uqOEIZtq_wI\" title=\"How to use tilt-and-turn windows\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe></div>" },
     "noLaundry": { "title": "Laundry", "html": "<p>There are no guest-accessible washing machines on-site. A highly-rated local launderette is <a href=\"https://maps.app.goo.gl/uYuoqcrG3xC3Q2Nz8\" target=\"_blank\" rel=\"noopener noreferrer\">True Colours Launderette</a>.</p><p>Towels are not changed daily. For fresh towels (max. once every 2 days), please leave used ones outside your door by 11:00am.</p>" },
     "hasLaundry": { "title": "Laundry", "html": "<p>The washing machine is available for your use. It is located in the basement. This video provides access and usage instructions:</p><div class=\"video-container\"><iframe src=\"https://www.youtube.com/embed/hLV62ekup-E\" title=\"How to use washing machine\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe></div>" },
-    "wholeHomeLuggage": { "title": "Check-in & Luggage", "html": "<p><strong>Self Check-in:</strong> From 15:00 onwards.</p><p><strong>Luggage Storage:</strong> If you require luggage storage outside of check-in/out times, please message us. Depending on availability, you may be able to store bags in the front room (Room 1).</p>" },
     "wholeHomeRubbish": { "title": "Rubbish Disposal", "html": "<p>Rubbish bags can be left on the pavement outside the front door, in front of the black fencing. The council collects it daily from this location.</p>" }
   },
   "bookings": {
@@ -249,7 +248,7 @@
       }
     },
     "193vbr": { 
-      "content": ["house193", "wifi193", "wholeHomeLuggage", "wholeHomeBedroomsDetailed", "wholeHomeBathrooms", "kitchenBase", "wholeHomeRubbish", "hasLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], 
+      "content": ["house193", "wifi193", "wholeHomeBedroomsDetailed", "wholeHomeBathrooms", "kitchenBase", "wholeHomeRubbish", "hasLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], 
       "house": "193", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -268,7 +267,7 @@
       }
     },
     "195vbr": { 
-      "content": ["house195", "wifi195", "wholeHomeLuggage", "wholeHomeBedroomsDetailed", "wholeHomeBathrooms", "kitchenBase", "wholeHomeRubbish", "hasLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], 
+      "content": ["house195", "wifi195", "wholeHomeBedroomsDetailed", "wholeHomeBathrooms", "kitchenBase", "wholeHomeRubbish", "hasLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], 
       "house": "195", 
       "entities": { 
         "weather": "weather.forecast_home", 

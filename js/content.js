@@ -7,12 +7,13 @@
  * @param {string[]} requiredKeys - Array of content keys for the specific booking.
  * @param {object} guestDetails - Details for the guest.
  * @param {object} contentFragments - All possible content fragments from config.json.
+ * @param {string} bookingKey - The booking identifier.
  * @param {boolean} [isLegacy=false] - Flag for old legacy guidebook versions.
  * @returns {object} The final, combined content object for rendering.
  */
-function generatePageContent(requiredKeys, guestDetails, contentFragments, isLegacy = false) {
+function generatePageContent(requiredKeys, guestDetails, contentFragments, bookingKey, isLegacy = false) {
   const staticContent = getStaticContent();
-  const dynamicPersonalizedContent = isLegacy ? {} : getDynamicPersonalizedContent(guestDetails);
+  const dynamicPersonalizedContent = isLegacy ? {} : getDynamicPersonalizedContent(guestDetails, bookingKey);
   const dynamicConfigContent = buildDynamicContent(requiredKeys, contentFragments);
   
   return { ...staticContent, ...dynamicPersonalizedContent, ...dynamicConfigContent };
@@ -72,8 +73,10 @@ function buildDynamicContent(keys, fragments) {
 }
 
 // --- THIS IS THE MISSING FUNCTION THAT HAS BEEN RESTORED ---
-function getDynamicPersonalizedContent(guestDetails) {
+function getDynamicPersonalizedContent(guestDetails, bookingKey) {
     if (!guestDetails || !guestDetails.checkInDateISO) return {};
+    
+    const personalizedContent = {};
     const checkInDate = new Date(guestDetails.checkInDateISO);
     const checkOutDate = new Date(guestDetails.checkOutDateISO);
     const dayBeforeCheckIn = new Date(checkInDate);
@@ -83,16 +86,27 @@ function getDynamicPersonalizedContent(guestDetails) {
     const dateOptions = { weekday: 'long', month: 'long', day: 'numeric' };
     const dayBeforeCheckInFormatted = dayBeforeCheckIn.toLocaleDateString('en-GB', dateOptions);
     const dayBeforeCheckOutFormatted = dayBeforeCheckOut.toLocaleDateString('en-GB', dateOptions);
-    return {
-        'guestLuggage': {
-            title: "Check-in & Luggage", emoji: "🧳",
-            html: `<p><strong>Self Check-in:</strong> From 15:00 onwards.</p><p><strong>Early Luggage Drop-off:</strong> From 11:00, you can use your front door code to access Cupboard V downstairs.</p><p>If you need to store bags before 11:00, please send us a message at the earliest the day before your arrival (on ${dayBeforeCheckInFormatted}), and if we can accommodate it, we're happy to.</p><p><strong>Early Check-in:</strong> While you are welcome to check if the room is ready from midday onwards, please only leave your belongings inside if it is completely finished. If it's not ready, please use Cupboard V.</p><p>This video shows the full process:</p><div class="video-container"><iframe src="https://www.youtube.com/embed/rlUbHfWcN0s" title="Luggage drop-off process" allowfullscreen></iframe></div>`
-        },
-        'checkout': {
-            title: "Check-out", emoji: "👋",
-            html: `<p>Check-out is at <strong>11:00 AM on ${guestDetails.checkOutDateFormatted}</strong>.</p><p>You don't need to worry about any cleaning; our team will handle everything.</p><p>If you need to store your luggage 🧳 after you check out, you are welcome to use Cupboard V downstairs. Your existing entry code will continue to work for the front door and the cupboard until 14:00. If you need to arrange a later pick-up, please send us a message (ideally by ${dayBeforeCheckOutFormatted}) to check for availability. We need to confirm because the house may be privately booked by a new group from 15:00, and for their privacy and security, access won't be possible after their check-in time.</p><p>⚠️ <strong>A quick but important request:</strong> Please be sure to take all your belongings from the room by 11am. Our cleaning team works on a tight schedule and will clear the room completely for our next guests.</p>`
-        }
+
+    const isWholeHome = bookingKey && bookingKey.includes('vbr');
+    let luggageHtml = '';
+
+    if (isWholeHome) {
+        luggageHtml = `<p><strong>Self Check-in:</strong> From 15:00 onwards on ${guestDetails.checkInDateFormatted}.</p><p><strong>Luggage Storage:</strong> If you require luggage storage outside of check-in/out times, please message us. Depending on availability, you may be able to store bags in the front room (Room 1).</p>`;
+    } else {
+        luggageHtml = `<p><strong>Self Check-in:</strong> From 15:00 onwards on ${guestDetails.checkInDateFormatted}.</p><p><strong>Early Luggage Drop-off:</strong> From 11:00, you can use your front door code to access Cupboard V downstairs.</p><p>If you need to store bags before 11:00, please send us a message at the earliest the day before your arrival (on ${dayBeforeCheckInFormatted}), and if we can accommodate it, we're happy to.</p><p><strong>Early Check-in:</strong> While you are welcome to check if the room is ready from midday onwards, please only leave your belongings inside if it is completely finished. If it's not ready, please use Cupboard V.</p><p>This video shows the full process:</p><div class="video-container"><iframe src="https://www.youtube.com/embed/rlUbHfWcN0s" title="Luggage drop-off process" allowfullscreen></iframe></div>`;
+    }
+
+    personalizedContent['guestLuggage'] = {
+        title: "Check-in & Luggage", emoji: "🧳",
+        html: luggageHtml
     };
+    
+    personalizedContent['checkout'] = {
+        title: "Check-out", emoji: "👋",
+        html: `<p>Check-out is at <strong>11:00 AM on ${guestDetails.checkOutDateFormatted}</strong>.</p><p>You don't need to worry about any cleaning; our team will handle everything.</p><p>If you need to store your luggage 🧳 after you check out, you are welcome to use Cupboard V downstairs. Your existing entry code will continue to work for the front door and the cupboard until 14:00. If you need to arrange a later pick-up, please send us a message (ideally by ${dayBeforeCheckOutFormatted}) to check for availability. We need to confirm because the house may be privately booked by a new group from 15:00, and for their privacy and security, access won't be possible after their check-in time.</p><p>⚠️ <strong>A quick but important request:</strong> Please be sure to take all your belongings from the room by 11am. Our cleaning team works on a tight schedule and will clear the room completely for our next guests.</p>`
+    };
+
+    return personalizedContent;
 }
 // --- END OF RESTORED FUNCTION ---
 
