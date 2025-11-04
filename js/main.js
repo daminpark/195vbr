@@ -85,7 +85,15 @@ async function buildSimpleGuidebook(bookingKey) {
     const config = await getConfig();
     AppState.currentBookingConfig = config.bookings[bookingKey];
     if (!AppState.currentBookingConfig) throw new Error(`Public booking key "${bookingKey}" not found.`);
-    const allContent = generatePageContent(AppState.currentBookingConfig.content, {}, config.contentFragments, bookingKey);
+    
+    // Start with the configured content keys
+    let contentKeys = [...AppState.currentBookingConfig.content];
+    // Filter out smart home features
+    contentKeys = contentKeys.filter(key => key !== 'heatingSmartAddon' && key !== 'lightsNote');
+    // Add the generic detailed check-in/out info
+    contentKeys.push('checkinStaticDetailed', 'checkoutStaticDetailed');
+
+    const allContent = generatePageContent(contentKeys, {}, config.contentFragments, bookingKey);
     AppState.chatbotContext = buildChatbotContext(allContent, {}, bookingKey);
     renderPage(allContent);
     // MODIFICATION: Simply hide the dashboard for these links.
@@ -104,15 +112,20 @@ async function buildLegacyGuidebook(params) {
     const staticContent = getStaticContent();
     let legacyContentKeys = new Set(Object.keys(staticContent));
 
-    // Add generic check-in and check-out to all legacy pages
-    legacyContentKeys.add('wholeHomeLuggage');
-    legacyContentKeys.add('checkoutStatic');
+    // Add base heating info to all legacy pages
+    legacyContentKeys.add('heatingBase');
 
     if (params.has('wholehome')) {
       pageTitle = "Whole Home Guide";
+      // Use simpler check-in/out for whole home
+      legacyContentKeys.add('wholeHomeLuggage');
+      legacyContentKeys.add('checkoutStatic');
       ['house193', 'house195', 'wifi193', 'wifi195', 'wholeHomeRubbish', 'hasLaundry', 'kitchenBase', 'windowsStandard', 'windowsTiltTurn'].forEach(item => legacyContentKeys.add(item));
     } else {
       pageTitle = "Private Room Guide";
+      // Use detailed check-in/out for private rooms
+      legacyContentKeys.add('checkinStaticDetailed');
+      legacyContentKeys.add('checkoutStaticDetailed');
       ['house193', 'wifi193'].forEach(item => legacyContentKeys.add(item));
       if (params.has('sharedk')) { ['kitchenShared', 'kitchenBase', 'noLaundry'].forEach(item => legacyContentKeys.add(item)); }
       if (params.has('sharedb')) { ['bathroomShared'].forEach(item => legacyContentKeys.add(item)); }

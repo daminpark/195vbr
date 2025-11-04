@@ -30,11 +30,16 @@
     "hasLaundry": { "title": "Laundry", "html": "<p>The washing machine is available for your use. It is located in the basement. This video provides access and usage instructions:</p><div class=\"video-container\"><iframe src=\"https://www.youtube.com/embed/hLV62ekup-E\" title=\"How to use washing machine\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe></div>" },
     "wholeHomeLuggage": { "title": "Check-in & Luggage", "html": "<p><strong>Self Check-in:</strong> From 15:00 onwards.</p><p><strong>Luggage Storage:</strong> If you require luggage storage outside of check-in/out times, please message us. Depending on availability, you may be able to store bags in the front room (Room 1).</p>" },
     "checkoutStatic": { "title": "Check-out", "html": "<p>Check-out is at <strong>11:00 AM</strong>.</p><p>You don't need to worry about any cleaning; our team will handle everything.</p><p>⚠️ <strong>A quick but important request:</strong> Please be sure to take all your belongings from the room by 11am. Our cleaning team works on a tight schedule and will clear the room completely for our next guests.</p>" },
+    "checkinStaticDetailed": { "title": "Check-in & Luggage", "html": "<p><strong>Self Check-in:</strong> From 15:00 onwards on your day of arrival.</p><p><strong>Early Luggage Drop-off:</strong> From 11:00, you can use a front door code to access Cupboard V downstairs.</p><p><strong>Early Check-in:</strong> While you are welcome to check if the room is ready from midday onwards, please only leave your belongings inside if it is completely finished. If it's not ready, please use Cupboard V.</p><p>This video shows the full process:</p><div class=\"video-container\"><iframe src=\"https://www.youtube.com/embed/rlUbHfWcN0s\" title=\"Luggage drop-off process\" allowfullscreen></iframe></div>" },
+    "checkoutStaticDetailed": { "title": "Check-out", "html": "<p>Check-out is at <strong>11:00 AM</strong>.</p><p>You don't need to worry about any cleaning; our team will handle everything.</p><p>If you need to store your luggage 🧳 after you check out, you are welcome to use Cupboard V downstairs. An entry code will work for the front door and the cupboard until 14:00. If you need to arrange a later pick-up, please send us a message to check for availability.</p><p>⚠️ <strong>A quick but important request:</strong> Please be sure to take all your belongings from the room by 11am. Our cleaning team works on a tight schedule and will clear the room completely for our next guests.</p>" },
+    "heatingBase": { "title": "Heating and Cooling", "html": "<p>You can control the temperature in your room using the valve (TRV) on your radiator.</p><p><strong>Cooling:</strong> We do not have air conditioning. We recommend keeping the window and curtains closed during sunny days and opening them in the evening.</p>" },
+    "heatingSmartAddon": { "title": "Heating and Cooling", "html": "<p>For bookings with smart home controls, you can also adjust this from the dashboard on this page.</p>" },
+    "lightsNote": { "title": "A Note on Light Controls", "html": "<p>Please note that these smart lights can only be controlled from this app when the physical light switch on the wall is in the 'ON' position. If a light is unresponsive, please check that its corresponding wall switch is turned on first.</p>" },
     "wholeHomeRubbish": { "title": "Rubbish Disposal", "html": "<p>Rubbish bags can be left on the pavement outside the front door, in front of the black fencing. The council collects it daily from this location.</p>" }
   },
   "bookings": {
     "31": { 
-      "content": ["house193", "wifi193", "room1", "bathroomA", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], 
+      "content": ["house193", "wifi193", "room1", "bathroomA", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn", "heatingBase", "heatingSmartAddon", "lightsNote"], 
       "house": "193", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -47,7 +52,7 @@
       }
     },
     "32": {
-      "content": ["house193", "wifi193", "room2", "bathroomA", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageInBed", "windowsStandard"], 
+      "content": ["house193", "wifi193", "room2", "bathroomA", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageInBed", "windowsStandard", "heatingBase", "heatingSmartAddon", "lightsNote"], 
       "house": "193", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -60,7 +65,7 @@
       }
     },
     "33": {
-      "content": ["house193", "wifi193", "room3", "bathroomC", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsStandard"], 
+      "content": ["house193", "wifi193", "room3", "bathroomC", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsStandard", "heatingBase", "heatingSmartAddon", "lightsNote"], 
       "house": "193", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -74,7 +79,7 @@
       }
     },
     "34": {
-      "content": ["house193", "wifi193", "room4", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], 
+      "content": ["house193", "wifi193", "room4", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn", "heatingBase", "heatingSmartAddon", "lightsNote"], 
       "house": "193", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -88,7 +93,7 @@
       }
     },
     "35": {
-      "content": ["house193", "wifi193", "room5", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageInBed", "windowsStandard"], 
+      "content": ["house193", "wifi193", "room5", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageInBed", "windowsStandard", "heatingBase", "heatingSmartAddon", "lightsNote"], 
       "house": "193", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -101,7 +106,7 @@
       }
     },
     "36": {
-      "content": ["house193", "wifi193", "room6", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], 
+      "content": ["house193", "wifi193", "room6", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn", "heatingBase", "heatingSmartAddon", "lightsNote"], 
       "house": "193", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -114,7 +119,7 @@
       }
     },
     "3a": {
-      "content": ["house193", "wifi193", "rooma", "bathroomA", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], 
+      "content": ["house193", "wifi193", "rooma", "bathroomA", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard", "heatingBase", "heatingSmartAddon", "lightsNote"], 
       "house": "193", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -127,7 +132,7 @@
       }
     },
     "3b": {
-      "content": ["house193", "wifi193", "roomb", "bathroomB", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], 
+      "content": ["house193", "wifi193", "roomb", "bathroomB", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard", "heatingBase", "heatingSmartAddon", "lightsNote"], 
       "house": "193", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -142,7 +147,7 @@
       }
     },
     "51": {
-      "content": ["house195", "wifi195", "room1", "bathroomA", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], 
+      "content": ["house195", "wifi195", "room1", "bathroomA", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn", "heatingBase", "heatingSmartAddon", "lightsNote"], 
       "house": "195", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -155,7 +160,7 @@
       }
     },
     "52": {
-      "content": ["house195", "wifi195", "room2", "bathroomA", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageInBed", "windowsStandard"], 
+      "content": ["house195", "wifi195", "room2", "bathroomA", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageInBed", "windowsStandard", "heatingBase", "heatingSmartAddon", "lightsNote"], 
       "house": "195", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -168,7 +173,7 @@
       }
     },
     "53": {
-      "content": ["house195", "wifi195", "room3", "bathroomC", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsStandard"], 
+      "content": ["house195", "wifi195", "room3", "bathroomC", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsStandard", "heatingBase", "heatingSmartAddon", "lightsNote"], 
       "house": "195", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -182,7 +187,7 @@
       }
     },
     "54": {
-      "content": ["house195", "wifi195", "room4", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], 
+      "content": ["house195", "wifi195", "room4", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn", "heatingBase", "heatingSmartAddon", "lightsNote"], 
       "house": "195", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -196,7 +201,7 @@
       }
     },
     "55": {
-      "content": ["house195", "wifi195", "room5", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageInBed", "windowsStandard"], 
+      "content": ["house195", "wifi195", "room5", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageInBed", "windowsStandard", "heatingBase", "heatingSmartAddon", "lightsNote"], 
       "house": "195", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -209,7 +214,7 @@
       }
     },
     "56": {
-      "content": ["house195", "wifi195", "room6", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn"], 
+      "content": ["house195", "wifi195", "room6", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn", "heatingBase", "heatingSmartAddon", "lightsNote"], 
       "house": "195", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -222,7 +227,7 @@
       }
     },
     "5a": {
-      "content": ["house195", "wifi195", "rooma", "bathroomA", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], 
+      "content": ["house195", "wifi195", "rooma", "bathroomA", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard", "heatingBase", "heatingSmartAddon", "lightsNote"], 
       "house": "195", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -235,7 +240,7 @@
       }
     },
     "5b": {
-      "content": ["house195", "wifi195", "roomb", "bathroomB", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], 
+      "content": ["house195", "wifi195", "roomb", "bathroomB", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard", "heatingBase", "heatingSmartAddon", "lightsNote"], 
       "house": "195", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -250,7 +255,7 @@
       }
     },
     "193vbr": { 
-      "content": ["house193", "wifi193", "wholeHomeBedroomsDetailed", "wholeHomeBathrooms", "kitchenBase", "wholeHomeRubbish", "hasLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], 
+      "content": ["house193", "wifi193", "wholeHomeBedroomsDetailed", "wholeHomeBathrooms", "kitchenBase", "wholeHomeRubbish", "hasLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard", "heatingBase", "heatingSmartAddon", "lightsNote"], 
       "house": "193", 
       "entities": { 
         "weather": "weather.forecast_home", 
@@ -269,7 +274,7 @@
       }
     },
     "195vbr": { 
-      "content": ["house195", "wifi195", "wholeHomeBedroomsDetailed", "wholeHomeBathrooms", "kitchenBase", "wholeHomeRubbish", "hasLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard"], 
+      "content": ["house195", "wifi195", "wholeHomeBedroomsDetailed", "wholeHomeBathrooms", "kitchenBase", "wholeHomeRubbish", "hasLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard", "heatingBase", "heatingSmartAddon", "lightsNote"], 
       "house": "195", 
       "entities": { 
         "weather": "weather.forecast_home", 
