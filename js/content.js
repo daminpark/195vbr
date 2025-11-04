@@ -56,7 +56,6 @@ function buildChatbotContext(content, guestDetails, bookingKey) {
       iframes.forEach(iframe => {
         const title = iframe.title || 'Instructional Video';
         const src = iframe.src;
-        // --- BUG FIX: Removed the .split('?')[0] which was truncating the URL ---
         const videoUrl = src.replace('/embed/', '/watch?v='); 
         const videoInfoNode = document.createElement('p');
         videoInfoNode.textContent = `(A video guide for "${title}" is available at this URL: ${videoUrl})`;
@@ -68,7 +67,7 @@ function buildChatbotContext(content, guestDetails, bookingKey) {
     }
   });
 
-  const systemPrompt = "You are 'Victoria', a friendly AI assistant for the 195VBR guesthouse. You MUST base your answer ONLY on the detailed guidebook information provided below, including the guest's specific booking details and the special hidden context. For all other questions, you should use your general knowledge. Be concise, friendly, and use Markdown for formatting links like [Link Text](URL).";
+  const systemPrompt = "You are 'Victoria', a friendly AI assistant for the 195VBR guesthouse. You MUST base your answer ONLY on the detailed guidebook information provided below, including the guest's specific booking details and the special hidden context. IMPORTANT: When a user asks for a video, you MUST provide the direct URL to the specific video if one is mentioned in the context for that topic. You should ONLY mention the general 'Instructional Video Playlist' as a fallback if no specific video is available. For all other questions, you should use your general knowledge. Be concise, friendly, and use Markdown for formatting links like [Link Text](URL).";
   
   return `${systemPrompt}\n\nRELEVANT GUIDEBOOK CONTENT:\n${contextText}`;
 }

@@ -1,5 +1,28 @@
 // js/api.js
 
+/**
+ * Replaces YouTube watch links in a string with embedded iframe HTML.
+ * @param {string} text The text to process.
+ * @returns {string} The text with YouTube links replaced by embeds.
+ */
+function processAndEmbedVideos(text) {
+  const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/g;
+  return text.replace(youtubeRegex, (match, videoId) => {
+    return `
+      <div class="video-container">
+        <iframe 
+          src="https://www.youtube.com/embed/${videoId}" 
+          title="YouTube video player" 
+          frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          referrerpolicy="strict-origin-when-cross-origin" 
+          allowfullscreen>
+        </iframe>
+      </div>
+    `;
+  });
+}
+
 /*
  * Fetches and parses the main config.json file.
  * @returns {Promise<object>} The configuration object.
@@ -87,6 +110,11 @@ async function sendMessage() {
             botMessageContainer.innerHTML = marked.parse(fullResponse);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
+
+        // --- BUG FIX: Re-render the final response with embedded videos ---
+        const processedResponse = processAndEmbedVideos(fullResponse);
+        botMessageContainer.innerHTML = marked.parse(processedResponse);
+        chatBox.scrollTop = chatBox.scrollHeight;
 
         AppState.chatHistory.push({ role: 'model', content: fullResponse, timestamp: new Date().toISOString() });
         const timestampHtml = `<div class="timestamp">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>`;

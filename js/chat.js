@@ -1,5 +1,28 @@
 // js/chat.js
 
+/**
+ * Replaces YouTube watch links in a string with embedded iframe HTML.
+ * @param {string} text The text to process.
+ * @returns {string} The text with YouTube links replaced by embeds.
+ */
+function processAndEmbedVideos(text) {
+  const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/g;
+  return text.replace(youtubeRegex, (match, videoId) => {
+    return `
+      <div class="video-container">
+        <iframe 
+          src="https://www.youtube.com/embed/${videoId}" 
+          title="YouTube video player" 
+          frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          referrerpolicy="strict-origin-when-cross-origin" 
+          allowfullscreen>
+        </iframe>
+      </div>
+    `;
+  });
+}
+
 let chatbotContext = '';
 let chatHistory = [];
 
@@ -24,20 +47,18 @@ document.addEventListener('DOMContentLoaded', () => {
     chatBox.innerHTML = ''; // Clear the chatbox before populating
     const getTimeStamp = (date) => new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    // --- CORRECTED MOBILE RENDERING LOOP ---
-    // 2. Populate chat box by iterating normally and adding each message to the top.
-    // This preserves the [Message] -> [Timestamp] visual order in a reversed column.
     chatHistory.forEach(msg => {
         let messageHtml = '';
         if (msg.role === 'user') {
             messageHtml = `<div class="message-bubble user-message"><p>${msg.content}</p></div><div class="timestamp">${getTimeStamp(msg.timestamp)}</div>`;
         } else if (msg.role === 'model') {
-            messageHtml = `<div class="message-bubble bot-message">${marked.parse(msg.content)}</div><div class="timestamp">${getTimeStamp(msg.timestamp)}</div>`;
+            // Process historical messages for videos too
+            const processedContent = processAndEmbedVideos(msg.content);
+            messageHtml = `<div class="message-bubble bot-message">${marked.parse(processedContent)}</div><div class="timestamp">${getTimeStamp(msg.timestamp)}</div>`;
         }
         chatBox.insertAdjacentHTML('afterbegin', messageHtml);
     });
 
-    // 3. If it's a new chat, add the suggestion buttons
     if (chatHistory.length === 1 && chatHistory[0].role === 'model') {
         const suggestionsHtml = `
             <div class="suggestions-container" id="suggestions-container">
@@ -46,8 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button class="suggestion-chip">How do I get in?</button>
             </div>
         `;
-        // BUG FIX: In a reversed column, 'afterbegin' places items visually at the bottom,
-        // which is correct for suggestions that should appear just above the input.
         chatBox.insertAdjacentHTML('afterbegin', suggestionsHtml);
 
         const suggestionsContainer = document.getElementById('suggestions-container');
@@ -56,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (e.target.classList.contains('suggestion-chip')) {
                     const userInputField = document.getElementById('user-input');
                     userInputField.value = e.target.textContent;
-                    sendMessageStandalone(); // Call send function directly
+                    sendMessageStandalone();
                 }
             });
         }
@@ -81,9 +100,6 @@ document.addEventListener('DOMContentLoaded', () => {
     userInputField.focus();
 });
 
-/**
- * Sends a message from the standalone chat page.
- */
 async function sendMessageStandalone() {
     const userInputField = document.getElementById('user-input');
     const inputContainer = document.getElementById('chat-input-container');
@@ -91,7 +107,6 @@ async function sendMessageStandalone() {
 
     if (!userInput || inputContainer.classList.contains('loading')) return;
 
-    // Always hide suggestions when a message is sent
     const suggestionsContainer = document.getElementById('suggestions-container');
     if (suggestionsContainer) {
         suggestionsContainer.style.display = 'none';
@@ -122,9 +137,7 @@ async function sendMessageStandalone() {
         if (!response.ok) throw new Error('Network response was not ok.');
 
         const indicator = chatBox.querySelector('.typing-indicator');
-        if (indicator) {
-            indicator.remove();
-        }
+        if (indicator) indicator.remove();
         
         const tempBotContainer = document.createElement('div');
         chatBox.insertAdjacentElement('afterbegin', tempBotContainer);
@@ -139,7 +152,12 @@ async function sendMessageStandalone() {
             tempBotContainer.innerHTML = `<div class="message-bubble bot-message">${marked.parse(fullResponse)}</div>`;
         }
 
+        // --- BUG FIX: Re-render the final response with embedded videos ---
+        const processedResponse = processAndEmbedVideos(fullResponse);
+        tempBotContainer.innerHTML = `<div class="message-bubble bot-message">${marked.parse(processedResponse)}</div>`;
+
         const botTimestamp = new Date();
+        // Save the original, unprocessed response to history
         chatHistory.push({ role: 'model', content: fullResponse, timestamp: botTimestamp.toISOString() });
         sessionStorage.setItem('chatHistory', JSON.stringify(chatHistory));
         
@@ -154,9 +172,8 @@ async function sendMessageStandalone() {
     } catch (error) {
         console.error('Fetch error:', error);
         const indicator = chatBox.querySelector('.typing-indicator');
-        if (indicator) {
-            indicator.remove();
-        }
+        if (indicator) indicator.remove();
+        
         const errorHtml = `<div class="message-bubble bot-message"><p>Sorry, I'm having trouble connecting.</p></div>`;
         chatBox.insertAdjacentHTML('afterbegin', errorHtml);
     } finally {
