@@ -24,7 +24,9 @@ document.addEventListener('DOMContentLoaded', () => {
     chatBox.innerHTML = ''; // Clear the chatbox before populating
     const getTimeStamp = (date) => new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    // --- BUG FIX: Populate chat history correctly for reversed layout ---
+    // --- CORRECTED MOBILE RENDERING LOOP ---
+    // 2. Populate chat box by iterating normally and adding each message to the top.
+    // This preserves the [Message] -> [Timestamp] visual order in a reversed column.
     chatHistory.forEach(msg => {
         let messageHtml = '';
         if (msg.role === 'user') {
@@ -32,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (msg.role === 'model') {
             messageHtml = `<div class="message-bubble bot-message">${marked.parse(msg.content)}</div><div class="timestamp">${getTimeStamp(msg.timestamp)}</div>`;
         }
-        // Add each message to the top of the container
         chatBox.insertAdjacentHTML('afterbegin', messageHtml);
     });
 
@@ -45,8 +46,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button class="suggestion-chip">How do I get in?</button>
             </div>
         `;
-        // In a reversed column, 'beforeend' places items visually at the top.
-        chatBox.insertAdjacentHTML('beforeend', suggestionsHtml);
+        // BUG FIX: In a reversed column, 'afterbegin' places items visually at the bottom,
+        // which is correct for suggestions that should appear just above the input.
+        chatBox.insertAdjacentHTML('afterbegin', suggestionsHtml);
 
         const suggestionsContainer = document.getElementById('suggestions-container');
         if (suggestionsContainer) {
@@ -99,7 +101,6 @@ async function sendMessageStandalone() {
     const now = new Date();
     const getTimeStamp = () => now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     
-    // --- BUG FIX: Add message to the top of the reversed container ---
     const userMessageHtml = `<div class="message-bubble user-message"><p>${userInput}</p></div><div class="timestamp">${getTimeStamp()}</div>`;
     chatBox.insertAdjacentHTML('afterbegin', userMessageHtml);
     
@@ -109,7 +110,6 @@ async function sendMessageStandalone() {
     
     inputContainer.classList.add('loading');
 
-    // --- BUG FIX: Add indicator to the top of the reversed container ---
     const typingIndicatorHtml = `<div class="message-bubble bot-message typing-indicator"><span></span><span></span><span></span></div>`;
     chatBox.insertAdjacentHTML('afterbegin', typingIndicatorHtml);
 
@@ -122,9 +122,10 @@ async function sendMessageStandalone() {
         if (!response.ok) throw new Error('Network response was not ok.');
 
         const indicator = chatBox.querySelector('.typing-indicator');
-        if (indicator) indicator.remove();
+        if (indicator) {
+            indicator.remove();
+        }
         
-        // --- BUG FIX: Use a temporary container and add to the top ---
         const tempBotContainer = document.createElement('div');
         chatBox.insertAdjacentElement('afterbegin', tempBotContainer);
 
@@ -153,8 +154,9 @@ async function sendMessageStandalone() {
     } catch (error) {
         console.error('Fetch error:', error);
         const indicator = chatBox.querySelector('.typing-indicator');
-        if (indicator) indicator.remove();
-        
+        if (indicator) {
+            indicator.remove();
+        }
         const errorHtml = `<div class="message-bubble bot-message"><p>Sorry, I'm having trouble connecting.</p></div>`;
         chatBox.insertAdjacentHTML('afterbegin', errorHtml);
     } finally {
