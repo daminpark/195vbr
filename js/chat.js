@@ -2,13 +2,12 @@
 
 /**
  * Replaces YouTube watch links in a string with embedded iframe HTML.
+ * This function now correctly handles both raw URLs and Markdown links.
  * @param {string} text The text to process.
  * @returns {string} The text with YouTube links replaced by embeds.
  */
 function processAndEmbedVideos(text) {
-  const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/g;
-  return text.replace(youtubeRegex, (match, videoId) => {
-    return `
+  const embedTemplate = (videoId) => `
       <div class="video-container">
         <iframe 
           src="https://www.youtube.com/embed/${videoId}" 
@@ -20,8 +19,22 @@ function processAndEmbedVideos(text) {
         </iframe>
       </div>
     `;
-  });
+
+  // Regex for full markdown links: [Text](youtube_url)
+  const markdownYoutubeRegex = /\[[^\]]*\]\((?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})\)/g;
+  
+  // Regex for raw youtube links
+  const rawYoutubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/g;
+  
+  // First, replace all markdown links containing youtube URLs. This removes the whole [Text](link) structure.
+  let processedText = text.replace(markdownYoutubeRegex, (match, videoId) => embedTemplate(videoId));
+  
+  // Then, replace any remaining raw youtube URLs.
+  processedText = processedText.replace(rawYoutubeRegex, (match, videoId) => embedTemplate(videoId));
+
+  return processedText;
 }
+
 
 let chatbotContext = '';
 let chatHistory = [];
@@ -52,7 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (msg.role === 'user') {
             messageHtml = `<div class="message-bubble user-message"><p>${msg.content}</p></div><div class="timestamp">${getTimeStamp(msg.timestamp)}</div>`;
         } else if (msg.role === 'model') {
-            // Process historical messages for videos too
             const processedContent = processAndEmbedVideos(msg.content);
             messageHtml = `<div class="message-bubble bot-message">${marked.parse(processedContent)}</div><div class="timestamp">${getTimeStamp(msg.timestamp)}</div>`;
         }
@@ -152,12 +164,10 @@ async function sendMessageStandalone() {
             tempBotContainer.innerHTML = `<div class="message-bubble bot-message">${marked.parse(fullResponse)}</div>`;
         }
 
-        // --- BUG FIX: Re-render the final response with embedded videos ---
         const processedResponse = processAndEmbedVideos(fullResponse);
         tempBotContainer.innerHTML = `<div class="message-bubble bot-message">${marked.parse(processedResponse)}</div>`;
 
         const botTimestamp = new Date();
-        // Save the original, unprocessed response to history
         chatHistory.push({ role: 'model', content: fullResponse, timestamp: botTimestamp.toISOString() });
         sessionStorage.setItem('chatHistory', JSON.stringify(chatHistory));
         
