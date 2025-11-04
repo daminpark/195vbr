@@ -105,8 +105,9 @@ function createDashboardCards(bookingConfig) {
                 `;
             }
         } else if (AppState.guestAccessLevel === 'full') {
-            const cardTitleKey = `content_titles.${key}`;
-            const cardTitle = t(cardTitleKey, {}, 'en'); // Use english title for consistency
+            // **THE FIX: Use 'ha_card_titles' instead of 'content_titles'**
+            const cardTitleKey = `ha_card_titles.${key}`; 
+            const cardTitle = t(cardTitleKey);
             cardsHtml += `<div class="ha-card"><div class="ha-card-title">${cardTitle}</div><div class="ha-card-status" id="ha-status-${key}">Loading...</div></div>`;
         }
     });
