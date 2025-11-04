@@ -149,15 +149,15 @@ html.chat-open #chat-widget {
     transform: translateY(0);
   }
 
-#chat-box {
-  flex: 1 1 auto;
-  overflow-y: auto; /* Enable native scrolling */
-  padding: 15px;
-  display: flex;
-  /* This is the magic part: messages stack from the bottom up */
-  flex-direction: column-reverse; 
-  gap: 12px;
-}
+  /* --- BUG FIX: Removed column-reverse --- */
+  #chat-box {
+    flex: 1 1 auto;
+    overflow-y: auto; /* Enable native scrolling */
+    padding: 15px;
+    display: flex;
+    flex-direction: column; /* Standard top-to-bottom flex direction */
+    gap: 12px;
+  }
   
   #chat-input-container {
     /* This container stays fixed at the bottom */

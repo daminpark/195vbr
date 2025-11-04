@@ -24,9 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     chatBox.innerHTML = ''; // Clear the chatbox before populating
     const getTimeStamp = (date) => new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    // --- CORRECTED MOBILE RENDERING LOOP ---
-    // 2. Populate chat box by iterating normally and adding each message to the top.
-    // This preserves the [Message] -> [Timestamp] visual order in a reversed column.
+    // --- BUG FIX: Populate chat box in chronological order ---
     chatHistory.forEach(msg => {
         let messageHtml = '';
         if (msg.role === 'user') {
@@ -34,8 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (msg.role === 'model') {
             messageHtml = `<div class="message-bubble bot-message">${marked.parse(msg.content)}</div><div class="timestamp">${getTimeStamp(msg.timestamp)}</div>`;
         }
-        chatBox.insertAdjacentHTML('afterbegin', messageHtml);
+        chatBox.insertAdjacentHTML('beforeend', messageHtml);
     });
+    chatBox.scrollTop = chatBox.scrollHeight;
 
     // 3. If it's a new chat, add the suggestion buttons
     if (chatHistory.length === 1 && chatHistory[0].role === 'model') {
@@ -46,9 +45,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button class="suggestion-chip">How do I get in?</button>
             </div>
         `;
-        // In a reversed column, 'beforeend' places items visually at the top.
-        // We add it after the message/timestamp pairs have been inserted.
         chatBox.insertAdjacentHTML('beforeend', suggestionsHtml);
+        chatBox.scrollTop = chatBox.scrollHeight;
 
         const suggestionsContainer = document.getElementById('suggestions-container');
         if (suggestionsContainer) {
@@ -101,8 +99,10 @@ async function sendMessageStandalone() {
     const now = new Date();
     const getTimeStamp = () => now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     
+    // --- BUG FIX: Add message to the end and scroll ---
     const userMessageHtml = `<div class="message-bubble user-message"><p>${userInput}</p></div><div class="timestamp">${getTimeStamp()}</div>`;
-    chatBox.insertAdjacentHTML('afterbegin', userMessageHtml);
+    chatBox.insertAdjacentHTML('beforeend', userMessageHtml);
+    chatBox.scrollTop = chatBox.scrollHeight;
     
     chatHistory.push({ role: 'user', content: userInput, timestamp: now.toISOString() });
     sessionStorage.setItem('chatHistory', JSON.stringify(chatHistory));
@@ -110,8 +110,10 @@ async function sendMessageStandalone() {
     
     inputContainer.classList.add('loading');
 
+    // --- BUG FIX: Add indicator to the end and scroll ---
     const typingIndicatorHtml = `<div class="message-bubble bot-message typing-indicator"><span></span><span></span><span></span></div>`;
-    chatBox.insertAdjacentHTML('afterbegin', typingIndicatorHtml);
+    chatBox.insertAdjacentHTML('beforeend', typingIndicatorHtml);
+    chatBox.scrollTop = chatBox.scrollHeight;
 
     try {
         const response = await fetch(`${BACKEND_API_BASE_URL}/api/chatbot`, {
@@ -121,17 +123,13 @@ async function sendMessageStandalone() {
         });
         if (!response.ok) throw new Error('Network response was not ok.');
 
-        // --- BUG FIX ---
-        // The original code was removing the parent element (the entire chat box).
-        // This is now corrected to only remove the indicator bubble itself.
         const indicator = chatBox.querySelector('.typing-indicator');
-        if (indicator) {
-            indicator.remove();
-        }
-        // --- END FIX ---
+        if (indicator) indicator.remove();
         
-        const tempBotContainer = document.createElement('div');
-        chatBox.insertAdjacentElement('afterbegin', tempBotContainer);
+        // --- BUG FIX: Append a new container for the bot message ---
+        const botMessageContainer = document.createElement('div');
+        botMessageContainer.className = 'message-bubble bot-message';
+        chatBox.appendChild(botMessageContainer);
 
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
@@ -140,32 +138,28 @@ async function sendMessageStandalone() {
             const { value, done } = await reader.read();
             if (done) break;
             fullResponse += decoder.decode(value, { stream: true });
-            tempBotContainer.innerHTML = `<div class="message-bubble bot-message">${marked.parse(fullResponse)}</div>`;
+            botMessageContainer.innerHTML = marked.parse(fullResponse);
+            // Scroll as new content streams in
+            chatBox.scrollTop = chatBox.scrollHeight;
         }
 
         const botTimestamp = new Date();
         chatHistory.push({ role: 'model', content: fullResponse, timestamp: botTimestamp.toISOString() });
         sessionStorage.setItem('chatHistory', JSON.stringify(chatHistory));
         
+        // --- BUG FIX: Add timestamp to the end and scroll ---
         const timestampHtml = `<div class="timestamp">${botTimestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>`;
-        tempBotContainer.insertAdjacentHTML('afterend', timestampHtml);
-        
-        while (tempBotContainer.firstChild) {
-            chatBox.insertAdjacentElement('afterbegin', tempBotContainer.firstChild);
-        }
-        tempBotContainer.remove();
+        chatBox.insertAdjacentHTML('beforeend', timestampHtml);
+        chatBox.scrollTop = chatBox.scrollHeight;
 
     } catch (error) {
         console.error('Fetch error:', error);
-        // --- BUG FIX ---
-        // Also corrected the logic in the error handling block.
         const indicator = chatBox.querySelector('.typing-indicator');
-        if (indicator) {
-            indicator.remove();
-        }
-        // --- END FIX ---
+        if (indicator) indicator.remove();
+
         const errorHtml = `<div class="message-bubble bot-message"><p>Sorry, I'm having trouble connecting.</p></div>`;
-        chatBox.insertAdjacentHTML('afterbegin', errorHtml);
+        chatBox.insertAdjacentHTML('beforeend', errorHtml);
+        chatBox.scrollTop = chatBox.scrollHeight;
     } finally {
         inputContainer.classList.remove('loading');
         userInputField.focus();
