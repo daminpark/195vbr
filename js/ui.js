@@ -38,9 +38,11 @@ function renderPage(allContent, guestDetails = {}, legacyTitle = null) {
 
   let fullHtml = `${welcomeHtml}<div id="ha-dashboard"></div>`;
   let tocHtml = '<ul>';
-  const sectionOrder = ['video', 'what-not-to-bring', 'Address', 'domestic-directions', 'airport-directions', 'getting-around', 'codetimes', 'Check-in & Luggage', 'checkout', 'Wifi', 'heating', 'lights-note', 'Bedroom', 'Bathroom', 'Kitchen', 'Rubbish Disposal', 'Windows', 'Laundry', 'ironing', 'troubleshooting', 'tv', 'contact', 'local-guidebook'];
   
   // --- THIS IS THE CORRECTED LOGIC ---
+  // The sectionOrder array has been updated to use the correct titles, fixing the lookup issue.
+  const sectionOrder = ['Instructional Video Playlist', 'What not to bring', 'Address', 'Domestic directions', 'Airport directions', 'Getting around', 'Lock info', 'Check-in & Luggage', 'Check-out', 'Wifi', 'Heating and Cooling', 'A Note on Light Controls', 'Bedroom', 'Bathroom', 'Kitchen', 'Rubbish Disposal', 'Windows', 'Laundry', 'Iron & Ironing Mat', 'Troubleshooting', 'TV', 'Contact', 'Local Guidebook'];
+  
   sectionOrder.forEach(titleKey => {
     // Find the key of the content object whose 'title' property matches the titleKey from our ordered list.
     const sectionObjectKey = Object.keys(allContent).find(
