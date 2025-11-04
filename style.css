@@ -149,13 +149,13 @@ html.chat-open #chat-widget {
     transform: translateY(0);
   }
 
-  /* --- BUG FIX: Removed column-reverse --- */
+  /* --- BUG FIX: Restore column-reverse --- */
   #chat-box {
     flex: 1 1 auto;
     overflow-y: auto; /* Enable native scrolling */
     padding: 15px;
     display: flex;
-    flex-direction: column; /* Standard top-to-bottom flex direction */
+    flex-direction: column-reverse; /* This is the key fix */
     gap: 12px;
   }
   
