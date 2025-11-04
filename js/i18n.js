@@ -13,15 +13,24 @@ const I18nState = {
  * This function should be called once when the application starts.
  */
 async function loadTranslations() {
-  // 1. Detect user's preferred language
-  const userLang = navigator.language || navigator.userLanguage; // e.g., "fr-CA", "es-ES", "en-US"
-  const primaryLanguage = userLang.split('-')[0]; // "fr", "es", "en"
+  const urlParams = new URLSearchParams(window.location.search);
+  const langOverride = urlParams.get('lang');
+  const savedLang = localStorage.getItem('selectedLanguage');
+  const browserLang = (navigator.language || navigator.userLanguage).split('-')[0];
 
-  // 2. Find the best matching supported language or default to 'en'
-  I18nState.currentLanguage = I18nState.supportedLanguages.includes(primaryLanguage)
-    ? primaryLanguage
-    : 'en';
+  let targetLang = 'en'; // Default
 
+  // **MODIFICATION: New language detection priority**
+  if (langOverride && I18nState.supportedLanguages.includes(langOverride)) {
+    targetLang = langOverride;
+  } else if (savedLang && I18nState.supportedLanguages.includes(savedLang)) {
+    targetLang = savedLang;
+  } else if (I18nState.supportedLanguages.includes(browserLang)) {
+    targetLang = browserLang;
+  }
+
+  I18nState.currentLanguage = targetLang;
+  
   // 3. Fetch the JSON files for the current language and the English fallback
   try {
     const [langResponse, fallbackResponse] = await Promise.all([
@@ -56,31 +65,18 @@ async function loadTranslations() {
 
 /**
  * The main translation function.
- * Gets a translated string for a given key.
- * Supports dot notation for nested keys (e.g., "welcome.header").
- * Supports dynamic value replacement (e.g., t('welcome.header', { guestName: 'John' })).
- * Falls back to English if a key is missing in the current language.
- *
- * @param {string} key - The key for the translation string (e.g., "chat.header").
- * @param {object} [replacements={}] - An object with keys and values for replacement.
- * @param {string|null} [forceLang=null] - Optional: force a specific language ('en') for the lookup.
- * @returns {string} The translated (and formatted) string.
+ * (No changes to this function)
  */
 function t(key, replacements = {}, forceLang = null) {
-  // Helper function to resolve dot notation keys
   const resolveKey = (obj, keyPath) => {
     return keyPath.split('.').reduce((acc, part) => acc && acc[part], obj);
   };
   
   let translation;
-  // **MODIFICATION: Allow forcing a language**
   if (forceLang === 'en') {
     translation = resolveKey(I18nState.fallbackTranslations, key);
   } else {
-    // 1. Try to get the string from the current language
     translation = resolveKey(I18nState.translations, key);
-    
-    // 2. If not found, try the fallback language (English)
     if (!translation) {
       translation = resolveKey(I18nState.fallbackTranslations, key);
     }
@@ -88,10 +84,9 @@ function t(key, replacements = {}, forceLang = null) {
 
   if (!translation) {
     console.warn(`Translation key not found in any language: "${key}"`);
-    return key; // Return the key itself as a last resort
+    return key;
   }
 
-  // 3. Perform replacements for dynamic values
   if (replacements && typeof replacements === 'object') {
     Object.keys(replacements).forEach(placeholder => {
       const regex = new RegExp(`{${placeholder}}`, 'g');

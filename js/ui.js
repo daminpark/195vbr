@@ -2,14 +2,15 @@
 
 /**
  * Renders the complete guidebook HTML to the page.
- * @param {object} allContent - The combined content object.
- * @param {object} [guestDetails={}] - Guest details for personalized welcome.
- * @param {string|null} [legacyTitle=null] - An override title for legacy pages.
+ * Also initializes the language picker.
  */
 function renderPage(allContent, guestDetails = {}, legacyTitle = null) {
   const guidebookContainer = document.getElementById('guidebook-container');
   const tocContainer = document.getElementById('table-of-contents');
 
+  // **MODIFICATION: Call the function to create the language pickers**
+  createLanguagePicker(); 
+  
   document.title = "195VBR Guidebook"; 
   const chatHeader = document.querySelector("#chat-header span");
   if(chatHeader) chatHeader.textContent = t('chat.header');
@@ -34,7 +35,6 @@ function renderPage(allContent, guestDetails = {}, legacyTitle = null) {
       ? t('welcome.during_stay')
       : t('welcome.confirmed_booking');
 
-    // **MODIFICATION: Format dates on the client-side**
     const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const checkInDateFormatted = new Date(guestDetails.checkInDateISO).toLocaleDateString(I18nState.currentLanguage, dateOptions);
     const checkOutDateFormatted = new Date(guestDetails.checkOutDateISO).toLocaleDateString(I18nState.currentLanguage, dateOptions);
@@ -59,7 +59,6 @@ function renderPage(allContent, guestDetails = {}, legacyTitle = null) {
   const sectionOrder = ['what_not_to_bring', 'address', 'domestic_directions', 'airport_directions', 'getting_around', 'lock_info', 'checkin_luggage', 'checkout', 'wifi', 'heating_cooling', 'light_controls_note', 'bedroom', 'bathroom', 'kitchen', 'rubbish_disposal', 'windows', 'laundry', 'ironing', 'troubleshooting', 'tv', 'contact', 'local_guidebook'];
   
   sectionOrder.forEach(titleKey => {
-    // **THE FIX: Compare the English title from config.json with the FORCED English translation of the key**
     const englishTitleToFind = t('content_titles.' + titleKey, {}, 'en').toLowerCase();
 
     const sectionObjectKey = Object.keys(allContent).find(
@@ -69,7 +68,7 @@ function renderPage(allContent, guestDetails = {}, legacyTitle = null) {
     if (sectionObjectKey && allContent[sectionObjectKey]) {
       const section = allContent[sectionObjectKey];
       const sectionId = section.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-      const translatedTitle = t('content_titles.' + titleKey); // Get title in current language
+      const translatedTitle = t('content_titles.' + titleKey);
 
       fullHtml += `<section id="${sectionId}"><h2>${section.emoji} ${translatedTitle}</h2>${section.html}</section>`;
       tocHtml += `<li><a href="#${sectionId}">${section.emoji} ${translatedTitle}</a></li>`;
@@ -82,9 +81,59 @@ function renderPage(allContent, guestDetails = {}, legacyTitle = null) {
 }
 
 /**
+ * **NEW FUNCTION**
+ * Creates and populates the language picker dropdown menus.
+ */
+async function createLanguagePicker() {
+  const desktopContainer = document.getElementById('language-picker-desktop-container');
+  const mobileContainer = document.getElementById('language-picker-mobile-container');
+  if (!desktopContainer || !mobileContainer) return;
+
+  // Fetch all language names
+  const langNames = {};
+  const promises = I18nState.supportedLanguages.map(async (lang) => {
+    try {
+      const response = await fetch(`/lang/${lang}.json`);
+      if (response.ok) {
+        const data = await response.json();
+        langNames[lang] = data.langName;
+      }
+    } catch (e) {
+      console.warn(`Could not fetch langName for ${lang}`);
+    }
+  });
+  await Promise.all(promises);
+
+  // Build the HTML for the select element
+  let optionsHtml = '';
+  I18nState.supportedLanguages.forEach(lang => {
+    const nativeName = langNames[lang] || lang;
+    const selected = lang === I18nState.currentLanguage ? 'selected' : '';
+    optionsHtml += `<option value="${lang}" ${selected}>${nativeName}</option>`;
+  });
+  const selectHtml = `<select id="language-select" aria-label="Choose language">${optionsHtml}</select>`;
+
+  // Inject into both containers
+  desktopContainer.innerHTML = selectHtml;
+  mobileContainer.innerHTML = selectHtml.replace('id="language-select"', 'id="language-select-mobile"'); // Use unique IDs
+
+  // Add event listener to handle language change
+  const handleLanguageChange = (event) => {
+    const newLang = event.target.value;
+    localStorage.setItem('selectedLanguage', newLang);
+
+    const url = new URL(window.location);
+    url.searchParams.set('lang', newLang); // Add lang parameter to force reload
+    window.location.href = url.toString();
+  };
+  
+  document.getElementById('language-select').addEventListener('change', handleLanguageChange);
+  document.getElementById('language-select-mobile').addEventListener('change', handleLanguageChange);
+}
+
+
+/**
  * Displays an error message on the page.
- * @param {string} type - 'missing' or 'denied'.
- * @param {string} [message=''] - A specific error message to display.
  */
 function displayErrorPage(type, message = '') {
   const guidebookContainer = document.getElementById('guidebook-container');
