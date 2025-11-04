@@ -6,9 +6,9 @@
  */
 function renderPage(allContent, guestDetails = {}, legacyTitle = null) {
   const guidebookContainer = document.getElementById('guidebook-container');
-  const tocContainer = document.getElementById('table-of-contents');
+  // **FIX: Target the new list for ToC links, not the whole nav container**
+  const tocListContainer = document.getElementById('toc-link-list'); 
 
-  // **MODIFICATION: Call the function to create the language pickers**
   createLanguagePicker(); 
   
   document.title = "195VBR Guidebook"; 
@@ -54,7 +54,7 @@ function renderPage(allContent, guestDetails = {}, legacyTitle = null) {
   }
 
   let fullHtml = `${welcomeHtml}<div id="ha-dashboard"></div>`;
-  let tocHtml = '<ul>';
+  let tocHtml = ''; // Build as a string
   
   const sectionOrder = ['what_not_to_bring', 'address', 'domestic_directions', 'airport_directions', 'getting_around', 'lock_info', 'checkin_luggage', 'checkout', 'wifi', 'heating_cooling', 'light_controls_note', 'bedroom', 'bathroom', 'kitchen', 'rubbish_disposal', 'windows', 'laundry', 'ironing', 'troubleshooting', 'tv', 'contact', 'local_guidebook'];
   
@@ -75,13 +75,15 @@ function renderPage(allContent, guestDetails = {}, legacyTitle = null) {
     }
   });
 
-  tocHtml += '</ul>';
   guidebookContainer.innerHTML = fullHtml;
-  tocContainer.innerHTML = tocHtml;
+  // **FIX: Populate the dedicated list, preserving the language picker**
+  if (tocListContainer) {
+    tocListContainer.innerHTML = tocHtml;
+  }
 }
 
 /**
- * **NEW FUNCTION**
+ * **FIX: Rewritten for robustness**
  * Creates and populates the language picker dropdown menus.
  */
 async function createLanguagePicker() {
@@ -89,7 +91,6 @@ async function createLanguagePicker() {
   const mobileContainer = document.getElementById('language-picker-mobile-container');
   if (!desktopContainer || !mobileContainer) return;
 
-  // Fetch all language names
   const langNames = {};
   const promises = I18nState.supportedLanguages.map(async (lang) => {
     try {
@@ -104,31 +105,38 @@ async function createLanguagePicker() {
   });
   await Promise.all(promises);
 
-  // Build the HTML for the select element
+  // **FIX: Create element programmatically instead of using innerHTML**
+  const selectEl = document.createElement('select');
+  selectEl.setAttribute('aria-label', 'Choose language');
+
   let optionsHtml = '';
   I18nState.supportedLanguages.forEach(lang => {
     const nativeName = langNames[lang] || lang;
     const selected = lang === I18nState.currentLanguage ? 'selected' : '';
     optionsHtml += `<option value="${lang}" ${selected}>${nativeName}</option>`;
   });
-  const selectHtml = `<select id="language-select" aria-label="Choose language">${optionsHtml}</select>`;
+  selectEl.innerHTML = optionsHtml;
 
-  // Inject into both containers
-  desktopContainer.innerHTML = selectHtml;
-  mobileContainer.innerHTML = selectHtml.replace('id="language-select"', 'id="language-select-mobile"'); // Use unique IDs
-
-  // Add event listener to handle language change
   const handleLanguageChange = (event) => {
     const newLang = event.target.value;
     localStorage.setItem('selectedLanguage', newLang);
-
     const url = new URL(window.location);
-    url.searchParams.set('lang', newLang); // Add lang parameter to force reload
+    url.searchParams.set('lang', newLang);
     window.location.href = url.toString();
   };
   
-  document.getElementById('language-select').addEventListener('change', handleLanguageChange);
-  document.getElementById('language-select-mobile').addEventListener('change', handleLanguageChange);
+  // Clone for the mobile version
+  const mobileSelectEl = selectEl.cloneNode(true);
+  
+  // Add listeners directly to the created elements (no need for getElementById)
+  selectEl.addEventListener('change', handleLanguageChange);
+  mobileSelectEl.addEventListener('change', handleLanguageChange);
+
+  // Clear containers and append the new elements
+  desktopContainer.innerHTML = '';
+  mobileContainer.innerHTML = '';
+  desktopContainer.appendChild(selectEl);
+  mobileContainer.appendChild(mobileSelectEl);
 }
 
 
@@ -139,7 +147,7 @@ function displayErrorPage(type, message = '') {
   const guidebookContainer = document.getElementById('guidebook-container');
   const tocContainer = document.getElementById('table-of-contents');
   document.getElementById('chat-launcher').style.display = 'none';
-  tocContainer.innerHTML = '';
+  if(tocContainer) tocContainer.innerHTML = '';
   let errorHtml;
 
   if (type === 'missing') {
