@@ -7,24 +7,28 @@
  * @param {string[]} requiredKeys - Array of content keys for the specific booking.
  * @param {object} guestDetails - Details for the guest.
  * @param {object} contentFragments - All possible content fragments from config.json.
+ * @param {string} bookingKey - The booking identifier.
  * @returns {object} The final content object.
  */
-function generatePageContent(requiredKeys, guestDetails, contentFragments) {
-  const dynamicContent = buildDynamicContent(requiredKeys, contentFragments, guestDetails);
+function generatePageContent(requiredKeys, guestDetails, contentFragments, bookingKey) {
+  // **FIX: All content, including personalized sections, is now handled here.**
+  const dynamicContent = buildDynamicContent(requiredKeys, contentFragments, guestDetails, bookingKey);
   const staticContent = getStaticContent();
   
-  // Merge dynamic content over static content, allowing overrides if necessary
+  // Merge dynamic content over static content.
   return { ...staticContent, ...dynamicContent };
 }
 
 /**
  * Builds the content sections that are dynamically determined by the booking key.
+ * This function now ALSO handles the personalized check-in/out sections.
  * @param {string[]} keys - The array of content fragment keys from config.json for the booking.
  * @param {object} fragments - The `contentFragments` object from config.json.
  * @param {object} guestDetails - The guest's details, including dates.
+ * @param {string} bookingKey - The booking identifier.
  * @returns {object} The assembled dynamic content object.
  */
-function buildDynamicContent(keys, fragments, guestDetails) {
+function buildDynamicContent(keys, fragments, guestDetails, bookingKey) {
   const content = {};
   
   // Prepare date-related replacements for personalized content
@@ -42,6 +46,16 @@ function buildDynamicContent(keys, fragments, guestDetails) {
     replacements.dayBeforeCheckOutFormatted = dayBeforeCheckOut.toLocaleDateString(I18nState.currentLanguage, dateOptions);
   }
 
+  // **FIX: Manually add the personalized check-in and check-out sections to the list of keys to be processed.**
+  // This is the core of the fix. We ensure they are always included for non-legacy bookings.
+  if (guestDetails.guestFirstName) {
+      const isWholeHome = bookingKey && bookingKey.includes('vbr');
+      // Add the correct check-in key based on booking type
+      keys.push(isWholeHome ? 'wholeHomeLuggage' : 'checkinStaticDetailed');
+      // Always add the detailed check-out key
+      keys.push('checkoutStaticDetailed');
+  }
+
   keys.forEach(key => {
     const fragment = fragments[key];
     if (fragment) {
@@ -49,7 +63,6 @@ function buildDynamicContent(keys, fragments, guestDetails) {
         const emoji = { "Address": "🏘️", "Wifi": "🛜", "Bedroom": "🛏️", "Bathroom": "🛁", "Kitchen": "🍳", "Windows": "🪟", "Laundry": "🧺", "Check-in & Luggage": "🧳", "Rubbish Disposal": "🗑️", "Check-out": "👋", "Heating and Cooling": "🌡️", "A Note on Light Controls": "🔌"}[fragment.title] || 'ℹ️';
         content[fragment.title] = { title: fragment.title, emoji: emoji, html: '' };
       }
-      // Use t() to translate the HTML key, passing in date replacements if any
       content[fragment.title].html += t(fragment.html, replacements);
     }
   });
