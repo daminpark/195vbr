@@ -1,14 +1,14 @@
 // js/chat.js
 
 /**
- * Replaces YouTube watch links in a string with embedded iframe HTML.
- * This function now correctly handles both raw URLs and Markdown links.
+ * Scans text for a YouTube link, removes it, and returns the cleaned text
+ * and an HTML string for the video embed.
  * @param {string} text The text to process.
- * @returns {string} The text with YouTube links replaced by embeds.
+ * @returns {{cleanedText: string, videoEmbedHtml: string|null}}
  */
-function processAndEmbedVideos(text) {
+function stripAndFindVideo(text) {
   const embedTemplate = (videoId) => `
-      <div class="video-container">
+      <div class="video-container" style="margin-bottom: 10px; max-width: 80%;">
         <iframe 
           src="https://www.youtube.com/embed/${videoId}" 
           title="YouTube video player" 
@@ -20,19 +20,27 @@ function processAndEmbedVideos(text) {
       </div>
     `;
 
-  // Regex for full markdown links: [Text](youtube_url)
   const markdownYoutubeRegex = /\[[^\]]*\]\((?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})\)/g;
-  
-  // Regex for raw youtube links
-  const rawYoutubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/g;
-  
-  // First, replace all markdown links containing youtube URLs. This removes the whole [Text](link) structure.
-  let processedText = text.replace(markdownYoutubeRegex, (match, videoId) => embedTemplate(videoId));
-  
-  // Then, replace any remaining raw youtube URLs.
-  processedText = processedText.replace(rawYoutubeRegex, (match, videoId) => embedTemplate(videoId));
+  const rawYoutubeRegex = /(https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/g;
 
-  return processedText;
+  let videoEmbedHtml = null;
+  let cleanedText = text;
+
+  const markdownMatch = markdownYoutubeRegex.exec(cleanedText);
+  if (markdownMatch && markdownMatch[1]) {
+    videoEmbedHtml = embedTemplate(markdownMatch[1]);
+    cleanedText = cleanedText.replace(markdownYoutubeRegex, '').trim();
+  } else {
+    const rawMatch = rawYoutubeRegex.exec(cleanedText);
+    if (rawMatch && rawMatch[1]) { // Note: The capture group is 1 for raw regex
+      videoEmbedHtml = embedTemplate(rawMatch[1]);
+      cleanedText = cleanedText.replace(rawYoutubeRegex, '').trim();
+    }
+  }
+
+  cleanedText = cleanedText.replace(/<p>\s*<\/p>/g, '');
+
+  return { cleanedText, videoEmbedHtml };
 }
 
 
@@ -65,8 +73,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (msg.role === 'user') {
             messageHtml = `<div class="message-bubble user-message"><p>${msg.content}</p></div><div class="timestamp">${getTimeStamp(msg.timestamp)}</div>`;
         } else if (msg.role === 'model') {
-            const processedContent = processAndEmbedVideos(msg.content);
-            messageHtml = `<div class="message-bubble bot-message">${marked.parse(processedContent)}</div><div class="timestamp">${getTimeStamp(msg.timestamp)}</div>`;
+            const { cleanedText, videoEmbedHtml } = stripAndFindVideo(msg.content);
+            messageHtml = `<div class="message-bubble bot-message">${marked.parse(cleanedText)}</div><div class="timestamp">${getTimeStamp(msg.timestamp)}</div>`;
+            if (videoEmbedHtml) {
+                // In reversed layout, video comes before the bubble in the DOM
+                messageHtml = videoEmbedHtml + messageHtml;
+            }
         }
         chatBox.insertAdjacentHTML('afterbegin', messageHtml);
     });
@@ -93,22 +105,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 4. Set up event listeners
     const sendBtn = document.getElementById('send-btn');
     const userInputField = document.getElementById('user-input');
-
-    sendBtn.addEventListener('mousedown', (e) => {
-        e.preventDefault();
-        sendMessageStandalone();
-    });
-
-    userInputField.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            sendMessageStandalone();
-        }
-    });
-
+    sendBtn.addEventListener('mousedown', (e) => { e.preventDefault(); sendMessageStandalone(); });
+    userInputField.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessageStandalone(); } });
     userInputField.focus();
 });
 
@@ -151,33 +151,38 @@ async function sendMessageStandalone() {
         const indicator = chatBox.querySelector('.typing-indicator');
         if (indicator) indicator.remove();
         
-        const tempBotContainer = document.createElement('div');
-        chatBox.insertAdjacentElement('afterbegin', tempBotContainer);
-
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let fullResponse = '';
+        
+        // Create containers for streaming
+        const tempBubbleContainer = document.createElement('div');
+        tempBubbleContainer.className = 'message-bubble bot-message';
+        chatBox.insertAdjacentElement('afterbegin', tempBubbleContainer);
+
         while (true) {
             const { value, done } = await reader.read();
             if (done) break;
             fullResponse += decoder.decode(value, { stream: true });
-            tempBotContainer.innerHTML = `<div class="message-bubble bot-message">${marked.parse(fullResponse)}</div>`;
+            tempBubbleContainer.innerHTML = marked.parse(fullResponse);
         }
 
-        const processedResponse = processAndEmbedVideos(fullResponse);
-        tempBotContainer.innerHTML = `<div class="message-bubble bot-message">${marked.parse(processedResponse)}</div>`;
+        const { cleanedText, videoEmbedHtml } = stripAndFindVideo(fullResponse);
+        
+        // Re-render the bubble with cleaned text
+        tempBubbleContainer.innerHTML = marked.parse(cleanedText);
 
         const botTimestamp = new Date();
         chatHistory.push({ role: 'model', content: fullResponse, timestamp: botTimestamp.toISOString() });
         sessionStorage.setItem('chatHistory', JSON.stringify(chatHistory));
         
         const timestampHtml = `<div class="timestamp">${botTimestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>`;
-        tempBotContainer.insertAdjacentHTML('afterend', timestampHtml);
+        tempBubbleContainer.insertAdjacentHTML('afterend', timestampHtml);
         
-        while (tempBotContainer.firstChild) {
-            chatBox.insertAdjacentElement('afterbegin', tempBotContainer.firstChild);
+        if (videoEmbedHtml) {
+            // Because the layout is reversed, the video goes in last to appear at the bottom
+            chatBox.insertAdjacentHTML('afterbegin', videoEmbedHtml);
         }
-        tempBotContainer.remove();
 
     } catch (error) {
         console.error('Fetch error:', error);

@@ -1,14 +1,14 @@
 // js/api.js
 
 /**
- * Replaces YouTube watch links in a string with embedded iframe HTML.
- * This function now correctly handles both raw URLs and Markdown links.
+ * Scans text for a YouTube link, removes it, and returns the cleaned text
+ * and an HTML string for the video embed.
  * @param {string} text The text to process.
- * @returns {string} The text with YouTube links replaced by embeds.
+ * @returns {{cleanedText: string, videoEmbedHtml: string|null}}
  */
-function processAndEmbedVideos(text) {
+function stripAndFindVideo(text) {
   const embedTemplate = (videoId) => `
-      <div class="video-container">
+      <div class="video-container" style="margin-top: 10px; margin-left: 15px; max-width: calc(80% - 15px);">
         <iframe 
           src="https://www.youtube.com/embed/${videoId}" 
           title="YouTube video player" 
@@ -20,19 +20,27 @@ function processAndEmbedVideos(text) {
       </div>
     `;
 
-  // Regex for full markdown links: [Text](youtube_url)
   const markdownYoutubeRegex = /\[[^\]]*\]\((?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})\)/g;
-  
-  // Regex for raw youtube links
-  const rawYoutubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/g;
-  
-  // First, replace all markdown links containing youtube URLs. This removes the whole [Text](link) structure.
-  let processedText = text.replace(markdownYoutubeRegex, (match, videoId) => embedTemplate(videoId));
-  
-  // Then, replace any remaining raw youtube URLs.
-  processedText = processedText.replace(rawYoutubeRegex, (match, videoId) => embedTemplate(videoId));
+  const rawYoutubeRegex = /(https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/g;
 
-  return processedText;
+  let videoEmbedHtml = null;
+  let cleanedText = text;
+
+  const markdownMatch = markdownYoutubeRegex.exec(cleanedText);
+  if (markdownMatch && markdownMatch[1]) {
+    videoEmbedHtml = embedTemplate(markdownMatch[1]);
+    cleanedText = cleanedText.replace(markdownYoutubeRegex, '').trim();
+  } else {
+    const rawMatch = rawYoutubeRegex.exec(cleanedText);
+    if (rawMatch && rawMatch[1]) {
+      videoEmbedHtml = embedTemplate(rawMatch[1]);
+      cleanedText = cleanedText.replace(rawYoutubeRegex, '').trim();
+    }
+  }
+
+  cleanedText = cleanedText.replace(/<p>\s*<\/p>/g, '');
+
+  return { cleanedText, videoEmbedHtml };
 }
 
 
@@ -120,17 +128,30 @@ async function sendMessage() {
             const { value, done } = await reader.read();
             if (done) break;
             fullResponse += decoder.decode(value, { stream: true });
+            // Temporarily render raw text during stream
             botMessageContainer.innerHTML = marked.parse(fullResponse);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        const processedResponse = processAndEmbedVideos(fullResponse);
-        botMessageContainer.innerHTML = marked.parse(processedResponse);
-        chatBox.scrollTop = chatBox.scrollHeight;
+        // --- BUG FIX: Use the new stripAndFindVideo function ---
+        const { cleanedText, videoEmbedHtml } = stripAndFindVideo(fullResponse);
 
+        // Render the final, cleaned text
+        botMessageContainer.innerHTML = marked.parse(cleanedText);
+        
+        // Save the original, unmodified response to history
         AppState.chatHistory.push({ role: 'model', content: fullResponse, timestamp: new Date().toISOString() });
+        
+        // Add the timestamp for the main bubble
         const timestampHtml = `<div class="timestamp">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>`;
         chatBox.insertAdjacentHTML('beforeend', timestampHtml);
+
+        // If a video was found, append it as a new, separate element
+        if (videoEmbedHtml) {
+            chatBox.insertAdjacentHTML('beforeend', videoEmbedHtml);
+        }
+        
+        chatBox.scrollTop = chatBox.scrollHeight;
 
     } catch (error) {
         console.error('Chatbot fetch error:', error);
@@ -155,7 +176,6 @@ async function sendMessage() {
 async function fetchHAData(entityId, house, type = 'state', currentOpaqueBookingKey) {
   const proxyUrl = `${BACKEND_API_BASE_URL}/api/ha-proxy`;
   let url = `${proxyUrl}?house=${house}&entity=${entityId}&type=${type}`;
-  // Only add the secure key if it's provided
   if (currentOpaqueBookingKey) {
       url += `&opaqueBookingKey=${currentOpaqueBookingKey}`;
   }

@@ -39,7 +39,8 @@ function buildChatbotContext(content, guestDetails, bookingKey) {
 
   contextText += getChatbotOnlyContext(bookingKey) + "\n\n";
 
-  const sectionOrder = ['What not to bring', 'Address', 'Domestic directions', 'Airport directions', 'Getting around', 'Lock info', 'Check-in & Luggage', 'Check-out', 'Wifi', 'Heating and Cooling', 'A Note on Light Controls', 'Bedroom', 'Bathroom', 'Kitchen', 'Rubbish Disposal', 'Windows', 'Laundry', 'Iron & Ironing Mat', 'Troubleshooting', 'TV', 'Contact', 'Local Guidebook', 'Instructional Video Playlist'];
+  // --- BUG FIX: Removed the Instructional Video Playlist to prevent it from being a fallback for the AI ---
+  const sectionOrder = ['What not to bring', 'Address', 'Domestic directions', 'Airport directions', 'Getting around', 'Lock info', 'Check-in & Luggage', 'Check-out', 'Wifi', 'Heating and Cooling', 'A Note on Light Controls', 'Bedroom', 'Bathroom', 'Kitchen', 'Rubbish Disposal', 'Windows', 'Laundry', 'Iron & Ironing Mat', 'Troubleshooting', 'TV', 'Contact', 'Local Guidebook'];
 
   sectionOrder.forEach(key => {
     // Find the content object by its title property
@@ -87,7 +88,6 @@ function buildDynamicContent(keys, fragments) {
   return content;
 }
 
-// --- THIS IS THE MISSING FUNCTION THAT HAS BEEN RESTORED ---
 function getDynamicPersonalizedContent(guestDetails, bookingKey) {
     if (!guestDetails || !guestDetails.checkInDateISO) return {};
     
@@ -123,7 +123,6 @@ function getDynamicPersonalizedContent(guestDetails, bookingKey) {
 
     return personalizedContent;
 }
-// --- END OF RESTORED FUNCTION ---
 
 function getChatbotOnlyContext(bookingId) {
     const groundFloorLuggageQuirk = "The guest is in a ground floor room. While their room is easily accessible, they should be aware that the luggage storage cupboard (Cupboard V) is downstairs, reached by a narrow staircase. This is something to keep in mind if they plan to store heavy bags.";
