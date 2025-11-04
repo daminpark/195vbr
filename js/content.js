@@ -3,24 +3,62 @@
 // This file contains all logic for generating and assembling guidebook content.
 
 /**
- * Combines static, dynamic, and personalized content into a single object.
+ * Generates the final, combined content object for rendering.
  * @param {string[]} requiredKeys - Array of content keys for the specific booking.
  * @param {object} guestDetails - Details for the guest.
  * @param {object} contentFragments - All possible content fragments from config.json.
- * @param {string} bookingKey - The booking identifier.
- * @param {boolean} [isLegacy=false] - Flag for old legacy guidebook versions.
- * @returns {object} The final, combined content object for rendering.
+ * @returns {object} The final content object.
  */
-function generatePageContent(requiredKeys, guestDetails, contentFragments, bookingKey, isLegacy = false) {
+function generatePageContent(requiredKeys, guestDetails, contentFragments) {
+  const dynamicContent = buildDynamicContent(requiredKeys, contentFragments, guestDetails);
   const staticContent = getStaticContent();
-  const dynamicPersonalizedContent = isLegacy ? {} : getDynamicPersonalizedContent(guestDetails, bookingKey);
-  const dynamicConfigContent = buildDynamicContent(requiredKeys, contentFragments);
   
-  return { ...staticContent, ...dynamicPersonalizedContent, ...dynamicConfigContent };
+  // Merge dynamic content over static content, allowing overrides if necessary
+  return { ...staticContent, ...dynamicContent };
 }
 
 /**
- * Builds the final context string for the AI chatbot.
+ * Builds the content sections that are dynamically determined by the booking key.
+ * @param {string[]} keys - The array of content fragment keys from config.json for the booking.
+ * @param {object} fragments - The `contentFragments` object from config.json.
+ * @param {object} guestDetails - The guest's details, including dates.
+ * @returns {object} The assembled dynamic content object.
+ */
+function buildDynamicContent(keys, fragments, guestDetails) {
+  const content = {};
+  
+  // Prepare date-related replacements for personalized content
+  const replacements = {};
+  if (guestDetails.checkInDateISO) {
+    const dateOptions = { weekday: 'long', month: 'long', day: 'numeric' };
+    const dayBeforeCheckIn = new Date(guestDetails.checkInDateISO);
+    dayBeforeCheckIn.setDate(new Date(guestDetails.checkInDateISO).getDate() - 1);
+    const dayBeforeCheckOut = new Date(guestDetails.checkOutDateISO);
+    dayBeforeCheckOut.setDate(new Date(guestDetails.checkOutDateISO).getDate() - 1);
+
+    replacements.checkInDateFormatted = new Date(guestDetails.checkInDateISO).toLocaleDateString(I18nState.currentLanguage, dateOptions);
+    replacements.dayBeforeCheckInFormatted = dayBeforeCheckIn.toLocaleDateString(I18nState.currentLanguage, dateOptions);
+    replacements.checkOutDateFormatted = new Date(guestDetails.checkOutDateISO).toLocaleDateString(I18nState.currentLanguage, dateOptions);
+    replacements.dayBeforeCheckOutFormatted = dayBeforeCheckOut.toLocaleDateString(I18nState.currentLanguage, dateOptions);
+  }
+
+  keys.forEach(key => {
+    const fragment = fragments[key];
+    if (fragment) {
+      if (!content[fragment.title]) {
+        const emoji = { "Address": "🏘️", "Wifi": "🛜", "Bedroom": "🛏️", "Bathroom": "🛁", "Kitchen": "🍳", "Windows": "🪟", "Laundry": "🧺", "Check-in & Luggage": "🧳", "Rubbish Disposal": "🗑️", "Check-out": "👋", "Heating and Cooling": "🌡️", "A Note on Light Controls": "🔌"}[fragment.title] || 'ℹ️';
+        content[fragment.title] = { title: fragment.title, emoji: emoji, html: '' };
+      }
+      // Use t() to translate the HTML key, passing in date replacements if any
+      content[fragment.title].html += t(fragment.html, replacements);
+    }
+  });
+  return content;
+}
+
+
+/**
+ * Builds the final context string for the AI chatbot in the user's language.
  * @param {object} content - The fully assembled page content.
  * @param {object} guestDetails - The guest's details.
  * @param {string} bookingKey - The booking identifier.
@@ -33,7 +71,6 @@ function buildChatbotContext(content, guestDetails, bookingKey) {
   if (guestDetails && guestDetails.guestName) {
     contextText += `--- GUEST INFORMATION ---\n`;
     contextText += `Name: ${guestDetails.guestName}\n`;
-    // **MODIFICATION: Format dates here for the AI, in English, for clarity**
     const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const checkInDateFormatted = new Date(guestDetails.checkInDateISO).toLocaleDateString('en-GB', dateOptions);
     const checkOutDateFormatted = new Date(guestDetails.checkOutDateISO).toLocaleDateString('en-GB', dateOptions);
@@ -43,21 +80,18 @@ function buildChatbotContext(content, guestDetails, bookingKey) {
 
   contextText += getChatbotOnlyContext(bookingKey) + "\n\n";
 
-  // **MODIFICATION: Use the English titles for matching, as they are the constant identifiers**
-  const sectionOrder = ['What not to bring', 'Address', 'Domestic directions', 'Airport directions', 'Getting around', 'Lock info', 'Check-in & Luggage', 'Check-out', 'Wifi', 'Heating and Cooling', 'A Note on Light Controls', 'Bedroom', 'Bathroom', 'Kitchen', 'Rubbish Disposal', 'Windows', 'Laundry', 'Iron & Ironing Mat', 'Troubleshooting', 'TV', 'Contact', 'Local Guidebook'];
+  const sectionOrder = ['what_not_to_bring', 'address', 'domestic_directions', 'airport_directions', 'getting_around', 'lock_info', 'checkin_luggage', 'checkout', 'wifi', 'heating_cooling', 'light_controls_note', 'bedroom', 'bathroom', 'kitchen', 'rubbish_disposal', 'windows', 'laundry', 'ironing', 'troubleshooting', 'tv', 'contact', 'local_guidebook'];
 
-  sectionOrder.forEach(englishTitle => {
-    // Find the content object by its English title property
+  sectionOrder.forEach(titleKey => {
+    const englishTitle = t('content_titles.' + titleKey, {}, 'en').toLowerCase();
     const sectionObjectKey = Object.keys(content).find(
-      k => content[k].title && content[k].title.toLowerCase() === englishTitle.toLowerCase()
+      k => content[k].title && content[k].title.toLowerCase() === englishTitle
     );
     
     if (sectionObjectKey && content[sectionObjectKey]) {
       const section = content[sectionObjectKey];
-      // **MODIFICATION: The HTML is now translated, so we use it directly**
       tempDiv.innerHTML = section.html; 
       
-      // The rest of the logic for extracting video links remains the same
       const iframes = tempDiv.querySelectorAll('iframe');
       iframes.forEach(iframe => {
         const title = iframe.title || 'Instructional Video';
@@ -68,7 +102,7 @@ function buildChatbotContext(content, guestDetails, bookingKey) {
         tempDiv.appendChild(videoInfoNode);
       });
       
-      const translatedTitle = t('content_titles.' + section.title.toLowerCase().replace(/[^a-z0-9]+/g, '_'));
+      const translatedTitle = t('content_titles.' + titleKey);
       contextText += `--- Section: ${translatedTitle} ---\n`;
       const plainText = tempDiv.textContent || tempDiv.innerText || "";
       contextText += plainText.replace(/(\s\s)\s+/g, '$1').trim() + "\n\n";
@@ -80,58 +114,24 @@ function buildChatbotContext(content, guestDetails, bookingKey) {
   return `${systemPrompt}\n\nRELEVANT GUIDEBOOK CONTENT:\n${contextText}`;
 }
 
-function buildDynamicContent(keys, fragments) {
-  const content = {};
-  keys.forEach(key => {
-    const fragment = fragments[key];
-    if (fragment) {
-      if (!content[fragment.title]) {
-        const emoji = { "Address": "🏘️", "Wifi": "🛜", "Bedroom": "🛏️", "Bathroom": "🛁", "Kitchen": "🍳", "Windows": "🪟", "Laundry": "🧺", "Check-in & Luggage": "🧳", "Rubbish Disposal": "🗑️", "Check-out": "👋", "Heating and Cooling": "🌡️", "A Note on Light Controls": "🔌"}[fragment.title] || 'ℹ️';
-        content[fragment.title] = { title: fragment.title, emoji: emoji, html: '' };
-      }
-      // **MODIFICATION: Use t() to translate the HTML key from config.json**
-      content[fragment.title].html += t(fragment.html);
-    }
-  });
-  return content;
-}
-
-function getDynamicPersonalizedContent(guestDetails, bookingKey) {
-    if (!guestDetails || !guestDetails.checkInDateISO) return {};
-    
-    // This function creates static content keys, so we will translate them in `getStaticContent`
-    const personalizedContent = {};
-    const checkInDate = new Date(guestDetails.checkInDateISO);
-    const checkOutDate = new Date(guestDetails.checkOutDateISO);
-    const dayBeforeCheckIn = new Date(checkInDate);
-    dayBeforeCheckIn.setDate(checkInDate.getDate() - 1);
-    const dayBeforeCheckOut = new Date(checkOutDate);
-    dayBeforeCheckOut.setDate(checkOutDate.getDate() - 1);
-
-    // We will pass these ISO dates to the static content and format/translate them there
-    const isWholeHome = bookingKey && bookingKey.includes('vbr');
-    
-    let luggageHtmlKey = isWholeHome ? 'content_html.wholeHomeLuggage' : 'content_html.checkinStaticDetailed';
-    
-    // These keys now point to translations. The actual content is built in getStaticContent.
-    // For personalized content, we pass the raw data to be formatted by the translation strings.
-    personalizedContent['guestLuggage'] = {
-        title: "Check-in & Luggage", emoji: "🧳",
-        html: t(luggageHtmlKey, {
-            checkInDateFormatted: new Date(guestDetails.checkInDateISO).toLocaleDateString(I18nState.currentLanguage, { weekday: 'long', month: 'long', day: 'numeric' }),
-            dayBeforeCheckInFormatted: dayBeforeCheckIn.toLocaleDateString(I18nState.currentLanguage, { weekday: 'long', month: 'long', day: 'numeric' })
-        })
-    };
-    
-    personalizedContent['checkout'] = {
-        title: "Check-out", emoji: "👋",
-        html: t('content_html.checkoutStaticDetailed', {
-            checkOutDateFormatted: new Date(guestDetails.checkOutDateISO).toLocaleDateString(I18nState.currentLanguage, { weekday: 'long', month: 'long', day: 'numeric' }),
-            dayBeforeCheckOutFormatted: dayBeforeCheckOut.toLocaleDateString(I18nState.currentLanguage, { weekday: 'long', month: 'long', day: 'numeric' })
-        })
-    };
-
-    return personalizedContent;
+/**
+ * Returns the sections of the guidebook that are static for all bookings.
+ * The HTML content is now a key that will be translated.
+ * @returns {object} The static content object.
+ */
+function getStaticContent() {
+  return {
+    'what-not-to-bring': { title: 'What not to bring', emoji: '🚫', html: t('static_html.what_not_to_bring') },
+    'domestic-directions': { title: 'Domestic directions', emoji: '🚶', html: t('static_html.domestic_directions') },
+    'airport-directions': { title: 'Airport directions', emoji: '✈️', html: t('static_html.airport_directions') },
+    'getting-around': { title: 'Getting around', emoji: '🚇', html: t('static_html.getting_around') },
+    'codetimes': { title: 'Lock info', emoji: '*️⃣', html: t('static_html.codetimes') },
+    'ironing': { title: 'Iron & Ironing Mat', emoji: '👕', html: t('static_html.ironing') },
+    'troubleshooting': { title: 'Troubleshooting', emoji: '🛠️', html: t('static_html.troubleshooting') },
+    'contact': { title: 'Contact', emoji: '☎️', html: t('static_html.contact') },
+    'tv': { title: 'TV', emoji: '📺', html: t('static_html.tv') },
+    'local-guidebook': { title: 'Local Guidebook', emoji: '📍', html: t('static_html.local_guidebook') }
+  };
 }
 
 
@@ -152,19 +152,4 @@ function getChatbotOnlyContext(bookingId) {
     if (sharedBathroomBookings.has(bookingId)) { context += `**Shared Bathroom:** Professionally cleaned daily. Features a superior shower with strong, hot water pressure and sustainable toiletries.`; }
     context += `--- END HIDDEN CONTEXT ---`;
     return context;
-}
-
-function getStaticContent() {
-  return {
-    'what-not-to-bring': { title: 'What not to bring', emoji: '🚫', html: t('static_html.what_not_to_bring') },
-    'domestic-directions': { title: 'Domestic directions', emoji: '🚶', html: t('static_html.domestic_directions') },
-    'airport-directions': { title: 'Airport directions', emoji: '✈️', html: t('static_html.airport_directions') },
-    'getting-around': { title: 'Getting around', emoji: '🚇', html: t('static_html.getting_around') },
-    'codetimes': { title: 'Lock info', emoji: '*️⃣', html: t('static_html.codetimes') },
-    'ironing': { title: 'Iron & Ironing Mat', emoji: '👕', html: t('static_html.ironing') },
-    'troubleshooting': { title: 'Troubleshooting', emoji: '🛠️', html: t('static_html.troubleshooting') },
-    'contact': { title: 'Contact', emoji: '☎️', html: t('static_html.contact') },
-    'tv': { title: 'TV', emoji: '📺', html: t('static_html.tv') },
-    'local-guidebook': { title: 'Local Guidebook', emoji: '📍', html: t('static_html.local_guidebook') }
-  };
 }
