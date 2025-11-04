@@ -39,14 +39,33 @@ function buildChatbotContext(content, guestDetails, bookingKey) {
 
   contextText += getChatbotOnlyContext(bookingKey) + "\n\n";
 
-  const sectionOrder = ['video', 'what-not-to-bring', 'Address', 'domestic-directions', 'airport-directions', 'getting-around', 'codetimes', 'Check-in & Luggage', 'checkout', 'Wifi', 'heating', 'Bedroom', 'Bathroom', 'Kitchen', 'Rubbish Disposal', 'Windows', 'Laundry', 'ironing', 'troubleshooting', 'tv', 'contact', 'local-guidebook'];
+  // --- BUG FIX: Reordered the sections to match the UI ---
+  const sectionOrder = ['What not to bring', 'Address', 'Domestic directions', 'Airport directions', 'Getting around', 'Lock info', 'Check-in & Luggage', 'Check-out', 'Wifi', 'Heating and Cooling', 'A Note on Light Controls', 'Bedroom', 'Bathroom', 'Kitchen', 'Rubbish Disposal', 'Windows', 'Laundry', 'Iron & Ironing Mat', 'Troubleshooting', 'TV', 'Contact', 'Local Guidebook', 'Instructional Video Playlist'];
 
   sectionOrder.forEach(key => {
-    const sectionObjectKey = Object.keys(content).find(k => k.toLowerCase() === key.toLowerCase());
+    // Find the content object by its title property
+    const sectionObjectKey = Object.keys(content).find(
+      k => content[k].title && content[k].title.toLowerCase() === key.toLowerCase()
+    );
+    
     if (sectionObjectKey && content[sectionObjectKey]) {
       const section = content[sectionObjectKey];
       contextText += `--- Section: ${section.title} ---\n`;
       tempDiv.innerHTML = section.html;
+
+      // --- BUG FIX: Make video links visible to the AI ---
+      const iframes = tempDiv.querySelectorAll('iframe');
+      iframes.forEach(iframe => {
+        const title = iframe.title || 'Instructional Video';
+        const src = iframe.src;
+        // Create a clean, non-embed URL for the AI to provide
+        const videoUrl = src.replace('/embed/', '/watch?v=').split('?')[0]; 
+        // Create a descriptive text node and append it. This ensures it gets picked up by .textContent
+        const videoInfoNode = document.createElement('p');
+        videoInfoNode.textContent = `(A video guide for "${title}" is available at this URL: ${videoUrl})`;
+        tempDiv.appendChild(videoInfoNode);
+      });
+
       const plainText = tempDiv.textContent || tempDiv.innerText || "";
       contextText += plainText.replace(/(\s\s)\s+/g, '$1').trim() + "\n\n";
     }

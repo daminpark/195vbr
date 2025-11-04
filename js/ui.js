@@ -41,9 +41,9 @@ function renderPage(allContent, guestDetails = {}, legacyTitle = null) {
 
   let fullHtml = `${welcomeHtml}<div id="ha-dashboard"></div>`;
   let tocHtml = '<ul>';
-  const sectionOrder = ['Instructional Video Playlist', 'What not to bring', 'Address', 'Domestic directions', 'Airport directions', 'Getting around', 'Lock info', 'Check-in & Luggage', 'Check-out', 'Wifi', 'Heating and Cooling', 'A Note on Light Controls', 'Bedroom', 'Bathroom', 'Kitchen', 'Rubbish Disposal', 'Windows', 'Laundry', 'Iron & Ironing Mat', 'Troubleshooting', 'TV', 'Contact', 'Local Guidebook'];
+  // --- BUG FIX: Reordered the sections to move the video playlist to the end ---
+  const sectionOrder = ['What not to bring', 'Address', 'Domestic directions', 'Airport directions', 'Getting around', 'Lock info', 'Check-in & Luggage', 'Check-out', 'Wifi', 'Heating and Cooling', 'A Note on Light Controls', 'Bedroom', 'Bathroom', 'Kitchen', 'Rubbish Disposal', 'Windows', 'Laundry', 'Iron & Ironing Mat', 'Troubleshooting', 'TV', 'Contact', 'Local Guidebook', 'Instructional Video Playlist'];
   
-  // --- THIS IS THE CORRECTED LOGIC ---
   sectionOrder.forEach(titleKey => {
     // Find the key of the content object whose 'title' property matches the titleKey from our ordered list.
     const sectionObjectKey = Object.keys(allContent).find(
@@ -57,7 +57,6 @@ function renderPage(allContent, guestDetails = {}, legacyTitle = null) {
       tocHtml += `<li><a href="#${sectionId}">${section.emoji} ${section.title}</a></li>`;
     }
   });
-  // --- END OF CORRECTION ---
 
   tocHtml += '</ul>';
   guidebookContainer.innerHTML = fullHtml;
