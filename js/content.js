@@ -39,7 +39,6 @@ function buildChatbotContext(content, guestDetails, bookingKey) {
 
   contextText += getChatbotOnlyContext(bookingKey) + "\n\n";
 
-  // --- BUG FIX: Reordered the sections to match the UI ---
   const sectionOrder = ['What not to bring', 'Address', 'Domestic directions', 'Airport directions', 'Getting around', 'Lock info', 'Check-in & Luggage', 'Check-out', 'Wifi', 'Heating and Cooling', 'A Note on Light Controls', 'Bedroom', 'Bathroom', 'Kitchen', 'Rubbish Disposal', 'Windows', 'Laundry', 'Iron & Ironing Mat', 'Troubleshooting', 'TV', 'Contact', 'Local Guidebook', 'Instructional Video Playlist'];
 
   sectionOrder.forEach(key => {
@@ -53,14 +52,12 @@ function buildChatbotContext(content, guestDetails, bookingKey) {
       contextText += `--- Section: ${section.title} ---\n`;
       tempDiv.innerHTML = section.html;
 
-      // --- BUG FIX: Make video links visible to the AI ---
       const iframes = tempDiv.querySelectorAll('iframe');
       iframes.forEach(iframe => {
         const title = iframe.title || 'Instructional Video';
         const src = iframe.src;
-        // Create a clean, non-embed URL for the AI to provide
-        const videoUrl = src.replace('/embed/', '/watch?v=').split('?')[0]; 
-        // Create a descriptive text node and append it. This ensures it gets picked up by .textContent
+        // --- BUG FIX: Removed the .split('?')[0] which was truncating the URL ---
+        const videoUrl = src.replace('/embed/', '/watch?v='); 
         const videoInfoNode = document.createElement('p');
         videoInfoNode.textContent = `(A video guide for "${title}" is available at this URL: ${videoUrl})`;
         tempDiv.appendChild(videoInfoNode);
