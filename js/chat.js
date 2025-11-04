@@ -121,7 +121,14 @@ async function sendMessageStandalone() {
         });
         if (!response.ok) throw new Error('Network response was not ok.');
 
-        chatBox.querySelector('.typing-indicator').parentElement.remove();
+        // --- BUG FIX ---
+        // The original code was removing the parent element (the entire chat box).
+        // This is now corrected to only remove the indicator bubble itself.
+        const indicator = chatBox.querySelector('.typing-indicator');
+        if (indicator) {
+            indicator.remove();
+        }
+        // --- END FIX ---
         
         const tempBotContainer = document.createElement('div');
         chatBox.insertAdjacentElement('afterbegin', tempBotContainer);
@@ -150,9 +157,13 @@ async function sendMessageStandalone() {
 
     } catch (error) {
         console.error('Fetch error:', error);
-        if (chatBox.querySelector('.typing-indicator')) {
-            chatBox.querySelector('.typing-indicator').parentElement.remove();
+        // --- BUG FIX ---
+        // Also corrected the logic in the error handling block.
+        const indicator = chatBox.querySelector('.typing-indicator');
+        if (indicator) {
+            indicator.remove();
         }
+        // --- END FIX ---
         const errorHtml = `<div class="message-bubble bot-message"><p>Sorry, I'm having trouble connecting.</p></div>`;
         chatBox.insertAdjacentHTML('afterbegin', errorHtml);
     } finally {
