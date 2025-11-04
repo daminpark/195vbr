@@ -63,24 +63,32 @@ async function loadTranslations() {
  *
  * @param {string} key - The key for the translation string (e.g., "chat.header").
  * @param {object} [replacements={}] - An object with keys and values for replacement.
+ * @param {string|null} [forceLang=null] - Optional: force a specific language ('en') for the lookup.
  * @returns {string} The translated (and formatted) string.
  */
-function t(key, replacements = {}) {
+function t(key, replacements = {}, forceLang = null) {
   // Helper function to resolve dot notation keys
   const resolveKey = (obj, keyPath) => {
     return keyPath.split('.').reduce((acc, part) => acc && acc[part], obj);
   };
   
-  // 1. Try to get the string from the current language
-  let translation = resolveKey(I18nState.translations, key);
-  
-  // 2. If not found, try the fallback language (English)
-  if (!translation) {
+  let translation;
+  // **MODIFICATION: Allow forcing a language**
+  if (forceLang === 'en') {
     translation = resolveKey(I18nState.fallbackTranslations, key);
+  } else {
+    // 1. Try to get the string from the current language
+    translation = resolveKey(I18nState.translations, key);
+    
+    // 2. If not found, try the fallback language (English)
     if (!translation) {
-      console.warn(`Translation key not found in any language: "${key}"`);
-      return key; // Return the key itself as a last resort
+      translation = resolveKey(I18nState.fallbackTranslations, key);
     }
+  }
+
+  if (!translation) {
+    console.warn(`Translation key not found in any language: "${key}"`);
+    return key; // Return the key itself as a last resort
   }
 
   // 3. Perform replacements for dynamic values

@@ -103,14 +103,12 @@ export default async function handler(req, res) {
       }
 
       const { fullName, firstName } = getGuestNames(matchedEvent.summary);
-      const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: LONDON_TIME_ZONE };
       
+      // **MODIFICATION: Remove formatted dates, send only ISO strings**
       return res.status(200).json({
           access: accessLevel,
           guestName: fullName,
           guestFirstName: firstName,
-          checkInDateFormatted: checkInDate.toLocaleDateString('en-GB', dateOptions),
-          checkOutDateFormatted: checkOutDate.toLocaleDateString('en-GB', dateOptions),
           checkInDateISO: checkInDate.toISOString(),
           checkOutDateISO: checkOutDate.toISOString()
       });

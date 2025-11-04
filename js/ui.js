@@ -10,14 +10,13 @@ function renderPage(allContent, guestDetails = {}, legacyTitle = null) {
   const guidebookContainer = document.getElementById('guidebook-container');
   const tocContainer = document.getElementById('table-of-contents');
 
-  // **MODIFICATION: Set static UI text using t() function**
-  document.title = "195VBR Guidebook"; // This can remain static or be translated if needed
+  document.title = "195VBR Guidebook"; 
   const chatHeader = document.querySelector("#chat-header span");
   if(chatHeader) chatHeader.textContent = t('chat.header');
   const chatInput = document.getElementById('user-input');
   if(chatInput) chatInput.placeholder = t('chat.input_placeholder');
   const chatCloseBtn = document.getElementById('chat-close');
-  if(chatCloseBtn) chatCloseBtn.setAttribute('aria-label', 'Close chat'); // Can be translated
+  if(chatCloseBtn) chatCloseBtn.setAttribute('aria-label', 'Close chat'); 
 
   let welcomeHtml = '';
   if (legacyTitle) {
@@ -30,16 +29,20 @@ function renderPage(allContent, guestDetails = {}, legacyTitle = null) {
     const checkInDate = new Date(guestDetails.checkInDateISO);
     const isDuringStay = now >= checkInDate;
     
-    // **MODIFICATION: Use t() for translations**
     const welcomeHeader = t('welcome.header', { guestName: guestDetails.guestFirstName });
     const welcomeMessage = isDuringStay 
       ? t('welcome.during_stay')
       : t('welcome.confirmed_booking');
+
+    // **MODIFICATION: Format dates on the client-side**
+    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const checkInDateFormatted = new Date(guestDetails.checkInDateISO).toLocaleDateString(I18nState.currentLanguage, dateOptions);
+    const checkOutDateFormatted = new Date(guestDetails.checkOutDateISO).toLocaleDateString(I18nState.currentLanguage, dateOptions);
       
     welcomeHtml = `
       <section id="welcome">
         <h2>${welcomeHeader}</h2>
-        <p><strong>${t('welcome.checkin_date')}:</strong> ${guestDetails.checkInDateFormatted}<br><strong>${t('welcome.checkout_date')}:</strong> ${guestDetails.checkOutDateFormatted}</p>
+        <p><strong>${t('welcome.checkin_date')}:</strong> ${checkInDateFormatted}<br><strong>${t('welcome.checkout_date')}:</strong> ${checkOutDateFormatted}</p>
         <p>${welcomeMessage}</p>
       </section>`;
   } else {
@@ -53,14 +56,14 @@ function renderPage(allContent, guestDetails = {}, legacyTitle = null) {
   let fullHtml = `${welcomeHtml}<div id="ha-dashboard"></div>`;
   let tocHtml = '<ul>';
   
-  // **MODIFICATION: Use translation keys instead of English titles**
   const sectionOrder = ['what_not_to_bring', 'address', 'domestic_directions', 'airport_directions', 'getting_around', 'lock_info', 'checkin_luggage', 'checkout', 'wifi', 'heating_cooling', 'light_controls_note', 'bedroom', 'bathroom', 'kitchen', 'rubbish_disposal', 'windows', 'laundry', 'ironing', 'troubleshooting', 'tv', 'contact', 'local_guidebook'];
   
   sectionOrder.forEach(titleKey => {
-    // Find the corresponding object key in allContent based on its title property
-    // We check against the English title, as that's what's in the config object
+    // **THE FIX: Compare the English title from config.json with the FORCED English translation of the key**
+    const englishTitleToFind = t('content_titles.' + titleKey, {}, 'en').toLowerCase();
+
     const sectionObjectKey = Object.keys(allContent).find(
-      key => allContent[key].title && allContent[key].title.toLowerCase() === t('content_titles.' + titleKey, {}, 'en').toLowerCase()
+      key => allContent[key].title && allContent[key].title.toLowerCase() === englishTitleToFind
     );
 
     if (sectionObjectKey && allContent[sectionObjectKey]) {
@@ -72,7 +75,6 @@ function renderPage(allContent, guestDetails = {}, legacyTitle = null) {
       tocHtml += `<li><a href="#${sectionId}">${section.emoji} ${translatedTitle}</a></li>`;
     }
   });
-
 
   tocHtml += '</ul>';
   guidebookContainer.innerHTML = fullHtml;
@@ -91,7 +93,6 @@ function displayErrorPage(type, message = '') {
   tocContainer.innerHTML = '';
   let errorHtml;
 
-  // **MODIFICATION: Use t() for translations**
   if (type === 'missing') {
     errorHtml = `<h1>${t('error_page.booking_not_found')}</h1><section id="error-message"><h2><span style="color: #d9534f;">&#9888;</span> ${t('error_page.invalid_link')}</h2><p>${t('error_page.missing_code_message')}</p></section>`;
   } else {
@@ -165,7 +166,6 @@ function setupEnterKeyListener() {
 function addInitialBotMessage() {
     const chatBox = document.getElementById('chat-box');
     
-    // **MODIFICATION: Use t() for translations**
     const welcomeMessageHtml = `<div class="message-bubble bot-message"><p>${t('chat.initial_message')}</p></div>`;
     
     const suggestionsHtml = `
@@ -180,11 +180,10 @@ function addInitialBotMessage() {
 
     AppState.chatHistory = [{
         role: 'model',
-        content: t('chat.initial_message'), // Store the translated message in history
+        content: t('chat.initial_message'),
         timestamp: new Date().toISOString()
     }];
 
-    // ROBUST CLICK HANDLER
     const suggestionsContainer = document.getElementById('suggestions-container');
     if (suggestionsContainer) {
         suggestionsContainer.addEventListener('click', (e) => {
