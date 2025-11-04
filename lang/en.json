@@ -1,0 +1,65 @@
+{
+  "langName": "English",
+  "welcome": {
+    "header": "Welcome, {guestName}'s group!",
+    "header_nouser": "Welcome to the Guidebook!",
+    "confirmed_booking": "Your booking is confirmed for these dates. Please have a look through the guidebook, where you'll find key information and our AI assistant. During your stay, this page will also let you see and control your room's heating and lighting.",
+    "during_stay": "Welcome to our guidebook, where you can find information, chat with our AI assistant, and see and control your room's heating and lighting.",
+    "checkin_date": "Check-in",
+    "checkout_date": "Check-out"
+  },
+  "ha_dashboard": {
+    "weather_loading": "Loading Weather...",
+    "weather_unavailable": "Weather data unavailable.",
+    "occupancy_occupied": "Occupied",
+    "occupancy_vacant": "Vacant",
+    "occupancy_unavailable": "Unavailable",
+    "current_temp_prefix": "Current",
+    "light_unavailable": "Power is off at the wall switch.",
+    "light_refresh_aria": "Refresh status"
+  },
+  "chat": {
+    "header": "Victoria (AI Assistant)",
+    "input_placeholder": "Ask a question...",
+    "back_button_aria": "Back to Guidebook",
+    "send_button_aria": "Send message",
+    "initial_message": "Welcome! I'm Victoria, your AI assistant. Ask me anything about the guesthouse or your London trip.",
+    "suggestion_checkin": "Can I check in early?",
+    "suggestion_room": "What room am I in?",
+    "suggestion_entry": "How do I get in?",
+    "session_load_error": "Could not load chat session. Please return to the guidebook and try again.",
+    "connection_error": "Sorry, I'm having trouble connecting."
+  },
+  "error_page": {
+    "access_denied": "Access Denied",
+    "validation_failed": "Validation Failed",
+    "booking_not_found": "Booking Not Found",
+    "invalid_link": "Invalid Access Link",
+    "missing_code_message": "Your link is missing a booking code. Please use the exact link provided to you.",
+    "contact_message": "Please ensure you are using the correct, most recent link. If you continue to have trouble, please contact us through your booking platform."
+  },
+  "content_titles": {
+    "what_not_to_bring": "What not to bring",
+    "address": "Address",
+    "domestic_directions": "Domestic directions",
+    "airport_directions": "Airport directions",
+    "getting_around": "Getting around",
+    "lock_info": "Lock info",
+    "checkin_luggage": "Check-in & Luggage",
+    "checkout": "Check-out",
+    "wifi": "Wifi",
+    "heating_cooling": "Heating and Cooling",
+    "light_controls_note": "A Note on Light Controls",
+    "bedroom": "Bedroom",
+    "bathroom": "Bathroom",
+    "kitchen": "Kitchen",
+    "rubbish_disposal": "Rubbish Disposal",
+    "windows": "Windows",
+    "laundry": "Laundry",
+    "ironing": "Iron & Ironing Mat",
+    "troubleshooting": "Troubleshooting",
+    "tv": "TV",
+    "contact": "Contact",
+    "local_guidebook": "Local Guidebook"
+  }
+}

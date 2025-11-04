@@ -10,6 +10,15 @@ function renderPage(allContent, guestDetails = {}, legacyTitle = null) {
   const guidebookContainer = document.getElementById('guidebook-container');
   const tocContainer = document.getElementById('table-of-contents');
 
+  // **MODIFICATION: Set static UI text using t() function**
+  document.title = "195VBR Guidebook"; // This can remain static or be translated if needed
+  const chatHeader = document.querySelector("#chat-header span");
+  if(chatHeader) chatHeader.textContent = t('chat.header');
+  const chatInput = document.getElementById('user-input');
+  if(chatInput) chatInput.placeholder = t('chat.input_placeholder');
+  const chatCloseBtn = document.getElementById('chat-close');
+  if(chatCloseBtn) chatCloseBtn.setAttribute('aria-label', 'Close chat'); // Can be translated
+
   let welcomeHtml = '';
   if (legacyTitle) {
     welcomeHtml = `
@@ -20,42 +29,57 @@ function renderPage(allContent, guestDetails = {}, legacyTitle = null) {
     const now = new Date();
     const checkInDate = new Date(guestDetails.checkInDateISO);
     const isDuringStay = now >= checkInDate;
-    const welcomeHeader = isDuringStay ? `Welcome, ${guestDetails.guestFirstName}'s group!` : `Hi ${guestDetails.guestFirstName}'s group!`;
+    
+    // **MODIFICATION: Use t() for translations**
+    const welcomeHeader = t('welcome.header', { guestName: guestDetails.guestFirstName });
     const welcomeMessage = isDuringStay 
-      ? `Welcome to our guidebook, where you can find information, chat with our AI assistant, and see and control your room's heating and lighting.`
-      : `Your booking is confirmed for these dates. Please have a look through the guidebook, where you'll find key information and our AI assistant. During your stay, this page will also let you see and control your room's heating and lighting.`;
+      ? t('welcome.during_stay')
+      : t('welcome.confirmed_booking');
       
     welcomeHtml = `
       <section id="welcome">
         <h2>${welcomeHeader}</h2>
-        <p><strong>Check-in:</strong> ${guestDetails.checkInDateFormatted}<br><strong>Check-out:</strong> ${guestDetails.checkOutDateFormatted}</p>
+        <p><strong>${t('welcome.checkin_date')}:</strong> ${guestDetails.checkInDateFormatted}<br><strong>${t('welcome.checkout_date')}:</strong> ${guestDetails.checkOutDateFormatted}</p>
         <p>${welcomeMessage}</p>
       </section>`;
   } else {
      welcomeHtml = `
       <section id="welcome">
-        <h2>Welcome to the Guidebook!</h2>
+        <h2>${t('welcome.header_nouser')}</h2>
         <p>This guide provides helpful information for your stay. You can also ask our AI assistant, Victoria, any questions you may have.</p>
       </section>`;
   }
 
   let fullHtml = `${welcomeHtml}<div id="ha-dashboard"></div>`;
   let tocHtml = '<ul>';
-  // --- BUG FIX: Removed the video playlist from the section order ---
-  const sectionOrder = ['What not to bring', 'Address', 'Domestic directions', 'Airport directions', 'Getting around', 'Lock info', 'Check-in & Luggage', 'Check-out', 'Wifi', 'Heating and Cooling', 'A Note on Light Controls', 'Bedroom', 'Bathroom', 'Kitchen', 'Rubbish Disposal', 'Windows', 'Laundry', 'Iron & Ironing Mat', 'Troubleshooting', 'TV', 'Contact', 'Local Guidebook'];
   
+  // **MODIFICATION: Use translation keys instead of English titles**
+  const sectionOrder = ['what_not_to_bring', 'address', 'domestic_directions', 'airport_directions', 'getting_around', 'lock_info', 'checkin_luggage', 'checkout', 'wifi', 'heating_cooling', 'light_controls_note', 'bedroom', 'bathroom', 'kitchen', 'rubbish_disposal', 'windows', 'laundry', 'ironing', 'troubleshooting', 'tv', 'contact', 'local_guidebook'];
+  
+  // Create a map from English title to translation key for easier lookup
+  const titleToKeyMap = {};
+  Object.keys(allContent).forEach(key => {
+    if(allContent[key].title) {
+        titleToKeyMap[allContent[key].title.toLowerCase()] = key;
+    }
+  });
+
   sectionOrder.forEach(titleKey => {
+    // Find the corresponding object key in allContent based on its title property
     const sectionObjectKey = Object.keys(allContent).find(
-      key => allContent[key].title && allContent[key].title.toLowerCase() === titleKey.toLowerCase()
+      key => allContent[key].title && allContent[key].title.toLowerCase() === t('content_titles.' + titleKey).toLowerCase()
     );
 
     if (sectionObjectKey && allContent[sectionObjectKey]) {
       const section = allContent[sectionObjectKey];
       const sectionId = section.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-      fullHtml += `<section id="${sectionId}"><h2>${section.emoji} ${section.title}</h2>${section.html}</section>`;
-      tocHtml += `<li><a href="#${sectionId}">${section.emoji} ${section.title}</a></li>`;
+      const translatedTitle = t('content_titles.' + titleKey);
+
+      fullHtml += `<section id="${sectionId}"><h2>${section.emoji} ${translatedTitle}</h2>${section.html}</section>`;
+      tocHtml += `<li><a href="#${sectionId}">${section.emoji} ${translatedTitle}</a></li>`;
     }
   });
+
 
   tocHtml += '</ul>';
   guidebookContainer.innerHTML = fullHtml;
@@ -73,109 +97,3 @@ function displayErrorPage(type, message = '') {
   document.getElementById('chat-launcher').style.display = 'none';
   tocContainer.innerHTML = '';
   let errorHtml;
-  if (type === 'missing') {
-    errorHtml = `<h1>Booking Not Found</h1><section id="error-message"><h2><span style="color: #d9534f;">&#9888;</span> Invalid Access Link</h2><p>Your link is missing a booking code. Please use the exact link provided to you.</p></section>`;
-  } else {
-    errorHtml = `<h1>Access Denied</h1><section id="error-message"><h2><span style="color: #d9534f;">&#9888;</span> Validation Failed</h2><p>${message}</p><p>Please ensure you are using the correct, most recent link. If you continue to have trouble, please contact us through your booking platform.</p></section>`;
-  }
-  guidebookContainer.innerHTML = errorHtml;
-}
-
-/**
- * Sets up the hamburger menu for mobile devices.
- */
-function setupMobileMenu() {
-    const hamburgerBtn = document.getElementById('hamburger-btn');
-    const nav = document.getElementById('table-of-contents');
-    const overlay = document.getElementById('nav-overlay');
-    const body = document.body;
-    const toggleMenu = () => { nav.classList.toggle('nav-open'); overlay.classList.toggle('nav-open'); body.classList.toggle('nav-open'); };
-    hamburgerBtn.addEventListener('click', toggleMenu);
-    overlay.addEventListener('click', toggleMenu);
-    nav.addEventListener('click', (e) => { if (e.target.tagName === 'A') { toggleMenu(); } });
-}
-
-/**
- * Configures the chat launcher to either open the widget or navigate to the chat page.
- */
-function setupChatToggle() {
-  const chatLauncher = document.getElementById('chat-launcher');
-  const isMobile = () => window.innerWidth <= 768;
-
-  const launchChat = (e) => {
-    e.preventDefault();
-    if (isMobile()) {
-      const currentSearchParams = window.location.search;
-      sessionStorage.setItem('chatbotContext', AppState.chatbotContext);
-      sessionStorage.setItem('chatHistory', JSON.stringify(AppState.chatHistory));
-      window.location.href = `chat.html${currentSearchParams}`;
-    } else {
-      document.documentElement.classList.add('chat-open');
-      document.getElementById('user-input').focus();
-    }
-  };
-
-  chatLauncher.addEventListener('click', launchChat);
-
-  const closeBtn = document.getElementById('chat-close');
-  if(closeBtn) {
-    closeBtn.addEventListener('click', () => {
-      document.documentElement.classList.remove('chat-open');
-    });
-  }
-}
-
-/**
- * Adds an event listener to the chat input field to send a message on Enter key press.
- */
-function setupEnterKeyListener() {
-  const userInputField = document.querySelector('#chat-widget #user-input');
-  if (userInputField) { 
-    userInputField.addEventListener('keypress', (e) => { 
-      if (e.key === 'Enter' && !e.shiftKey) { 
-        e.preventDefault(); 
-        sendMessage(); 
-      } 
-    }); 
-  }
-}
-
-/**
- * Adds the initial welcome message and suggestion chips to the chatbox.
- */
-function addInitialBotMessage() {
-    const chatBox = document.getElementById('chat-box');
-    
-    const welcomeMessageHtml = `<div class="message-bubble bot-message"><p>Welcome! I'm Victoria, your AI assistant. Ask me anything about the guesthouse or your London trip.</p></div>`;
-    
-    // Updated prompt text
-    const suggestionsHtml = `
-        <div class="suggestions-container" id="suggestions-container">
-            <button class="suggestion-chip">Can I check in early?</button>
-            <button class="suggestion-chip">What room am I in?</button>
-            <button class="suggestion-chip">How do I get in?</button>
-        </div>
-    `;
-
-    chatBox.innerHTML = welcomeMessageHtml + suggestionsHtml;
-
-    AppState.chatHistory = [{
-        role: 'model',
-        content: "Welcome! I'm Victoria, your AI assistant. Ask me anything about the guesthouse or your London trip.",
-        timestamp: new Date().toISOString()
-    }];
-
-    // ROBUST CLICK HANDLER
-    const suggestionsContainer = document.getElementById('suggestions-container');
-    if (suggestionsContainer) {
-        suggestionsContainer.addEventListener('click', (e) => {
-            if (e.target.classList.contains('suggestion-chip')) {
-                const promptText = e.target.textContent;
-                const userInputField = document.getElementById('user-input');
-                const sendBtn = document.getElementById('send-btn');
-                userInputField.value = promptText;
-                sendBtn.click();
-            }
-        });
-    }
-}

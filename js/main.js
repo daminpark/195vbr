@@ -14,6 +14,12 @@ const AppState = {
 
 // --- PRIMARY EVENT LISTENER ---
 document.addEventListener('DOMContentLoaded', async () => {
+  // **MODIFICATION: Load translations first**
+  await loadTranslations();
+  
+  // **MODIFICATION: Set the page language attribute**
+  document.documentElement.lang = I18nState.currentLanguage;
+
   const params = new URLSearchParams(window.location.search);
   const searchString = window.location.search;
   AppState.opaqueBookingKey = params.get('booking');
@@ -99,7 +105,8 @@ async function buildSimpleGuidebook(bookingKey) {
     // MODIFICATION: Simply hide the dashboard for these links.
     const dashboard = document.getElementById('ha-dashboard');
     if (dashboard) dashboard.style.display = 'none';
-  } catch (error) {
+  } catch (error)
+{
     console.error("Error building simple guidebook:", error);
     displayErrorPage('denied', `Could not load guidebook. ${error.message}`);
   }

@@ -1,0 +1,65 @@
+{
+  "langName": "Español",
+  "welcome": {
+    "header": "¡Bienvenido, grupo de {guestName}!",
+    "header_nouser": "¡Bienvenido a la Guía!",
+    "confirmed_booking": "Su reserva está confirmada para estas fechas. Por favor, revise la guía, donde encontrará información clave y nuestro asistente de IA. Durante su estancia, esta página también le permitirá ver y controlar la calefacción y la iluminación de su habitación.",
+    "during_stay": "Bienvenido a nuestra guía, donde puede encontrar información, chatear con nuestro asistente de IA y ver y controlar la calefacción y la iluminación de su habitación.",
+    "checkin_date": "Check-in",
+    "checkout_date": "Check-out"
+  },
+  "ha_dashboard": {
+    "weather_loading": "Cargando Clima...",
+    "weather_unavailable": "Datos del clima no disponibles.",
+    "occupancy_occupied": "Ocupado",
+    "occupancy_vacant": "Libre",
+    "occupancy_unavailable": "No disponible",
+    "current_temp_prefix": "Actual",
+    "light_unavailable": "El interruptor de la pared está apagado.",
+    "light_refresh_aria": "Refrescar estado"
+  },
+  "chat": {
+    "header": "Victoria (Asistente IA)",
+    "input_placeholder": "Haz una pregunta...",
+    "back_button_aria": "Volver a la Guía",
+    "send_button_aria": "Enviar mensaje",
+    "initial_message": "¡Bienvenido! Soy Victoria, tu asistente de IA. Pregúntame cualquier cosa sobre la casa de huéspedes o tu viaje a Londres.",
+    "suggestion_checkin": "¿Puedo hacer el check-in antes?",
+    "suggestion_room": "¿En qué habitación estoy?",
+    "suggestion_entry": "¿Cómo entro?",
+    "session_load_error": "No se pudo cargar la sesión de chat. Por favor, vuelva a la guía e inténtelo de nuevo.",
+    "connection_error": "Lo siento, tengo problemas para conectarme."
+  },
+  "error_page": {
+    "access_denied": "Acceso Denegado",
+    "validation_failed": "Falló la Validación",
+    "booking_not_found": "Reserva No Encontrada",
+    "invalid_link": "Enlace de Acceso Inválido",
+    "missing_code_message": "A su enlace le falta un código de reserva. Por favor, use el enlace exacto que se le proporcionó.",
+    "contact_message": "Por favor, asegúrese de que está utilizando el enlace correcto y más reciente. Si sigue teniendo problemas, contáctenos a través de su plataforma de reservas."
+  },
+  "content_titles": {
+    "what_not_to_bring": "Qué no traer",
+    "address": "Dirección",
+    "domestic_directions": "Direcciones nacionales",
+    "airport_directions": "Direcciones desde el aeropuerto",
+    "getting_around": "Cómo moverse",
+    "lock_info": "Información de la cerradura",
+    "checkin_luggage": "Check-in y Equipaje",
+    "checkout": "Check-out",
+    "wifi": "Wifi",
+    "heating_cooling": "Calefacción y Refrigeración",
+    "light_controls_note": "Nota sobre los Controles de Luz",
+    "bedroom": "Dormitorio",
+    "bathroom": "Baño",
+    "kitchen": "Cocina",
+    "rubbish_disposal": "Eliminación de basura",
+    "windows": "Ventanas",
+    "laundry": "Lavandería",
+    "ironing": "Plancha y Alfombrilla de Planchado",
+    "troubleshooting": "Solución de problemas",
+    "tv": "TV",
+    "contact": "Contacto",
+    "local_guidebook": "Guía Local"
+  }
+}

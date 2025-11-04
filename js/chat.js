@@ -47,7 +47,18 @@ function stripAndFindVideo(text) {
 let chatbotContext = '';
 let chatHistory = [];
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // **MODIFICATION: Load translations first**
+    await loadTranslations();
+    document.documentElement.lang = I18nState.currentLanguage;
+
+    // **MODIFICATION: Translate static UI elements**
+    document.title = t('chat.header');
+    document.querySelector('#chat-header span').textContent = t('chat.header');
+    document.getElementById('chat-back-btn').setAttribute('aria-label', t('chat.back_button_aria'));
+    document.getElementById('user-input').placeholder = t('chat.input_placeholder');
+    document.getElementById('send-btn').setAttribute('aria-label', t('chat.send_button_aria'));
+
     // 1. Setup
     const searchParams = new URLSearchParams(window.location.search);
     const bookingKey = searchParams.get('booking');
@@ -58,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const storedHistory = sessionStorage.getItem('chatHistory');
 
     if (!chatbotContext || !storedHistory) {
-        document.getElementById('chat-box').innerHTML = '<p style="padding: 1rem; text-align: center;">Could not load chat session.</p>';
+        document.getElementById('chat-box').innerHTML = `<p style="padding: 1rem; text-align: center;">${t('chat.session_load_error')}</p>`;
         document.getElementById('chat-input-container').style.display = 'none';
         return;
     }
@@ -86,9 +97,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (chatHistory.length === 1 && chatHistory[0].role === 'model') {
         const suggestionsHtml = `
             <div class="suggestions-container" id="suggestions-container">
-                <button class="suggestion-chip">Can I check in early?</button>
-                <button class="suggestion-chip">What room am I in?</button>
-                <button class="suggestion-chip">How do I get in?</button>
+                <button class="suggestion-chip">${t('chat.suggestion_checkin')}</button>
+                <button class="suggestion-chip">${t('chat.suggestion_room')}</button>
+                <button class="suggestion-chip">${t('chat.suggestion_entry')}</button>
             </div>
         `;
         chatBox.insertAdjacentHTML('afterbegin', suggestionsHtml);
@@ -189,7 +200,7 @@ async function sendMessageStandalone() {
         const indicator = chatBox.querySelector('.typing-indicator');
         if (indicator) indicator.remove();
         
-        const errorHtml = `<div class="message-bubble bot-message"><p>Sorry, I'm having trouble connecting.</p></div>`;
+        const errorHtml = `<div class="message-bubble bot-message"><p>${t('chat.connection_error')}</p></div>`;
         chatBox.insertAdjacentHTML('afterbegin', errorHtml);
     } finally {
         inputContainer.classList.remove('loading');
