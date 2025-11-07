@@ -34,10 +34,14 @@ function buildDynamicContent(keys, fragments, guestDetails, bookingKey) {
   // Prepare date-related replacements for personalized content
   const replacements = {};
   if (guestDetails.checkInDateISO) {
-    // **FIX: Ensure dates are formatted in London time**
     const dateOptions = { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'Europe/London' };
     const dayBeforeCheckIn = new Date(guestDetails.checkInDateISO);
     dayBeforeCheckIn.setDate(new Date(guestDetails.checkInDateISO).getDate() - 1);
+    
+    // **FIX: The missing calculation for dayBeforeCheckOut has been added.**
+    const dayBeforeCheckOut = new Date(guestDetails.checkOutDateISO);
+    dayBeforeCheckOut.setDate(new Date(guestDetails.checkOutDateISO).getDate() - 1);
+
     replacements.checkInDateFormatted = new Date(guestDetails.checkInDateISO).toLocaleDateString(I18nState.currentLanguage, dateOptions);
     replacements.dayBeforeCheckInFormatted = dayBeforeCheckIn.toLocaleDateString(I18nState.currentLanguage, dateOptions);
     replacements.checkOutDateFormatted = new Date(guestDetails.checkOutDateISO).toLocaleDateString(I18nState.currentLanguage, dateOptions);
