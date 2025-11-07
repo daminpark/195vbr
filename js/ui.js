@@ -35,11 +35,13 @@ function renderPage(allContent, guestDetails = {}, legacyTitle = null) {
       ? t('welcome.during_stay')
       : t('welcome.confirmed_booking');
 
-    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    // **FIX: Ensure dates are formatted in London time**
+    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Europe/London' };
     const checkInDateFormatted = new Date(guestDetails.checkInDateISO).toLocaleDateString(I18nState.currentLanguage, dateOptions);
     const checkOutDateFormatted = new Date(guestDetails.checkOutDateISO).toLocaleDateString(I18nState.currentLanguage, dateOptions);
       
     welcomeHtml = `
+
       <section id="welcome">
         <h2>${welcomeHeader}</h2>
         <p><strong>${t('welcome.checkin_date')}:</strong> ${checkInDateFormatted}<br><strong>${t('welcome.checkout_date')}:</strong> ${checkOutDateFormatted}</p>

@@ -43,6 +43,18 @@ a:hover { color: #551A8B; }
 #table-of-contents ul { list-style: none; padding: 0; margin: 0; }
 #table-of-contents li a { display: block; padding: 0.5rem; text-decoration: none; color: var(--text-color-dark); border-radius: 4px; }
 #table-of-contents li a:hover { background-color: #e9ecef; }
+/* **FIX: Styles for new desktop logos** */
+.desktop-logo-container {
+  display: none; /* Hide on mobile by default */
+}
+
+.main-content-logo {
+  padding-bottom: 1rem;
+  text-align: center;
+}
+.main-content-logo .logo {
+  height: 50px;
+}
 
 /* ---------------------------------------------------
    3. CHAT WIDGET
@@ -106,6 +118,24 @@ html.chat-open #chat-widget {
    4. RESPONSIVE & MOBILE STYLES
 --------------------------------------------------- */
 .mobile-header { display: none; }
+
+@media (min-width: 769px) {
+  .desktop-logo-container {
+    display: block; /* Show on desktop */
+  }
+
+  #table-of-contents .desktop-logo-container {
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    text-align: center;
+  }
+
+  #table-of-contents .desktop-logo-container .logo {
+    max-width: 80%;
+    height: auto;
+  }
+}
 
 @media (max-width: 768px) {
   /* Scroll lock for modals on mobile */
