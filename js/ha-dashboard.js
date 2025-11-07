@@ -319,7 +319,8 @@ async function fetchWeatherData(entityId, house, currentOpaqueBookingKey) {
     if (topRowContainer) {
         let topRowHtml = `<div class="weather-item current-weather-item"><div class="weather-item-label">${t('ha_dashboard.weather_now')}</div><span class="weather-item-icon material-symbols-outlined">${weatherIconMap[currentState.state] || 'sunny'}</span><div class="weather-item-temp">${Math.round(currentState.attributes.temperature)}°</div></div>`;
         hourlyForecast.slice(1, 5).forEach(hour => {
-            const time = new Date(hour.datetime).toLocaleTimeString(I18nState.currentLanguage, { hour: 'numeric', hour12: false });
+            // **FIX: Changed time formatting to include minutes (e.g., 21:00)**
+            const time = new Date(hour.datetime).toLocaleTimeString(I18nState.currentLanguage, { hour: '2-digit', minute: '2-digit', hour12: false });
             topRowHtml += `<div class="weather-item"><div class="weather-item-label">${time}</div><span class="weather-item-icon material-symbols-outlined">${weatherIconMap[hour.condition] || 'sunny'}</span><div class="weather-item-temp">${Math.round(hour.temperature)}°</div></div>`;
         });
         topRowContainer.innerHTML = topRowHtml;
