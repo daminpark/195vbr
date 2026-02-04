@@ -165,14 +165,14 @@
       "house": "193",
       "entities": {
         "weather": "weather.forecast_home",
-        "bathroom_a": "binary_sensor.bathroom_a_occupancy",
-        "bathroom_b": "binary_sensor.bathroom_b_occupancy",
-        "kitchen": "binary_sensor.kitchen_occupancy",
+        "bathroom_a": "binary_sensor.193_a_presence_presence",
+        "bathroom_b": "binary_sensor.193_b_presence_presence",
+        "kitchen": "binary_sensor.193_k_presence_presence",
         "climate": {
-          "climate.3_1_trv": "ha_entity_names.room1_radiator"
+          "climate.193_1_trv": "ha_entity_names.room1_radiator"
         },
         "lights": {
-          "light.3_1_lights": "ha_entity_names.room1_main_lights"
+          "light.193_1_lights": "ha_entity_names.room1_main_lights"
         }
       }
     },
@@ -195,14 +195,14 @@
       "house": "193",
       "entities": {
         "weather": "weather.forecast_home",
-        "bathroom_a": "binary_sensor.bathroom_a_occupancy",
-        "bathroom_b": "binary_sensor.bathroom_b_occupancy",
-        "kitchen": "binary_sensor.kitchen_occupancy",
+        "bathroom_a": "binary_sensor.193_a_presence_presence",
+        "bathroom_b": "binary_sensor.193_b_presence_presence",
+        "kitchen": "binary_sensor.193_k_presence_presence",
         "climate": {
-          "climate.3_2_trv": "ha_entity_names.room2_radiator"
+          "climate.193_2_trv": "ha_entity_names.room2_radiator"
         },
         "lights": {
-          "light.3_2_lights": "ha_entity_names.room2_main_lights"
+          "light.193_2_lights": "ha_entity_names.room2_main_lights"
         }
       }
     },
@@ -225,15 +225,15 @@
       "house": "193",
       "entities": {
         "weather": "weather.forecast_home",
-        "kitchen": "binary_sensor.kitchen_occupancy",
+        "kitchen": "binary_sensor.193_k_presence_presence",
         "climate": {
-          "climate.3_c_trv": "ha_entity_names.bathroomC_radiator",
-          "climate.3_3_trv": "ha_entity_names.room3_radiator"
+          "climate.193_c_trv": "ha_entity_names.bathroomC_radiator",
+          "climate.193_3_trv": "ha_entity_names.room3_radiator"
         },
         "lights": {
-          "light.3_3_lights": "ha_entity_names.room3_main_lights",
-          "light.3_3_lamp": "ha_entity_names.room3_bedside_lamp",
-          "light.3_c_lights": "ha_entity_names.bathroom_lights"
+          "light.193_3_lights": "ha_entity_names.room3_main_lights",
+          "light.193_3_lamps": "ha_entity_names.room3_bedside_lamp",
+          "light.193_c_lights": "ha_entity_names.bathroom_lights"
         }
       }
     },
@@ -256,15 +256,15 @@
       "house": "193",
       "entities": {
         "weather": "weather.forecast_home",
-        "bathroom_a": "binary_sensor.bathroom_a_occupancy",
-        "bathroom_b": "binary_sensor.bathroom_b_occupancy",
-        "kitchen": "binary_sensor.kitchen_occupancy",
+        "bathroom_a": "binary_sensor.193_a_presence_presence",
+        "bathroom_b": "binary_sensor.193_b_presence_presence",
+        "kitchen": "binary_sensor.193_k_presence_presence",
         "climate": {
-          "climate.3_4_trv": "ha_entity_names.room4_radiator"
+          "climate.193_4_trv": "ha_entity_names.room4_radiator"
         },
         "lights": {
-          "light.3_4_lights": "ha_entity_names.room4_main_lights",
-          "light.3_4_lamp": "ha_entity_names.room4_bedside_lamp"
+          "light.193_4_lights": "ha_entity_names.room4_main_lights",
+          "light.193_4_lamps": "ha_entity_names.room4_bedside_lamp"
         }
       }
     },
@@ -287,14 +287,14 @@
       "house": "193",
       "entities": {
         "weather": "weather.forecast_home",
-        "bathroom_a": "binary_sensor.bathroom_a_occupancy",
-        "bathroom_b": "binary_sensor.bathroom_b_occupancy",
-        "kitchen": "binary_sensor.kitchen_occupancy",
+        "bathroom_a": "binary_sensor.193_a_presence_presence",
+        "bathroom_b": "binary_sensor.193_b_presence_presence",
+        "kitchen": "binary_sensor.193_k_presence_presence",
         "climate": {
-          "climate.3_5_trv": "ha_entity_names.room5_radiator"
+          "climate.193_5_trv": "ha_entity_names.room5_radiator"
         },
         "lights": {
-          "light.3_5_lights": "ha_entity_names.room5_main_lights"
+          "light.193_5_lights": "ha_entity_names.room5_main_lights"
         }
       }
     },
@@ -317,14 +317,14 @@
       "house": "193",
       "entities": {
         "weather": "weather.forecast_home",
-        "bathroom_a": "binary_sensor.bathroom_a_occupancy",
-        "bathroom_b": "binary_sensor.bathroom_b_occupancy",
-        "kitchen": "binary_sensor.kitchen_occupancy",
+        "bathroom_a": "binary_sensor.193_a_presence_presence",
+        "bathroom_b": "binary_sensor.193_b_presence_presence",
+        "kitchen": "binary_sensor.193_k_presence_presence",
         "climate": {
-          "climate.3_6_trv": "ha_entity_names.room6_radiator"
+          "climate.193_6_trv": "ha_entity_names.room6_radiator"
         },
         "lights": {
-          "light.3_6_lights": "ha_entity_names.room6_main_lights"
+          "light.193_6_lights": "ha_entity_names.room6_main_lights"
         }
       }
     },
@@ -349,16 +349,16 @@
       "house": "193",
       "entities": {
         "weather": "weather.forecast_home",
-        "bathroom_a": "binary_sensor.bathroom_a_occupancy",
-        "bathroom_b": "binary_sensor.bathroom_b_occupancy",
-        "kitchen": "binary_sensor.kitchen_occupancy",
+        "bathroom_a": "binary_sensor.193_a_presence_presence",
+        "bathroom_b": "binary_sensor.193_b_presence_presence",
+        "kitchen": "binary_sensor.193_k_presence_presence",
         "climate": {
-          "climate.3_1_trv": "ha_entity_names.room1_radiator",
-          "climate.3_2_trv": "ha_entity_names.room2_radiator"
+          "climate.193_1_trv": "ha_entity_names.room1_radiator",
+          "climate.193_2_trv": "ha_entity_names.room2_radiator"
         },
         "lights": {
-          "light.3_1_lights": "ha_entity_names.room1_main_lights",
-          "light.3_2_lights": "ha_entity_names.room2_main_lights"
+          "light.193_1_lights": "ha_entity_names.room1_main_lights",
+          "light.193_2_lights": "ha_entity_names.room2_main_lights"
         }
       }
     },
@@ -383,19 +383,19 @@
       "house": "193",
       "entities": {
         "weather": "weather.forecast_home",
-        "bathroom_a": "binary_sensor.bathroom_a_occupancy",
-        "bathroom_b": "binary_sensor.bathroom_b_occupancy",
-        "kitchen": "binary_sensor.kitchen_occupancy",
+        "bathroom_a": "binary_sensor.193_a_presence_presence",
+        "bathroom_b": "binary_sensor.193_b_presence_presence",
+        "kitchen": "binary_sensor.193_k_presence_presence",
         "climate": {
-          "climate.3_4_trv": "ha_entity_names.room4_radiator",
-          "climate.3_5_trv": "ha_entity_names.room5_radiator",
-          "climate.3_6_trv": "ha_entity_names.room6_radiator"
+          "climate.193_4_trv": "ha_entity_names.room4_radiator",
+          "climate.193_5_trv": "ha_entity_names.room5_radiator",
+          "climate.193_6_trv": "ha_entity_names.room6_radiator"
         },
         "lights": {
-          "light.3_4_lights": "ha_entity_names.room4_main_lights",
-          "light.3_4_lamp": "ha_entity_names.room4_bedside_lamp",
-          "light.3_5_lights": "ha_entity_names.room5_main_lights",
-          "light.3_6_lights": "ha_entity_names.room6_main_lights"
+          "light.193_4_lights": "ha_entity_names.room4_main_lights",
+          "light.193_4_lamps": "ha_entity_names.room4_bedside_lamp",
+          "light.193_5_lights": "ha_entity_names.room5_main_lights",
+          "light.193_6_lights": "ha_entity_names.room6_main_lights"
         }
       }
     },
@@ -418,14 +418,14 @@
       "house": "195",
       "entities": {
         "weather": "weather.forecast_home",
-        "bathroom_a": "binary_sensor.bathroom_a_occupancy",
-        "bathroom_b": "binary_sensor.bathroom_b_occupancy",
-        "kitchen": "binary_sensor.kitchen_occupancy",
+        "bathroom_a": "binary_sensor.195_a_presence_presence",
+        "bathroom_b": "binary_sensor.195_b_presence_presence",
+        "kitchen": "binary_sensor.195_k_presence_presence",
         "climate": {
-          "climate.5_1_trv": "ha_entity_names.room1_radiator"
+          "climate.195_1_trv": "ha_entity_names.room1_radiator"
         },
         "lights": {
-          "light.5_1_lights": "ha_entity_names.room1_main_lights"
+          "light.195_1_lights": "ha_entity_names.room1_main_lights"
         }
       }
     },
@@ -448,14 +448,14 @@
       "house": "195",
       "entities": {
         "weather": "weather.forecast_home",
-        "bathroom_a": "binary_sensor.bathroom_a_occupancy",
-        "bathroom_b": "binary_sensor.bathroom_b_occupancy",
-        "kitchen": "binary_sensor.kitchen_occupancy",
+        "bathroom_a": "binary_sensor.195_a_presence_presence",
+        "bathroom_b": "binary_sensor.195_b_presence_presence",
+        "kitchen": "binary_sensor.195_k_presence_presence",
         "climate": {
-          "climate.5_2_trv": "ha_entity_names.room2_radiator"
+          "climate.195_2_trv": "ha_entity_names.room2_radiator"
         },
         "lights": {
-          "light.5_2_lights": "ha_entity_names.room2_main_lights"
+          "light.195_2_lights": "ha_entity_names.room2_main_lights"
         }
       }
     },
@@ -478,15 +478,15 @@
       "house": "195",
       "entities": {
         "weather": "weather.forecast_home",
-        "kitchen": "binary_sensor.kitchen_occupancy",
+        "kitchen": "binary_sensor.195_k_presence_presence",
         "climate": {
-          "climate.5_c_trv": "ha_entity_names.bathroomC_radiator",
-          "climate.5_3_trv": "ha_entity_names.room3_radiator"
+          "climate.195_c_trv": "ha_entity_names.bathroomC_radiator",
+          "climate.195_3_trv": "ha_entity_names.room3_radiator"
         },
         "lights": {
-          "light.5_3_lights": "ha_entity_names.room3_main_lights",
-          "light.5_3_lamp": "ha_entity_names.room3_bedside_lamp",
-          "light.5_c_lights": "ha_entity_names.bathroom_lights"
+          "light.195_3_lights": "ha_entity_names.room3_main_lights",
+          "light.195_3_lamps": "ha_entity_names.room3_bedside_lamp",
+          "light.195_c_lights": "ha_entity_names.bathroom_lights"
         }
       }
     },
@@ -509,15 +509,15 @@
       "house": "195",
       "entities": {
         "weather": "weather.forecast_home",
-        "bathroom_a": "binary_sensor.bathroom_a_occupancy",
-        "bathroom_b": "binary_sensor.bathroom_b_occupancy",
-        "kitchen": "binary_sensor.kitchen_occupancy",
+        "bathroom_a": "binary_sensor.195_a_presence_presence",
+        "bathroom_b": "binary_sensor.195_b_presence_presence",
+        "kitchen": "binary_sensor.195_k_presence_presence",
         "climate": {
-          "climate.5_4_trv": "ha_entity_names.room4_radiator"
+          "climate.195_4_trv": "ha_entity_names.room4_radiator"
         },
         "lights": {
-          "light.5_4_lights": "ha_entity_names.room4_main_lights",
-          "light.5_4_lamp": "ha_entity_names.room4_bedside_lamp"
+          "light.195_4_lights": "ha_entity_names.room4_main_lights",
+          "light.195_4_lamps": "ha_entity_names.room4_bedside_lamp"
         }
       }
     },
@@ -540,14 +540,14 @@
       "house": "195",
       "entities": {
         "weather": "weather.forecast_home",
-        "bathroom_a": "binary_sensor.bathroom_a_occupancy",
-        "bathroom_b": "binary_sensor.bathroom_b_occupancy",
-        "kitchen": "binary_sensor.kitchen_occupancy",
+        "bathroom_a": "binary_sensor.195_a_presence_presence",
+        "bathroom_b": "binary_sensor.195_b_presence_presence",
+        "kitchen": "binary_sensor.195_k_presence_presence",
         "climate": {
-          "climate.5_5_trv": "ha_entity_names.room5_radiator"
+          "climate.195_5_trv": "ha_entity_names.room5_radiator"
         },
         "lights": {
-          "light.5_5_lights": "ha_entity_names.room5_main_lights"
+          "light.195_5_lights": "ha_entity_names.room5_main_lights"
         }
       }
     },
@@ -570,14 +570,14 @@
       "house": "195",
       "entities": {
         "weather": "weather.forecast_home",
-        "bathroom_a": "binary_sensor.bathroom_a_occupancy",
-        "bathroom_b": "binary_sensor.bathroom_b_occupancy",
-        "kitchen": "binary_sensor.kitchen_occupancy",
+        "bathroom_a": "binary_sensor.195_a_presence_presence",
+        "bathroom_b": "binary_sensor.195_b_presence_presence",
+        "kitchen": "binary_sensor.195_k_presence_presence",
         "climate": {
-          "climate.5_6_trv": "ha_entity_names.room6_radiator"
+          "climate.195_6_trv": "ha_entity_names.room6_radiator"
         },
         "lights": {
-          "light.5_6_lights": "ha_entity_names.room6_main_lights"
+          "light.195_6_lights": "ha_entity_names.room6_main_lights"
         }
       }
     },
@@ -602,16 +602,16 @@
       "house": "195",
       "entities": {
         "weather": "weather.forecast_home",
-        "bathroom_a": "binary_sensor.bathroom_a_occupancy",
-        "bathroom_b": "binary_sensor.bathroom_b_occupancy",
-        "kitchen": "binary_sensor.kitchen_occupancy",
+        "bathroom_a": "binary_sensor.195_a_presence_presence",
+        "bathroom_b": "binary_sensor.195_b_presence_presence",
+        "kitchen": "binary_sensor.195_k_presence_presence",
         "climate": {
-          "climate.5_1_trv": "ha_entity_names.room1_radiator",
-          "climate.5_2_trv": "ha_entity_names.room2_radiator"
+          "climate.195_1_trv": "ha_entity_names.room1_radiator",
+          "climate.195_2_trv": "ha_entity_names.room2_radiator"
         },
         "lights": {
-          "light.5_1_lights": "ha_entity_names.room1_main_lights",
-          "light.5_2_lights": "ha_entity_names.room2_main_lights"
+          "light.195_1_lights": "ha_entity_names.room1_main_lights",
+          "light.195_2_lights": "ha_entity_names.room2_main_lights"
         }
       }
     },
@@ -636,19 +636,19 @@
       "house": "195",
       "entities": {
         "weather": "weather.forecast_home",
-        "bathroom_a": "binary_sensor.bathroom_a_occupancy",
-        "bathroom_b": "binary_sensor.bathroom_b_occupancy",
-        "kitchen": "binary_sensor.kitchen_occupancy",
+        "bathroom_a": "binary_sensor.195_a_presence_presence",
+        "bathroom_b": "binary_sensor.195_b_presence_presence",
+        "kitchen": "binary_sensor.195_k_presence_presence",
         "climate": {
-          "climate.5_4_trv": "ha_entity_names.room4_radiator",
-          "climate.5_5_trv": "ha_entity_names.room5_radiator",
-          "climate.5_6_trv": "ha_entity_names.room6_radiator"
+          "climate.195_4_trv": "ha_entity_names.room4_radiator",
+          "climate.195_5_trv": "ha_entity_names.room5_radiator",
+          "climate.195_6_trv": "ha_entity_names.room6_radiator"
         },
         "lights": {
-          "light.5_4_lights": "ha_entity_names.room4_main_lights",
-          "light.5_4_lamp": "ha_entity_names.room4_bedside_lamp",
-          "light.5_5_lights": "ha_entity_names.room5_main_lights",
-          "light.5_6_lights": "ha_entity_names.room6_main_lights"
+          "light.195_4_lights": "ha_entity_names.room4_main_lights",
+          "light.195_4_lamps": "ha_entity_names.room4_bedside_lamp",
+          "light.195_5_lights": "ha_entity_names.room5_main_lights",
+          "light.195_6_lights": "ha_entity_names.room6_main_lights"
         }
       }
     },
@@ -673,24 +673,24 @@
       "entities": {
         "weather": "weather.forecast_home",
         "climate": {
-          "climate.3_1_trv": "ha_entity_names.room1_radiator",
-          "climate.3_2_trv": "ha_entity_names.room2_radiator",
-          "climate.3_3_trv": "ha_entity_names.room3_radiator",
-          "climate.3_c_trv": "ha_entity_names.bathroomC_radiator",
-          "climate.3_4_trv": "ha_entity_names.room4_radiator",
-          "climate.3_5_trv": "ha_entity_names.room5_radiator",
-          "climate.3_6_trv": "ha_entity_names.room6_radiator"
+          "climate.193_1_trv": "ha_entity_names.room1_radiator",
+          "climate.193_2_trv": "ha_entity_names.room2_radiator",
+          "climate.193_3_trv": "ha_entity_names.room3_radiator",
+          "climate.193_c_trv": "ha_entity_names.bathroomC_radiator",
+          "climate.193_4_trv": "ha_entity_names.room4_radiator",
+          "climate.193_5_trv": "ha_entity_names.room5_radiator",
+          "climate.193_6_trv": "ha_entity_names.room6_radiator"
         },
         "lights": {
-          "light.3_1_lights": "ha_entity_names.room1_lights",
-          "light.3_2_lights": "ha_entity_names.room2_lights",
-          "light.3_3_lights": "ha_entity_names.room3_lights",
-          "light.3_3_lamp": "ha_entity_names.room3_lamp",
-          "light.3_c_lights": "ha_entity_names.bathroomC_lights",
-          "light.3_4_lights": "ha_entity_names.room4_lights",
-          "light.3_4_lamp": "ha_entity_names.room4_lamp",
-          "light.3_5_lights": "ha_entity_names.room5_lights",
-          "light.3_6_lights": "ha_entity_names.room6_lights"
+          "light.193_1_lights": "ha_entity_names.room1_lights",
+          "light.193_2_lights": "ha_entity_names.room2_lights",
+          "light.193_3_lights": "ha_entity_names.room3_lights",
+          "light.193_3_lamps": "ha_entity_names.room3_lamp",
+          "light.193_c_lights": "ha_entity_names.bathroomC_lights",
+          "light.193_4_lights": "ha_entity_names.room4_lights",
+          "light.193_4_lamps": "ha_entity_names.room4_lamp",
+          "light.193_5_lights": "ha_entity_names.room5_lights",
+          "light.193_6_lights": "ha_entity_names.room6_lights"
         }
       }
     },
@@ -715,24 +715,24 @@
       "entities": {
         "weather": "weather.forecast_home",
         "climate": {
-          "climate.5_1_trv": "ha_entity_names.room1_radiator",
-          "climate.5_2_trv": "ha_entity_names.room2_radiator",
-          "climate.5_3_trv": "ha_entity_names.room3_radiator",
-          "climate.5_c_trv": "ha_entity_names.bathroomC_radiator",
-          "climate.5_4_trv": "ha_entity_names.room4_radiator",
-          "climate.5_5_trv": "ha_entity_names.room5_radiator",
-          "climate.5_6_trv": "ha_entity_names.room6_radiator"
+          "climate.195_1_trv": "ha_entity_names.room1_radiator",
+          "climate.195_2_trv": "ha_entity_names.room2_radiator",
+          "climate.195_3_trv": "ha_entity_names.room3_radiator",
+          "climate.195_c_trv": "ha_entity_names.bathroomC_radiator",
+          "climate.195_4_trv": "ha_entity_names.room4_radiator",
+          "climate.195_5_trv": "ha_entity_names.room5_radiator",
+          "climate.195_6_trv": "ha_entity_names.room6_radiator"
         },
         "lights": {
-          "light.5_1_lights": "ha_entity_names.room1_lights",
-          "light.5_2_lights": "ha_entity_names.room2_lights",
-          "light.5_3_lights": "ha_entity_names.room3_lights",
-          "light.5_3_lamp": "ha_entity_names.room3_lamp",
-          "light.5_c_lights": "ha_entity_names.bathroomC_lights",
-          "light.5_4_lights": "ha_entity_names.room4_lights",
-          "light.5_4_lamp": "ha_entity_names.room4_lamp",
-          "light.5_5_lights": "ha_entity_names.room5_lights",
-          "light.5_6_lights": "ha_entity_names.room6_lights"
+          "light.195_1_lights": "ha_entity_names.room1_lights",
+          "light.195_2_lights": "ha_entity_names.room2_lights",
+          "light.195_3_lights": "ha_entity_names.room3_lights",
+          "light.195_3_lamps": "ha_entity_names.room3_lamp",
+          "light.195_c_lights": "ha_entity_names.bathroomC_lights",
+          "light.195_4_lights": "ha_entity_names.room4_lights",
+          "light.195_4_lamps": "ha_entity_names.room4_lamp",
+          "light.195_5_lights": "ha_entity_names.room5_lights",
+          "light.195_6_lights": "ha_entity_names.room6_lights"
         }
       }
     }
