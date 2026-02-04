@@ -166,6 +166,7 @@
       "entities": {
         "weather": "weather.forecast_home",
         "bathroom_a": "binary_sensor.bathroom_a_occupancy",
+        "bathroom_b": "binary_sensor.bathroom_b_occupancy",
         "kitchen": "binary_sensor.kitchen_occupancy",
         "climate": {
           "climate.3_1_trv": "ha_entity_names.room1_radiator"
@@ -195,6 +196,7 @@
       "entities": {
         "weather": "weather.forecast_home",
         "bathroom_a": "binary_sensor.bathroom_a_occupancy",
+        "bathroom_b": "binary_sensor.bathroom_b_occupancy",
         "kitchen": "binary_sensor.kitchen_occupancy",
         "climate": {
           "climate.3_2_trv": "ha_entity_names.room2_radiator"
@@ -254,6 +256,7 @@
       "house": "193",
       "entities": {
         "weather": "weather.forecast_home",
+        "bathroom_a": "binary_sensor.bathroom_a_occupancy",
         "bathroom_b": "binary_sensor.bathroom_b_occupancy",
         "kitchen": "binary_sensor.kitchen_occupancy",
         "climate": {
@@ -284,6 +287,7 @@
       "house": "193",
       "entities": {
         "weather": "weather.forecast_home",
+        "bathroom_a": "binary_sensor.bathroom_a_occupancy",
         "bathroom_b": "binary_sensor.bathroom_b_occupancy",
         "kitchen": "binary_sensor.kitchen_occupancy",
         "climate": {
@@ -313,6 +317,7 @@
       "house": "193",
       "entities": {
         "weather": "weather.forecast_home",
+        "bathroom_a": "binary_sensor.bathroom_a_occupancy",
         "bathroom_b": "binary_sensor.bathroom_b_occupancy",
         "kitchen": "binary_sensor.kitchen_occupancy",
         "climate": {
@@ -414,6 +419,7 @@
       "entities": {
         "weather": "weather.forecast_home",
         "bathroom_a": "binary_sensor.bathroom_a_occupancy",
+        "bathroom_b": "binary_sensor.bathroom_b_occupancy",
         "kitchen": "binary_sensor.kitchen_occupancy",
         "climate": {
           "climate.5_1_trv": "ha_entity_names.room1_radiator"
@@ -443,6 +449,7 @@
       "entities": {
         "weather": "weather.forecast_home",
         "bathroom_a": "binary_sensor.bathroom_a_occupancy",
+        "bathroom_b": "binary_sensor.bathroom_b_occupancy",
         "kitchen": "binary_sensor.kitchen_occupancy",
         "climate": {
           "climate.5_2_trv": "ha_entity_names.room2_radiator"
@@ -502,6 +509,7 @@
       "house": "195",
       "entities": {
         "weather": "weather.forecast_home",
+        "bathroom_a": "binary_sensor.bathroom_a_occupancy",
         "bathroom_b": "binary_sensor.bathroom_b_occupancy",
         "kitchen": "binary_sensor.kitchen_occupancy",
         "climate": {
@@ -532,6 +540,7 @@
       "house": "195",
       "entities": {
         "weather": "weather.forecast_home",
+        "bathroom_a": "binary_sensor.bathroom_a_occupancy",
         "bathroom_b": "binary_sensor.bathroom_b_occupancy",
         "kitchen": "binary_sensor.kitchen_occupancy",
         "climate": {
@@ -561,6 +570,7 @@
       "house": "195",
       "entities": {
         "weather": "weather.forecast_home",
+        "bathroom_a": "binary_sensor.bathroom_a_occupancy",
         "bathroom_b": "binary_sensor.bathroom_b_occupancy",
         "kitchen": "binary_sensor.kitchen_occupancy",
         "climate": {
