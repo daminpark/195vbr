@@ -164,7 +164,6 @@
       ],
       "house": "193",
       "entities": {
-        "weather": "weather.forecast_home",
         "bathroom_a": "binary_sensor.193_a_presence_presence",
         "bathroom_b": "binary_sensor.193_b_presence_presence",
         "kitchen": "binary_sensor.193_k_presence_presence",

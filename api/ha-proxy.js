@@ -83,18 +83,11 @@ export default async function handler(req, res) {
 
       if (!entity) return res.status(400).json({ error: 'Missing entity' });
       let data;
-      if (type === 'hourly_forecast' || type === 'daily_forecast') {
-        const forecastType = type.split('_')[0];
-        const forecastUrl = `${hassUrl}/api/services/weather/get_forecasts?return_response=true`;
-        const response = await fetch(forecastUrl, { method: 'POST', headers, body: JSON.stringify({ entity_id: entity, type: forecastType }) });
-        if (!response.ok) throw new Error(`HA API responded with status ${response.status}`);
-        const responseJson = await response.json();
-        if (responseJson?.service_response?.[entity]) { data = responseJson.service_response[entity].forecast; } else { data = []; }
-      } else {
-        const response = await fetch(`${hassUrl}/api/states/${entity}`, { headers });
-        if (!response.ok) throw new Error(`HA API responded with status ${response.status}`);
-        data = await response.json();
-      }
+      // We removed weather forecast logic (`hourly_forecast` / `daily_forecast`)
+      const response = await fetch(`${hassUrl}/api/states/${entity}`, { headers });
+      if (!response.ok) throw new Error(`HA API responded with status ${response.status}`);
+      data = await response.json();
+
       res.setHeader('Cache-Control', 's-maxage=30, stale-while-revalidate');
       return res.status(200).json(data);
     }

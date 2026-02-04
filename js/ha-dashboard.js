@@ -2,7 +2,7 @@
 
 // This file handles all interactions with the Home Assistant dashboard.
 
-const weatherIconMap = { 'clear-night':'clear_night', 'cloudy':'cloudy', 'fog':'foggy', 'hail':'weather_hail', 'lightning':'thunderstorm', 'lightning-rainy':'thunderstorm', 'partlycloudy':'partly_cloudy_day', 'pouring':'rainy', 'rainy':'rainy', 'snowy':'weather_snowy', 'snowy-rainy':'weather_snowy', 'sunny':'sunny', 'windy':'windy', 'windy-variant':'windy', 'exceptional':'warning' };
+
 
 /**
  * Utility function to debounce another function.
@@ -11,12 +11,12 @@ const weatherIconMap = { 'clear-night':'clear_night', 'cloudy':'cloudy', 'fog':'
  * @returns {Function} The debounced function.
  */
 function debounce(func, delay) {
-  let timeout;
-  return function(...args) {
-    const context = this;
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(context, args), delay);
-  };
+    let timeout;
+    return function (...args) {
+        const context = this;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(context, args), delay);
+    };
 }
 
 /**
@@ -24,24 +24,24 @@ function debounce(func, delay) {
  * @param {string} house - The house identifier ('193' or '195').
  */
 async function initializePusher(house) {
-  if (AppState.channel) {
-    AppState.channel.unbind_all();
-    AppState.pusher.unsubscribe(AppState.channel.name);
-  }
-  try {
-    const pusherConfigResponse = await fetch(`${BACKEND_API_BASE_URL}/api/pusher-config`);
-    if (!pusherConfigResponse.ok) throw new Error('Could not fetch Pusher configuration.');
-    const pusherConfig = await pusherConfigResponse.json();
-    AppState.pusher = new Pusher(pusherConfig.key, { cluster: pusherConfig.cluster });
-    const channelName = `house-${house}`;
-    AppState.channel = AppState.pusher.subscribe(channelName);
-    AppState.channel.bind('state-update', function(data) {
-      console.log('Received real-time update:', data);
-      updateCardFromPush(data);
-    });
-  } catch (error) {
-    console.error("Failed to initialize real-time updates:", error);
-  }
+    if (AppState.channel) {
+        AppState.channel.unbind_all();
+        AppState.pusher.unsubscribe(AppState.channel.name);
+    }
+    try {
+        const pusherConfigResponse = await fetch(`${BACKEND_API_BASE_URL}/api/pusher-config`);
+        if (!pusherConfigResponse.ok) throw new Error('Could not fetch Pusher configuration.');
+        const pusherConfig = await pusherConfigResponse.json();
+        AppState.pusher = new Pusher(pusherConfig.key, { cluster: pusherConfig.cluster });
+        const channelName = `house-${house}`;
+        AppState.channel = AppState.pusher.subscribe(channelName);
+        AppState.channel.bind('state-update', function (data) {
+            console.log('Received real-time update:', data);
+            updateCardFromPush(data);
+        });
+    } catch (error) {
+        console.error("Failed to initialize real-time updates:", error);
+    }
 }
 
 /**
@@ -53,12 +53,10 @@ function createDashboardCards(bookingConfig) {
     const dashboard = document.getElementById('ha-dashboard');
     if (!dashboard) return;
     let cardsHtml = '';
-    const entityKeys = Object.keys(entities).sort((a, b) => a === 'weather' ? -1 : b === 'weather' ? 1 : 0);
-    
+    const entityKeys = Object.keys(entities);
+
     entityKeys.forEach(key => {
-        if (key === 'weather') {
-            cardsHtml += createWeatherCardHtml();
-        } else if (key === 'climate' && AppState.guestAccessLevel === 'full') {
+        if (key === 'climate' && AppState.guestAccessLevel === 'full') {
             const climateEntities = entities[key];
             let climateHtml = '';
             for (const [entityId, nameKey] of Object.entries(climateEntities)) {
@@ -106,7 +104,7 @@ function createDashboardCards(bookingConfig) {
             }
         } else if (AppState.guestAccessLevel === 'full') {
             // **THE FIX: Use 'ha_card_titles' instead of 'content_titles'**
-            const cardTitleKey = `ha_card_titles.${key}`; 
+            const cardTitleKey = `ha_card_titles.${key}`;
             const cardTitle = t(cardTitleKey);
             cardsHtml += `<div class="ha-card"><div class="ha-card-title">${cardTitle}</div><div class="ha-card-status" id="ha-status-${key}">Loading...</div></div>`;
         }
@@ -128,7 +126,7 @@ function createDashboardCards(bookingConfig) {
                 container.querySelector('.climate-set-temp-display').textContent = `${parseFloat(currentSlider.value).toFixed(1)}°`;
             }
         });
-        slider.addEventListener('change', debounce(function() {
+        slider.addEventListener('change', debounce(function () {
             setTemperature(this.dataset.entity, parseFloat(this.value), AppState.currentBookingConfig.house);
         }, 500));
     });
@@ -183,173 +181,125 @@ function createDashboardCards(bookingConfig) {
     });
 }
 
-/**
- * Creates the HTML string for just the weather card.
- * @returns {string} HTML string for the weather card.
- */
-function createWeatherCardHtml() {
-  return `<div class="ha-card weather-card" id="ha-card-weather"><div class="weather-top-row" id="ha-weather-top-row">${t('ha_dashboard.weather_loading')}</div><div class="weather-forecast" id="ha-weather-daily"></div></div>`;
-}
+
 
 /**
  * Fetches the initial state of all HA entities and populates the dashboard.
  * @param {object} bookingConfig - The configuration for the current booking.
  */
 async function displayHomeAssistantStatus(bookingConfig) {
-  const { house, entities } = bookingConfig;
-  if (!house || !entities) return;
+    const { house, entities } = bookingConfig;
+    if (!house || !entities) return;
 
-  let entitiesToFetch = [];
-  for (const [key, entityValue] of Object.entries(entities)) {
-    if (key === 'climate' || key === 'lights') {
-      entitiesToFetch.push(...Object.keys(entityValue));
-    } else if (key !== 'weather') {
-      entitiesToFetch.push(entityValue);
+    let entitiesToFetch = [];
+    for (const [key, entityValue] of Object.entries(entities)) {
+        if (key === 'climate' || key === 'lights') {
+            entitiesToFetch.push(...Object.keys(entityValue));
+        } else {
+            entitiesToFetch.push(entityValue);
+        }
     }
-  }
-  
-  let allStates = {};
-  if (entitiesToFetch.length > 0) {
-      try {
-        const proxyUrl = `${BACKEND_API_BASE_URL}/api/ha-proxy`;
-        const response = await fetch(`${proxyUrl}?house=${house}&type=batch_states&entities=${entitiesToFetch.join(',')}&opaqueBookingKey=${AppState.opaqueBookingKey}`);
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(`Batch State Fetch Error: ${errorData.error || response.statusText}`);
-        }
-        allStates = await response.json();
-      } catch (error) {
-        console.error("Failed to fetch batch entity states:", error);
-      }
-  }
 
-  for (const [key, entityValue] of Object.entries(entities)) {
-    if (key === 'weather') {
-      fetchWeatherData(entityValue, house, AppState.opaqueBookingKey);
-    } else if (key === 'climate' && AppState.guestAccessLevel === 'full') {
-        for (const entityId of Object.keys(entityValue)) {
-            const container = document.getElementById(`climate-${entityId}`);
-            const state = allStates[entityId];
-            if (container && state) {
-                container.querySelector('.climate-current-temp').textContent = `${t('ha_dashboard.current_temp_prefix')}: ${state.attributes.current_temperature.toFixed(1)}°`;
-                container.querySelector('.climate-set-temp-display').textContent = `${state.attributes.temperature.toFixed(1)}°`;
-                const slider = container.querySelector('.climate-slider');
-                slider.value = state.attributes.temperature;
-                slider.disabled = false;
-            } else if (container) {
-                container.querySelector('.climate-current-temp').textContent = t('ha_dashboard.occupancy_unavailable');
+    let allStates = {};
+    if (entitiesToFetch.length > 0) {
+        try {
+            const proxyUrl = `${BACKEND_API_BASE_URL}/api/ha-proxy`;
+            const response = await fetch(`${proxyUrl}?house=${house}&type=batch_states&entities=${entitiesToFetch.join(',')}&opaqueBookingKey=${AppState.opaqueBookingKey}`);
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`Batch State Fetch Error: ${errorData.error || response.statusText}`);
             }
+            allStates = await response.json();
+        } catch (error) {
+            console.error("Failed to fetch batch entity states:", error);
         }
-    } else if (key === 'lights' && AppState.guestAccessLevel === 'full') {
-        for (const entityId of Object.keys(entityValue)) {
-            const card = document.getElementById(`light-card-${entityId.replace(/\./g, '-')}`);
-            if (!card) continue;
-            const state = allStates[entityId];
-            if (state) {
-                if (state.state === 'unavailable') {
-                    card.classList.add('is-unavailable');
-                } else {
-                    card.classList.remove('is-unavailable');
-                    const { attributes, state: onOffState } = state;
-                    const toggle = card.querySelector('.light-switch');
-                    toggle.checked = onOffState === 'on';
-                    toggle.disabled = false;
-                    const brightnessRow = card.querySelector('[data-control="brightness"]');
-                    const colorTempRow = card.querySelector('[data-control="color_temp"]');
-                    let hasControls = false;
-                    if (attributes.hasOwnProperty('brightness')) {
-                        hasControls = true;
-                        brightnessRow.style.display = 'flex';
-                        const slider = brightnessRow.querySelector('.light-slider');
-                        slider.value = attributes.brightness || 0;
-                        slider.disabled = false;
-                        brightnessRow.querySelector('.light-slider-value').textContent = `${Math.round((attributes.brightness || 0) / 2.55)}%`;
-                    } else {
-                        brightnessRow.style.display = 'none';
-                    }
-                    if (attributes.supported_color_modes?.includes('color_temp')) {
-                        hasControls = true;
-                        colorTempRow.style.display = 'flex';
-                        const slider = colorTempRow.querySelector('.light-slider');
-                        slider.min = attributes.min_mireds;
-                        slider.max = attributes.max_mireds;
-                        slider.style.direction = 'rtl';
-                        const temp = attributes.color_temp || attributes.min_mireds;
-                        slider.value = temp;
-                        slider.disabled = false;
-                        colorTempRow.querySelector('.light-slider-value').textContent = `${Math.round(1000000 / temp)}K`;
-                    } else {
-                        colorTempRow.style.display = 'none';
-                    }
-                    card.querySelector('.light-slider-group').style.display = hasControls ? 'flex' : 'none';
+    }
+
+    for (const [key, entityValue] of Object.entries(entities)) {
+        if (key === 'climate' && AppState.guestAccessLevel === 'full') {
+            for (const entityId of Object.keys(entityValue)) {
+                const container = document.getElementById(`climate-${entityId}`);
+                const state = allStates[entityId];
+                if (container && state) {
+                    container.querySelector('.climate-current-temp').textContent = `${t('ha_dashboard.current_temp_prefix')}: ${state.attributes.current_temperature.toFixed(1)}°`;
+                    container.querySelector('.climate-set-temp-display').textContent = `${state.attributes.temperature.toFixed(1)}°`;
+                    const slider = container.querySelector('.climate-slider');
+                    slider.value = state.attributes.temperature;
+                    slider.disabled = false;
+                } else if (container) {
+                    container.querySelector('.climate-current-temp').textContent = t('ha_dashboard.occupancy_unavailable');
                 }
-            } else {
-                card.classList.add('is-unavailable');
+            }
+        } else if (key === 'lights' && AppState.guestAccessLevel === 'full') {
+            for (const entityId of Object.keys(entityValue)) {
+                const card = document.getElementById(`light-card-${entityId.replace(/\./g, '-')}`);
+                if (!card) continue;
+                const state = allStates[entityId];
+                if (state) {
+                    if (state.state === 'unavailable') {
+                        card.classList.add('is-unavailable');
+                    } else {
+                        card.classList.remove('is-unavailable');
+                        const { attributes, state: onOffState } = state;
+                        const toggle = card.querySelector('.light-switch');
+                        toggle.checked = onOffState === 'on';
+                        toggle.disabled = false;
+                        const brightnessRow = card.querySelector('[data-control="brightness"]');
+                        const colorTempRow = card.querySelector('[data-control="color_temp"]');
+                        let hasControls = false;
+                        if (attributes.hasOwnProperty('brightness')) {
+                            hasControls = true;
+                            brightnessRow.style.display = 'flex';
+                            const slider = brightnessRow.querySelector('.light-slider');
+                            slider.value = attributes.brightness || 0;
+                            slider.disabled = false;
+                            brightnessRow.querySelector('.light-slider-value').textContent = `${Math.round((attributes.brightness || 0) / 2.55)}%`;
+                        } else {
+                            brightnessRow.style.display = 'none';
+                        }
+                        if (attributes.supported_color_modes?.includes('color_temp')) {
+                            hasControls = true;
+                            colorTempRow.style.display = 'flex';
+                            const slider = colorTempRow.querySelector('.light-slider');
+                            slider.min = attributes.min_mireds;
+                            slider.max = attributes.max_mireds;
+                            slider.style.direction = 'rtl';
+                            const temp = attributes.color_temp || attributes.min_mireds;
+                            slider.value = temp;
+                            slider.disabled = false;
+                            colorTempRow.querySelector('.light-slider-value').textContent = `${Math.round(1000000 / temp)}K`;
+                        } else {
+                            colorTempRow.style.display = 'none';
+                        }
+                        card.querySelector('.light-slider-group').style.display = hasControls ? 'flex' : 'none';
+                    }
+                } else {
+                    card.classList.add('is-unavailable');
+                }
+            }
+        } else if (AppState.guestAccessLevel === 'full') {
+            const statusElement = document.getElementById(`ha-status-${key}`);
+            const state = allStates[entityValue];
+            if (statusElement && state) {
+                statusElement.textContent = state.state === 'on' ? t('ha_dashboard.occupancy_occupied') : t('ha_dashboard.occupancy_vacant');
+                statusElement.style.color = state.state === 'on' ? '#d9534f' : '#5cb85c';
+            } else if (statusElement) {
+                statusElement.textContent = t('ha_dashboard.occupancy_unavailable');
+                statusElement.style.color = 'gray';
             }
         }
-    } else if (AppState.guestAccessLevel === 'full') {
-        const statusElement = document.getElementById(`ha-status-${key}`);
-        const state = allStates[entityValue];
-        if (statusElement && state) {
-          statusElement.textContent = state.state === 'on' ? t('ha_dashboard.occupancy_occupied') : t('ha_dashboard.occupancy_vacant');
-          statusElement.style.color = state.state === 'on' ? '#d9534f' : '#5cb85c';
-        } else if (statusElement) {
-          statusElement.textContent = t('ha_dashboard.occupancy_unavailable');
-          statusElement.style.color = 'gray';
-        }
     }
-  }
-  pingAllLights(bookingConfig);
+    pingAllLights(bookingConfig);
 }
 
-/**
- * Fetches and displays only the weather data.
- * @param {string} entityId - The weather entity ID.
- * @param {string} house - The house identifier ('193' or '195').
- * @param {string|null} currentOpaqueBookingKey - The secure key or null.
- */
-async function fetchWeatherData(entityId, house, currentOpaqueBookingKey) {
-  try {
-    const [currentState, hourlyForecast, dailyForecast] = await Promise.all([
-        fetchHAData(entityId, house, 'state', currentOpaqueBookingKey),
-        fetchHAData(entityId, house, 'hourly_forecast', currentOpaqueBookingKey),
-        fetchHAData(entityId, house, 'daily_forecast', currentOpaqueBookingKey)
-    ]);
-    const topRowContainer = document.getElementById('ha-weather-top-row');
-    if (topRowContainer) {
-        let topRowHtml = `<div class="weather-item current-weather-item"><div class="weather-item-label">${t('ha_dashboard.weather_now')}</div><span class="weather-item-icon material-symbols-outlined">${weatherIconMap[currentState.state] || 'sunny'}</span><div class="weather-item-temp">${Math.round(currentState.attributes.temperature)}°</div></div>`;
-        hourlyForecast.slice(1, 5).forEach(hour => {
-            // **FIX: Changed time formatting to include minutes (e.g., 21:00)**
-            const time = new Date(hour.datetime).toLocaleTimeString(I18nState.currentLanguage, { hour: '2-digit', minute: '2-digit', hour12: false });
-            topRowHtml += `<div class="weather-item"><div class="weather-item-label">${time}</div><span class="weather-item-icon material-symbols-outlined">${weatherIconMap[hour.condition] || 'sunny'}</span><div class="weather-item-temp">${Math.round(hour.temperature)}°</div></div>`;
-        });
-        topRowContainer.innerHTML = topRowHtml;
-    }
-    const dailyContainer = document.getElementById('ha-weather-daily');
-    if (dailyContainer) {
-        let dailyHtml = '';
-        dailyForecast.slice(0, 4).forEach((day, index) => {
-            const dayName = index === 0 ? t('ha_dashboard.weather_today') : new Date(day.datetime).toLocaleDateString(I18nState.currentLanguage, { weekday: 'short' });
-            dailyHtml += `<div class="forecast-day"><div class="forecast-day-name">${dayName}</div><span class="forecast-day-icon material-symbols-outlined">${weatherIconMap[day.condition] || 'sunny'}</span><div class="forecast-day-temp">${Math.round(day.temperature)}°<span class="forecast-day-temp-low">${Math.round(day.templow)}°</span></div></div>`;
-        });
-        dailyContainer.innerHTML = dailyHtml;
-    }
-  } catch (error) {
-    console.error('Full weather fetch error:', error);
-    const topRowContainer = document.getElementById('ha-weather-top-row');
-    const dailyContainer = document.getElementById('ha-weather-daily');
-    const errorMessage = `<p style="font-size: 0.8rem; color: gray; text-align: center; width: 100%;">${t('ha_dashboard.weather_unavailable')}</p>`;
-    if (dailyContainer) dailyContainer.innerHTML = errorMessage;
-    if (topRowContainer) topRowContainer.innerHTML = '';
-  }
-}
+
 
 /**
  * Handles incoming real-time updates from Pusher.
  * @param {object} data - The data payload from the webhook.
  */
 function updateCardFromPush(data) {
-    let { entity_id, state, attributes } = data; 
+    let { entity_id, state, attributes } = data;
     if (typeof attributes === 'string') {
         try {
             const cleanString = attributes.replace(/<[^>]+>/g, 'null').replace(/\bNone\b/g, 'null').replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\(/g, '[').replace(/\)/g, ']').replace(/'/g, '"');
@@ -369,7 +319,7 @@ function updateCardFromPush(data) {
             case 'success': console.log(`%c[HA SUCCESS]%c ${attributes.message}`, "font-weight: bold; color: green;", ""); break;
             default: console.log(`%c[HA LOG]%c ${attributes.message}`, logStyle, "");
         }
-        return; 
+        return;
     }
 
     if (entity_id.startsWith('climate.')) {
@@ -393,7 +343,7 @@ function updateCardFromPush(data) {
             }
         }
     }
-    
+
     if (entity_id.startsWith('light.')) {
         const card = document.getElementById(`light-card-${entity_id.replace(/\./g, '-')}`);
         if (!card) return;
@@ -451,30 +401,30 @@ async function handleLightToggle(event) {
 }
 
 async function pingSingleLight(entityId, house) {
-  try {
-    await fetch(`${BACKEND_API_BASE_URL}/api/ha-proxy`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ house, entity: entityId, type: 'ping_light', opaqueBookingKey: AppState.opaqueBookingKey })
-    });
-  } catch (error) {
-    console.error(`Error pinging light ${entityId}:`, error);
-  }
+    try {
+        await fetch(`${BACKEND_API_BASE_URL}/api/ha-proxy`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ house, entity: entityId, type: 'ping_light', opaqueBookingKey: AppState.opaqueBookingKey })
+        });
+    } catch (error) {
+        console.error(`Error pinging light ${entityId}:`, error);
+    }
 }
 
 async function pingAllLights(bookingConfig) {
-  const { house, entities } = bookingConfig;
-  if (!house || !entities || !entities.lights) return;
-  console.log("Pinging all lights for live status...");
-  for (const entityId of Object.keys(entities.lights)) {
-    try {
-      await fetch(`${BACKEND_API_BASE_URL}/api/ha-proxy`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ house, entity: entityId, type: 'ping_light', opaqueBookingKey: AppState.opaqueBookingKey })
-      });
-    } catch (error) {
-      console.error(`Error pinging light ${entityId}:`, error);
+    const { house, entities } = bookingConfig;
+    if (!house || !entities || !entities.lights) return;
+    console.log("Pinging all lights for live status...");
+    for (const entityId of Object.keys(entities.lights)) {
+        try {
+            await fetch(`${BACKEND_API_BASE_URL}/api/ha-proxy`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ house, entity: entityId, type: 'ping_light', opaqueBookingKey: AppState.opaqueBookingKey })
+            });
+        } catch (error) {
+            console.error(`Error pinging light ${entityId}:`, error);
+        }
     }
-  }
 }
