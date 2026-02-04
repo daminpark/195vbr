@@ -1,72 +1,233 @@
 {
   "contentFragments": {
-    "house193": { "title": "Address", "html": "content_html.house193" },
-    "house195": { "title": "Address", "html": "content_html.house195" },
-    "wifi193": { "title": "Wifi", "html": "content_html.wifi193" },
-    "wifi195": { "title": "Wifi", "html": "content_html.wifi195" },
-    "room1": { "title": "Bedroom", "html": "content_html.room1" },
-    "room2": { "title": "Bedroom", "html": "content_html.room2" },
-    "room3": { "title": "Bedroom", "html": "content_html.room3" },
-    "room4": { "title": "Bedroom", "html": "content_html.room4" },
-    "room5": { "title": "Bedroom", "html": "content_html.room5" },
-    "room6": { "title": "Bedroom", "html": "content_html.room6" },
-    "rooma": { "title": "Bedroom", "html": "content_html.rooma" },
-    "roomb": { "title": "Bedroom", "html": "content_html.roomb" },
-    "wholeHomeBedroomsDetailed": { "title": "Bedroom", "html": "content_html.wholeHomeBedroomsDetailed" },
-    "storageUnderBed": { "title": "Bedroom", "html": "content_html.storageUnderBed" },
-    "storageInBed": { "title": "Bedroom", "html": "content_html.storageInBed" },
-    "wholeHomeBathrooms": { "title": "Bathroom", "html": "content_html.wholeHomeBathrooms" },
-    "bathroomA": { "title": "Bathroom", "html": "content_html.bathroomA" },
-    "bathroomB": { "title": "Bathroom", "html": "content_html.bathroomB" },
-    "bathroomC": { "title": "Bathroom", "html": "content_html.bathroomC" },
-    "bathroomShared": { "title": "Bathroom", "html": "content_html.bathroomShared" },
-    "bathroomPrivate": { "title": "Bathroom", "html": "content_html.bathroomPrivate" },
-    "kitchenShared": { "title": "Kitchen", "html": "content_html.kitchenShared" },
-    "kitchenPrivate": { "title": "Kitchen", "html": "content_html.kitchenPrivate" },
-    "kitchenBase": { "title": "Kitchen", "html": "content_html.kitchenBase" },
-    "windowsStandard": { "title": "Windows", "html": "content_html.windowsStandard" },
-    "windowsTiltTurn": { "title": "Windows", "html": "content_html.windowsTiltTurn" },
-    "noLaundry": { "title": "Laundry", "html": "content_html.noLaundry" },
-    "hasLaundry": { "title": "Laundry", "html": "content_html.hasLaundry" },
-    "wholeHomeLuggage": { "title": "Check-in & Luggage", "html": "content_html.wholeHomeLuggage" },
-    "checkoutStatic": { "title": "Check-out", "html": "content_html.checkoutStatic" },
-    "checkinStaticDetailed": { "title": "Check-in & Luggage", "html": "content_html.checkinStaticDetailed" },
-    "checkoutStaticDetailed": { "title": "Check-out", "html": "content_html.checkoutStaticDetailed" },
-    "heatingBase": { "title": "Heating and Cooling", "html": "content_html.heatingBase" },
-    "heatingSmartAddon": { "title": "Heating and Cooling", "html": "content_html.heatingSmartAddon" },
-    "lightsNote": { "title": "A Note on Light Controls", "html": "content_html.lightsNote" },
-    "wholeHomeRubbish": { "title": "Rubbish Disposal", "html": "content_html.wholeHomeRubbish" }
+    "house193": {
+      "title": "Address",
+      "html": "content_html.house193"
+    },
+    "house195": {
+      "title": "Address",
+      "html": "content_html.house195"
+    },
+    "wifi193": {
+      "title": "Wifi",
+      "html": "content_html.wifi193"
+    },
+    "wifi195": {
+      "title": "Wifi",
+      "html": "content_html.wifi195"
+    },
+    "room1": {
+      "title": "Bedroom",
+      "html": "content_html.room1"
+    },
+    "room2": {
+      "title": "Bedroom",
+      "html": "content_html.room2"
+    },
+    "room3": {
+      "title": "Bedroom",
+      "html": "content_html.room3"
+    },
+    "room4": {
+      "title": "Bedroom",
+      "html": "content_html.room4"
+    },
+    "room5": {
+      "title": "Bedroom",
+      "html": "content_html.room5"
+    },
+    "room6": {
+      "title": "Bedroom",
+      "html": "content_html.room6"
+    },
+    "rooma": {
+      "title": "Bedroom",
+      "html": "content_html.rooma"
+    },
+    "roomb": {
+      "title": "Bedroom",
+      "html": "content_html.roomb"
+    },
+    "wholeHomeBedroomsDetailed": {
+      "title": "Bedroom",
+      "html": "content_html.wholeHomeBedroomsDetailed"
+    },
+    "storageUnderBed": {
+      "title": "Bedroom",
+      "html": "content_html.storageUnderBed"
+    },
+    "storageInBed": {
+      "title": "Bedroom",
+      "html": "content_html.storageInBed"
+    },
+    "wholeHomeBathrooms": {
+      "title": "Bathroom",
+      "html": "content_html.wholeHomeBathrooms"
+    },
+    "bathroomA": {
+      "title": "Bathroom",
+      "html": "content_html.bathroomA"
+    },
+    "bathroomB": {
+      "title": "Bathroom",
+      "html": "content_html.bathroomB"
+    },
+    "bathroomC": {
+      "title": "Bathroom",
+      "html": "content_html.bathroomC"
+    },
+    "bathroomShared": {
+      "title": "Bathroom",
+      "html": "content_html.bathroomShared"
+    },
+    "bathroomPrivate": {
+      "title": "Bathroom",
+      "html": "content_html.bathroomPrivate"
+    },
+    "kitchenShared": {
+      "title": "Kitchen",
+      "html": "content_html.kitchenShared"
+    },
+    "kitchenPrivate": {
+      "title": "Kitchen",
+      "html": "content_html.kitchenPrivate"
+    },
+    "kitchenBase": {
+      "title": "Kitchen",
+      "html": "content_html.kitchenBase"
+    },
+    "windowsStandard": {
+      "title": "Windows",
+      "html": "content_html.windowsStandard"
+    },
+    "windowsTiltTurn": {
+      "title": "Windows",
+      "html": "content_html.windowsTiltTurn"
+    },
+    "noLaundry": {
+      "title": "Laundry",
+      "html": "content_html.noLaundry"
+    },
+    "hasLaundry": {
+      "title": "Laundry",
+      "html": "content_html.hasLaundry"
+    },
+    "wholeHomeLuggage": {
+      "title": "Check-in & Luggage",
+      "html": "content_html.wholeHomeLuggage"
+    },
+    "checkoutStatic": {
+      "title": "Check-out",
+      "html": "content_html.checkoutStatic"
+    },
+    "checkinStaticDetailed": {
+      "title": "Check-in & Luggage",
+      "html": "content_html.checkinStaticDetailed"
+    },
+    "checkoutStaticDetailed": {
+      "title": "Check-out",
+      "html": "content_html.checkoutStaticDetailed"
+    },
+    "heatingBase": {
+      "title": "Heating and Cooling",
+      "html": "content_html.heatingBase"
+    },
+    "heatingSmartAddon": {
+      "title": "Heating and Cooling",
+      "html": "content_html.heatingSmartAddon"
+    },
+    "lightsNote": {
+      "title": "A Note on Light Controls",
+      "html": "content_html.lightsNote"
+    },
+    "wholeHomeRubbish": {
+      "title": "Rubbish Disposal",
+      "html": "content_html.wholeHomeRubbish"
+    }
   },
   "bookings": {
-    "31": { 
-      "content": ["house193", "wifi193", "room1", "bathroomA", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn", "heatingBase", "heatingSmartAddon", "lightsNote"], 
-      "house": "193", 
-      "entities": { 
-        "weather": "weather.forecast_home", 
-        "bathroom_a": "binary_sensor.bathroom_a_occupancy", 
-        "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.3_1_trv": "ha_entity_names.room1_radiator"},
-        "lights": { "light.3_1_lights": "ha_entity_names.room1_main_lights" }
+    "31": {
+      "content": [
+        "house193",
+        "wifi193",
+        "room1",
+        "bathroomA",
+        "bathroomShared",
+        "kitchenShared",
+        "kitchenBase",
+        "noLaundry",
+        "storageUnderBed",
+        "windowsTiltTurn",
+        "heatingBase",
+        "heatingSmartAddon",
+        "lightsNote"
+      ],
+      "house": "193",
+      "entities": {
+        "weather": "weather.forecast_home",
+        "bathroom_a": "binary_sensor.bathroom_a_occupancy",
+        "kitchen": "binary_sensor.kitchen_occupancy",
+        "climate": {
+          "climate.3_1_trv": "ha_entity_names.room1_radiator"
+        },
+        "lights": {
+          "light.3_1_lights": "ha_entity_names.room1_main_lights"
+        }
       }
     },
     "32": {
-      "content": ["house193", "wifi193", "room2", "bathroomA", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageInBed", "windowsStandard", "heatingBase", "heatingSmartAddon", "lightsNote"], 
-      "house": "193", 
-      "entities": { 
-        "weather": "weather.forecast_home", 
-        "bathroom_a": "binary_sensor.bathroom_a_occupancy", 
-        "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.3_2_trv": "ha_entity_names.room2_radiator"},
-        "lights": { "light.3_2_lights": "ha_entity_names.room2_main_lights" }
+      "content": [
+        "house193",
+        "wifi193",
+        "room2",
+        "bathroomA",
+        "bathroomShared",
+        "kitchenShared",
+        "kitchenBase",
+        "noLaundry",
+        "storageInBed",
+        "windowsStandard",
+        "heatingBase",
+        "heatingSmartAddon",
+        "lightsNote"
+      ],
+      "house": "193",
+      "entities": {
+        "weather": "weather.forecast_home",
+        "bathroom_a": "binary_sensor.bathroom_a_occupancy",
+        "kitchen": "binary_sensor.kitchen_occupancy",
+        "climate": {
+          "climate.3_2_trv": "ha_entity_names.room2_radiator"
+        },
+        "lights": {
+          "light.3_2_lights": "ha_entity_names.room2_main_lights"
+        }
       }
     },
     "33": {
-      "content": ["house193", "wifi193", "room3", "bathroomC", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsStandard", "heatingBase", "heatingSmartAddon", "lightsNote"], 
-      "house": "193", 
-      "entities": { 
-        "weather": "weather.forecast_home", 
-        "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.3_c_trv": "ha_entity_names.bathroomC_radiator", "climate.3_3_trv": "ha_entity_names.room3_radiator"},
+      "content": [
+        "house193",
+        "wifi193",
+        "room3",
+        "bathroomC",
+        "bathroomPrivate",
+        "kitchenShared",
+        "kitchenBase",
+        "noLaundry",
+        "storageUnderBed",
+        "windowsStandard",
+        "heatingBase",
+        "heatingSmartAddon",
+        "lightsNote"
+      ],
+      "house": "193",
+      "entities": {
+        "weather": "weather.forecast_home",
+        "kitchen": "binary_sensor.kitchen_occupancy",
+        "climate": {
+          "climate.3_c_trv": "ha_entity_names.bathroomC_radiator",
+          "climate.3_3_trv": "ha_entity_names.room3_radiator"
+        },
         "lights": {
           "light.3_3_lights": "ha_entity_names.room3_main_lights",
           "light.3_3_lamp": "ha_entity_names.room3_bedside_lamp",
@@ -75,13 +236,29 @@
       }
     },
     "34": {
-      "content": ["house193", "wifi193", "room4", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn", "heatingBase", "heatingSmartAddon", "lightsNote"], 
-      "house": "193", 
-      "entities": { 
-        "weather": "weather.forecast_home", 
-        "bathroom_b": "binary_sensor.bathroom_b_occupancy", 
-        "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.3_4_trv": "ha_entity_names.room4_radiator"},
+      "content": [
+        "house193",
+        "wifi193",
+        "room4",
+        "bathroomB",
+        "bathroomShared",
+        "kitchenShared",
+        "kitchenBase",
+        "noLaundry",
+        "storageUnderBed",
+        "windowsTiltTurn",
+        "heatingBase",
+        "heatingSmartAddon",
+        "lightsNote"
+      ],
+      "house": "193",
+      "entities": {
+        "weather": "weather.forecast_home",
+        "bathroom_b": "binary_sensor.bathroom_b_occupancy",
+        "kitchen": "binary_sensor.kitchen_occupancy",
+        "climate": {
+          "climate.3_4_trv": "ha_entity_names.room4_radiator"
+        },
         "lights": {
           "light.3_4_lights": "ha_entity_names.room4_main_lights",
           "light.3_4_lamp": "ha_entity_names.room4_bedside_lamp"
@@ -89,34 +266,91 @@
       }
     },
     "35": {
-      "content": ["house193", "wifi193", "room5", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageInBed", "windowsStandard", "heatingBase", "heatingSmartAddon", "lightsNote"], 
-      "house": "193", 
-      "entities": { 
-        "weather": "weather.forecast_home", 
-        "bathroom_b": "binary_sensor.bathroom_b_occupancy", 
-        "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.3_5_trv": "ha_entity_names.room5_radiator"},
-        "lights": { "light.3_5_lights": "ha_entity_names.room5_main_lights" }
+      "content": [
+        "house193",
+        "wifi193",
+        "room5",
+        "bathroomB",
+        "bathroomShared",
+        "kitchenShared",
+        "kitchenBase",
+        "noLaundry",
+        "storageInBed",
+        "windowsStandard",
+        "heatingBase",
+        "heatingSmartAddon",
+        "lightsNote"
+      ],
+      "house": "193",
+      "entities": {
+        "weather": "weather.forecast_home",
+        "bathroom_b": "binary_sensor.bathroom_b_occupancy",
+        "kitchen": "binary_sensor.kitchen_occupancy",
+        "climate": {
+          "climate.3_5_trv": "ha_entity_names.room5_radiator"
+        },
+        "lights": {
+          "light.3_5_lights": "ha_entity_names.room5_main_lights"
+        }
       }
     },
     "36": {
-      "content": ["house193", "wifi193", "room6", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn", "heatingBase", "heatingSmartAddon", "lightsNote"], 
-      "house": "193", 
-      "entities": { 
-        "weather": "weather.forecast_home", 
-        "bathroom_b": "binary_sensor.bathroom_b_occupancy", 
-        "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.3_6_trv": "ha_entity_names.room6_radiator"},
-        "lights": { "light.3_6_lights": "ha_entity_names.room6_main_lights" }
+      "content": [
+        "house193",
+        "wifi193",
+        "room6",
+        "bathroomB",
+        "bathroomShared",
+        "kitchenShared",
+        "kitchenBase",
+        "noLaundry",
+        "storageUnderBed",
+        "windowsTiltTurn",
+        "heatingBase",
+        "heatingSmartAddon",
+        "lightsNote"
+      ],
+      "house": "193",
+      "entities": {
+        "weather": "weather.forecast_home",
+        "bathroom_b": "binary_sensor.bathroom_b_occupancy",
+        "kitchen": "binary_sensor.kitchen_occupancy",
+        "climate": {
+          "climate.3_6_trv": "ha_entity_names.room6_radiator"
+        },
+        "lights": {
+          "light.3_6_lights": "ha_entity_names.room6_main_lights"
+        }
       }
     },
     "3a": {
-      "content": ["house193", "wifi193", "rooma", "bathroomA", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard", "heatingBase", "heatingSmartAddon", "lightsNote"], 
-      "house": "193", 
-      "entities": { 
-        "weather": "weather.forecast_home", 
-        "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.3_1_trv": "ha_entity_names.room1_radiator", "climate.3_2_trv": "ha_entity_names.room2_radiator"},
+      "content": [
+        "house193",
+        "wifi193",
+        "rooma",
+        "bathroomA",
+        "bathroomShared",
+        "kitchenShared",
+        "kitchenBase",
+        "noLaundry",
+        "storageUnderBed",
+        "storageInBed",
+        "windowsTiltTurn",
+        "windowsStandard",
+        "heatingBase",
+        "heatingSmartAddon",
+        "lightsNote"
+      ],
+      "house": "193",
+      "entities": {
+        "weather": "weather.forecast_home",
+        "bathroom_a": "binary_sensor.bathroom_a_occupancy",
+        "bathroom_b": "binary_sensor.bathroom_b_occupancy",
+        "kitchen": "binary_sensor.kitchen_occupancy",
+        "climate": {
+          "climate.3_1_trv": "ha_entity_names.room1_radiator",
+          "climate.3_2_trv": "ha_entity_names.room2_radiator"
+        },
         "lights": {
           "light.3_1_lights": "ha_entity_names.room1_main_lights",
           "light.3_2_lights": "ha_entity_names.room2_main_lights"
@@ -124,12 +358,34 @@
       }
     },
     "3b": {
-      "content": ["house193", "wifi193", "roomb", "bathroomB", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard", "heatingBase", "heatingSmartAddon", "lightsNote"], 
-      "house": "193", 
-      "entities": { 
-        "weather": "weather.forecast_home", 
-        "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.3_4_trv": "ha_entity_names.room4_radiator", "climate.3_5_trv": "ha_entity_names.room5_radiator", "climate.3_6_trv": "ha_entity_names.room6_radiator"},
+      "content": [
+        "house193",
+        "wifi193",
+        "roomb",
+        "bathroomB",
+        "bathroomShared",
+        "kitchenShared",
+        "kitchenBase",
+        "noLaundry",
+        "storageUnderBed",
+        "storageInBed",
+        "windowsTiltTurn",
+        "windowsStandard",
+        "heatingBase",
+        "heatingSmartAddon",
+        "lightsNote"
+      ],
+      "house": "193",
+      "entities": {
+        "weather": "weather.forecast_home",
+        "bathroom_a": "binary_sensor.bathroom_a_occupancy",
+        "bathroom_b": "binary_sensor.bathroom_b_occupancy",
+        "kitchen": "binary_sensor.kitchen_occupancy",
+        "climate": {
+          "climate.3_4_trv": "ha_entity_names.room4_radiator",
+          "climate.3_5_trv": "ha_entity_names.room5_radiator",
+          "climate.3_6_trv": "ha_entity_names.room6_radiator"
+        },
         "lights": {
           "light.3_4_lights": "ha_entity_names.room4_main_lights",
           "light.3_4_lamp": "ha_entity_names.room4_bedside_lamp",
@@ -139,34 +395,87 @@
       }
     },
     "51": {
-      "content": ["house195", "wifi195", "room1", "bathroomA", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn", "heatingBase", "heatingSmartAddon", "lightsNote"], 
-      "house": "195", 
-      "entities": { 
-        "weather": "weather.forecast_home", 
-        "bathroom_a": "binary_sensor.bathroom_a_occupancy", 
-        "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.5_1_trv": "ha_entity_names.room1_radiator"},
-        "lights": { "light.5_1_lights": "ha_entity_names.room1_main_lights" }
+      "content": [
+        "house195",
+        "wifi195",
+        "room1",
+        "bathroomA",
+        "bathroomShared",
+        "kitchenShared",
+        "kitchenBase",
+        "noLaundry",
+        "storageUnderBed",
+        "windowsTiltTurn",
+        "heatingBase",
+        "heatingSmartAddon",
+        "lightsNote"
+      ],
+      "house": "195",
+      "entities": {
+        "weather": "weather.forecast_home",
+        "bathroom_a": "binary_sensor.bathroom_a_occupancy",
+        "kitchen": "binary_sensor.kitchen_occupancy",
+        "climate": {
+          "climate.5_1_trv": "ha_entity_names.room1_radiator"
+        },
+        "lights": {
+          "light.5_1_lights": "ha_entity_names.room1_main_lights"
+        }
       }
     },
     "52": {
-      "content": ["house195", "wifi195", "room2", "bathroomA", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageInBed", "windowsStandard", "heatingBase", "heatingSmartAddon", "lightsNote"], 
-      "house": "195", 
-      "entities": { 
-        "weather": "weather.forecast_home", 
-        "bathroom_a": "binary_sensor.bathroom_a_occupancy", 
-        "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.5_2_trv": "ha_entity_names.room2_radiator"},
-        "lights": { "light.5_2_lights": "ha_entity_names.room2_main_lights" }
+      "content": [
+        "house195",
+        "wifi195",
+        "room2",
+        "bathroomA",
+        "bathroomShared",
+        "kitchenShared",
+        "kitchenBase",
+        "noLaundry",
+        "storageInBed",
+        "windowsStandard",
+        "heatingBase",
+        "heatingSmartAddon",
+        "lightsNote"
+      ],
+      "house": "195",
+      "entities": {
+        "weather": "weather.forecast_home",
+        "bathroom_a": "binary_sensor.bathroom_a_occupancy",
+        "kitchen": "binary_sensor.kitchen_occupancy",
+        "climate": {
+          "climate.5_2_trv": "ha_entity_names.room2_radiator"
+        },
+        "lights": {
+          "light.5_2_lights": "ha_entity_names.room2_main_lights"
+        }
       }
     },
     "53": {
-      "content": ["house195", "wifi195", "room3", "bathroomC", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsStandard", "heatingBase", "heatingSmartAddon", "lightsNote"], 
-      "house": "195", 
-      "entities": { 
-        "weather": "weather.forecast_home", 
-        "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.5_c_trv": "ha_entity_names.bathroomC_radiator", "climate.5_3_trv": "ha_entity_names.room3_radiator"},
+      "content": [
+        "house195",
+        "wifi195",
+        "room3",
+        "bathroomC",
+        "bathroomPrivate",
+        "kitchenShared",
+        "kitchenBase",
+        "noLaundry",
+        "storageUnderBed",
+        "windowsStandard",
+        "heatingBase",
+        "heatingSmartAddon",
+        "lightsNote"
+      ],
+      "house": "195",
+      "entities": {
+        "weather": "weather.forecast_home",
+        "kitchen": "binary_sensor.kitchen_occupancy",
+        "climate": {
+          "climate.5_c_trv": "ha_entity_names.bathroomC_radiator",
+          "climate.5_3_trv": "ha_entity_names.room3_radiator"
+        },
         "lights": {
           "light.5_3_lights": "ha_entity_names.room3_main_lights",
           "light.5_3_lamp": "ha_entity_names.room3_bedside_lamp",
@@ -175,13 +484,29 @@
       }
     },
     "54": {
-      "content": ["house195", "wifi195", "room4", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn", "heatingBase", "heatingSmartAddon", "lightsNote"], 
-      "house": "195", 
-      "entities": { 
-        "weather": "weather.forecast_home", 
-        "bathroom_b": "binary_sensor.bathroom_b_occupancy", 
-        "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.5_4_trv": "ha_entity_names.room4_radiator"},
+      "content": [
+        "house195",
+        "wifi195",
+        "room4",
+        "bathroomB",
+        "bathroomShared",
+        "kitchenShared",
+        "kitchenBase",
+        "noLaundry",
+        "storageUnderBed",
+        "windowsTiltTurn",
+        "heatingBase",
+        "heatingSmartAddon",
+        "lightsNote"
+      ],
+      "house": "195",
+      "entities": {
+        "weather": "weather.forecast_home",
+        "bathroom_b": "binary_sensor.bathroom_b_occupancy",
+        "kitchen": "binary_sensor.kitchen_occupancy",
+        "climate": {
+          "climate.5_4_trv": "ha_entity_names.room4_radiator"
+        },
         "lights": {
           "light.5_4_lights": "ha_entity_names.room4_main_lights",
           "light.5_4_lamp": "ha_entity_names.room4_bedside_lamp"
@@ -189,34 +514,91 @@
       }
     },
     "55": {
-      "content": ["house195", "wifi195", "room5", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageInBed", "windowsStandard", "heatingBase", "heatingSmartAddon", "lightsNote"], 
-      "house": "195", 
-      "entities": { 
-        "weather": "weather.forecast_home", 
-        "bathroom_b": "binary_sensor.bathroom_b_occupancy", 
-        "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.5_5_trv": "ha_entity_names.room5_radiator"},
-        "lights": { "light.5_5_lights": "ha_entity_names.room5_main_lights" }
+      "content": [
+        "house195",
+        "wifi195",
+        "room5",
+        "bathroomB",
+        "bathroomShared",
+        "kitchenShared",
+        "kitchenBase",
+        "noLaundry",
+        "storageInBed",
+        "windowsStandard",
+        "heatingBase",
+        "heatingSmartAddon",
+        "lightsNote"
+      ],
+      "house": "195",
+      "entities": {
+        "weather": "weather.forecast_home",
+        "bathroom_b": "binary_sensor.bathroom_b_occupancy",
+        "kitchen": "binary_sensor.kitchen_occupancy",
+        "climate": {
+          "climate.5_5_trv": "ha_entity_names.room5_radiator"
+        },
+        "lights": {
+          "light.5_5_lights": "ha_entity_names.room5_main_lights"
+        }
       }
     },
     "56": {
-      "content": ["house195", "wifi195", "room6", "bathroomB", "bathroomShared", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "windowsTiltTurn", "heatingBase", "heatingSmartAddon", "lightsNote"], 
-      "house": "195", 
-      "entities": { 
-        "weather": "weather.forecast_home", 
-        "bathroom_b": "binary_sensor.bathroom_b_occupancy", 
-        "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.5_6_trv": "ha_entity_names.room6_radiator"},
-        "lights": { "light.5_6_lights": "ha_entity_names.room6_main_lights" }
+      "content": [
+        "house195",
+        "wifi195",
+        "room6",
+        "bathroomB",
+        "bathroomShared",
+        "kitchenShared",
+        "kitchenBase",
+        "noLaundry",
+        "storageUnderBed",
+        "windowsTiltTurn",
+        "heatingBase",
+        "heatingSmartAddon",
+        "lightsNote"
+      ],
+      "house": "195",
+      "entities": {
+        "weather": "weather.forecast_home",
+        "bathroom_b": "binary_sensor.bathroom_b_occupancy",
+        "kitchen": "binary_sensor.kitchen_occupancy",
+        "climate": {
+          "climate.5_6_trv": "ha_entity_names.room6_radiator"
+        },
+        "lights": {
+          "light.5_6_lights": "ha_entity_names.room6_main_lights"
+        }
       }
     },
     "5a": {
-      "content": ["house195", "wifi195", "rooma", "bathroomA", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard", "heatingBase", "heatingSmartAddon", "lightsNote"], 
-      "house": "195", 
-      "entities": { 
-        "weather": "weather.forecast_home", 
-        "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.5_1_trv": "ha_entity_names.room1_radiator", "climate.5_2_trv": "ha_entity_names.room2_radiator"},
+      "content": [
+        "house195",
+        "wifi195",
+        "rooma",
+        "bathroomA",
+        "bathroomShared",
+        "kitchenShared",
+        "kitchenBase",
+        "noLaundry",
+        "storageUnderBed",
+        "storageInBed",
+        "windowsTiltTurn",
+        "windowsStandard",
+        "heatingBase",
+        "heatingSmartAddon",
+        "lightsNote"
+      ],
+      "house": "195",
+      "entities": {
+        "weather": "weather.forecast_home",
+        "bathroom_a": "binary_sensor.bathroom_a_occupancy",
+        "bathroom_b": "binary_sensor.bathroom_b_occupancy",
+        "kitchen": "binary_sensor.kitchen_occupancy",
+        "climate": {
+          "climate.5_1_trv": "ha_entity_names.room1_radiator",
+          "climate.5_2_trv": "ha_entity_names.room2_radiator"
+        },
         "lights": {
           "light.5_1_lights": "ha_entity_names.room1_main_lights",
           "light.5_2_lights": "ha_entity_names.room2_main_lights"
@@ -224,12 +606,34 @@
       }
     },
     "5b": {
-      "content": ["house195", "wifi195", "roomb", "bathroomB", "bathroomPrivate", "kitchenShared", "kitchenBase", "noLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard", "heatingBase", "heatingSmartAddon", "lightsNote"], 
-      "house": "195", 
-      "entities": { 
-        "weather": "weather.forecast_home", 
-        "kitchen": "binary_sensor.kitchen_occupancy", 
-        "climate": {"climate.5_4_trv": "ha_entity_names.room4_radiator", "climate.5_5_trv": "ha_entity_names.room5_radiator", "climate.5_6_trv": "ha_entity_names.room6_radiator"},
+      "content": [
+        "house195",
+        "wifi195",
+        "roomb",
+        "bathroomB",
+        "bathroomShared",
+        "kitchenShared",
+        "kitchenBase",
+        "noLaundry",
+        "storageUnderBed",
+        "storageInBed",
+        "windowsTiltTurn",
+        "windowsStandard",
+        "heatingBase",
+        "heatingSmartAddon",
+        "lightsNote"
+      ],
+      "house": "195",
+      "entities": {
+        "weather": "weather.forecast_home",
+        "bathroom_a": "binary_sensor.bathroom_a_occupancy",
+        "bathroom_b": "binary_sensor.bathroom_b_occupancy",
+        "kitchen": "binary_sensor.kitchen_occupancy",
+        "climate": {
+          "climate.5_4_trv": "ha_entity_names.room4_radiator",
+          "climate.5_5_trv": "ha_entity_names.room5_radiator",
+          "climate.5_6_trv": "ha_entity_names.room6_radiator"
+        },
         "lights": {
           "light.5_4_lights": "ha_entity_names.room4_main_lights",
           "light.5_4_lamp": "ha_entity_names.room4_bedside_lamp",
@@ -238,12 +642,35 @@
         }
       }
     },
-    "193vbr": { 
-      "content": ["house193", "wifi193", "wholeHomeBedroomsDetailed", "wholeHomeBathrooms", "kitchenBase", "wholeHomeRubbish", "hasLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard", "heatingBase", "heatingSmartAddon", "lightsNote"], 
-      "house": "193", 
-      "entities": { 
-        "weather": "weather.forecast_home", 
-        "climate": {"climate.3_1_trv": "ha_entity_names.room1_radiator", "climate.3_2_trv": "ha_entity_names.room2_radiator", "climate.3_3_trv": "ha_entity_names.room3_radiator", "climate.3_c_trv": "ha_entity_names.bathroomC_radiator", "climate.3_4_trv": "ha_entity_names.room4_radiator", "climate.3_5_trv": "ha_entity_names.room5_radiator", "climate.3_6_trv": "ha_entity_names.room6_radiator"},
+    "193vbr": {
+      "content": [
+        "house193",
+        "wifi193",
+        "wholeHomeBedroomsDetailed",
+        "wholeHomeBathrooms",
+        "kitchenBase",
+        "wholeHomeRubbish",
+        "hasLaundry",
+        "storageUnderBed",
+        "storageInBed",
+        "windowsTiltTurn",
+        "windowsStandard",
+        "heatingBase",
+        "heatingSmartAddon",
+        "lightsNote"
+      ],
+      "house": "193",
+      "entities": {
+        "weather": "weather.forecast_home",
+        "climate": {
+          "climate.3_1_trv": "ha_entity_names.room1_radiator",
+          "climate.3_2_trv": "ha_entity_names.room2_radiator",
+          "climate.3_3_trv": "ha_entity_names.room3_radiator",
+          "climate.3_c_trv": "ha_entity_names.bathroomC_radiator",
+          "climate.3_4_trv": "ha_entity_names.room4_radiator",
+          "climate.3_5_trv": "ha_entity_names.room5_radiator",
+          "climate.3_6_trv": "ha_entity_names.room6_radiator"
+        },
         "lights": {
           "light.3_1_lights": "ha_entity_names.room1_lights",
           "light.3_2_lights": "ha_entity_names.room2_lights",
@@ -257,12 +684,35 @@
         }
       }
     },
-    "195vbr": { 
-      "content": ["house195", "wifi195", "wholeHomeBedroomsDetailed", "wholeHomeBathrooms", "kitchenBase", "wholeHomeRubbish", "hasLaundry", "storageUnderBed", "storageInBed", "windowsTiltTurn", "windowsStandard", "heatingBase", "heatingSmartAddon", "lightsNote"], 
-      "house": "195", 
-      "entities": { 
-        "weather": "weather.forecast_home", 
-        "climate": {"climate.5_1_trv": "ha_entity_names.room1_radiator", "climate.5_2_trv": "ha_entity_names.room2_radiator", "climate.5_3_trv": "ha_entity_names.room3_radiator", "climate.5_c_trv": "ha_entity_names.bathroomC_radiator", "climate.5_4_trv": "ha_entity_names.room4_radiator", "climate.5_5_trv": "ha_entity_names.room5_radiator", "climate.5_6_trv": "ha_entity_names.room6_radiator"},
+    "195vbr": {
+      "content": [
+        "house195",
+        "wifi195",
+        "wholeHomeBedroomsDetailed",
+        "wholeHomeBathrooms",
+        "kitchenBase",
+        "wholeHomeRubbish",
+        "hasLaundry",
+        "storageUnderBed",
+        "storageInBed",
+        "windowsTiltTurn",
+        "windowsStandard",
+        "heatingBase",
+        "heatingSmartAddon",
+        "lightsNote"
+      ],
+      "house": "195",
+      "entities": {
+        "weather": "weather.forecast_home",
+        "climate": {
+          "climate.5_1_trv": "ha_entity_names.room1_radiator",
+          "climate.5_2_trv": "ha_entity_names.room2_radiator",
+          "climate.5_3_trv": "ha_entity_names.room3_radiator",
+          "climate.5_c_trv": "ha_entity_names.bathroomC_radiator",
+          "climate.5_4_trv": "ha_entity_names.room4_radiator",
+          "climate.5_5_trv": "ha_entity_names.room5_radiator",
+          "climate.5_6_trv": "ha_entity_names.room6_radiator"
+        },
         "lights": {
           "light.5_1_lights": "ha_entity_names.room1_lights",
           "light.5_2_lights": "ha_entity_names.room2_lights",

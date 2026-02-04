@@ -15,17 +15,17 @@ function getPinFromPhoneNumber(description) {
 }
 
 function getFallbackPinFromName(summary) {
-    if (!summary) return null;
-    const cleanedName = summary.replace(/(Airbnb|Vrbo)\s*\(.*?\)\s*-\s*/i, '').trim();
-    if (!cleanedName) return null;
-    return cleanedName.replace(/\s+/g, '').toLowerCase().slice(0, 6);
+  if (!summary) return null;
+  const cleanedName = summary.replace(/(Airbnb|Vrbo)\s*\(.*?\)\s*-\s*/i, '').trim();
+  if (!cleanedName) return null;
+  return cleanedName.replace(/\s+/g, '').toLowerCase().slice(0, 6);
 }
 
 function getGuestNames(summary) {
-    if (!summary) return { fullName: "Valued Guest", firstName: "Guest" };
-    const fullName = summary.replace(/(Airbnb|Vrbo)\s*\(.*?\)\s*-\s*/i, '').trim();
-    const firstName = fullName.split(' ')[0];
-    return { fullName, firstName };
+  if (!summary) return { fullName: "Valued Guest", firstName: "Guest" };
+  const fullName = summary.replace(/(Airbnb|Vrbo)\s*\(.*?\)\s*-\s*/i, '').trim();
+  const firstName = fullName.split(' ')[0];
+  return { fullName, firstName };
 }
 
 // --- Main Handler ---
@@ -59,6 +59,25 @@ export default async function handler(req, res) {
     const [bookingId, pinProvided] = opaqueBookingKey.split('-');
     if (!bookingId || !pinProvided) {
       return res.status(400).json({ error: 'Malformed booking key.' });
+    }
+
+    // --- PREVIEW MODE CHECK ---
+    const PREVIEW_PIN = process.env.GUEST_PREVIEW_PIN;
+
+    // Only allow preview mode if a PIN is explicitly configured in environment variables
+    if (PREVIEW_PIN && pinProvided === PREVIEW_PIN) {
+      console.log(`Preview mode accessed for booking ${bookingId}`);
+      const now = new Date();
+      const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
+      const tomorrow = new Date(now); tomorrow.setDate(now.getDate() + 1);
+
+      return res.status(200).json({
+        access: 'full',
+        guestName: 'Preview Guest',
+        guestFirstName: 'Preview',
+        checkInDateISO: yesterday.toISOString(),
+        checkOutDateISO: tomorrow.toISOString()
+      });
     }
 
     const icalUrlEnvVarKey = `ICAL_URL_${bookingId}`;
@@ -103,14 +122,13 @@ export default async function handler(req, res) {
       }
 
       const { fullName, firstName } = getGuestNames(matchedEvent.summary);
-      
-      // **MODIFICATION: Remove formatted dates, send only ISO strings**
+
       return res.status(200).json({
-          access: accessLevel,
-          guestName: fullName,
-          guestFirstName: firstName,
-          checkInDateISO: checkInDate.toISOString(),
-          checkOutDateISO: checkOutDate.toISOString()
+        access: accessLevel,
+        guestName: fullName,
+        guestFirstName: firstName,
+        checkInDateISO: checkInDate.toISOString(),
+        checkOutDateISO: checkOutDate.toISOString()
       });
 
     } else {
