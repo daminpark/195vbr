@@ -56,6 +56,7 @@ function createDashboardCards(bookingConfig) {
     const entityKeys = Object.keys(entities);
 
     entityKeys.forEach(key => {
+        if (key === 'weather') return; // Explicitly skip weather if it still exists
         if (key === 'climate' && AppState.guestAccessLevel === 'full') {
             const climateEntities = entities[key];
             let climateHtml = '';
