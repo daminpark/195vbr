@@ -1,0 +1,819 @@
+# =============================================================================
+# Fan Control Package
+# =============================================================================
+#
+# Humidity-based fan control with presence and button support.
+#
+# Rooms:
+#   193.A (Bathroom A) - Presence + humidity, no button
+#   193.B (Bathroom B) - Presence + humidity, no button
+#   193.C (Ensuite)    - Humidity + button, no presence
+#   193.K (Kitchen)    - Humidity + button, no presence
+#   193.Z (Drying Room)- Humidity only, TRV at 22°C
+#
+# Old automations to remove from automations.yaml:
+#   - 1749433635862  (5.Z fan schedule)
+#   - 1749435040544  (Bathroom A presence)
+#   - 1749435092151  (5.B fan presence)
+#   - 1749485310549  (5.C fan control)
+#   - 1749485367514  (5.K fan control)
+#   - 1758429746363  (5.Z turn on from 10pm)
+#   - 1768421382273  (Fan Button Toggle 1hr)
+#   - 1755474303290  (5.Z reset temp)
+#
+# Old helpers to remove (if defined elsewhere):
+#   - input_number.5_c_baseline_humidity
+#   - input_number.5_k_baseline_humidity
+#   - sensor.5_c_derivative
+#   - sensor.5_k_derivative
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Template Sensors: Absolute Humidity (g/m³)
+# -----------------------------------------------------------------------------
+# Uses the Magnus formula to convert relative humidity + temperature
+# into absolute humidity. This is temperature-independent, avoiding
+# false triggers from temperature swings.
+# -----------------------------------------------------------------------------
+
+template:
+  - sensor:
+      - name: "193.A Absolute Humidity"
+        unit_of_measurement: "g/m³"
+        state_class: measurement
+        state: >
+          {% set T = states('sensor.193_a_thermometer_temperature') | float(20) %}
+          {% set RH = states('sensor.193_a_thermometer_humidity') | float(50) %}
+          {% if T is number and RH is number %}
+            {% set es = 6.112 * e ** (17.67 * T / (T + 243.5)) %}
+            {{ (2.1674 * es * RH / (273.15 + T)) | round(2) }}
+          {% else %}
+            unavailable
+          {% endif %}
+
+      - name: "193.B Absolute Humidity"
+        unit_of_measurement: "g/m³"
+        state_class: measurement
+        state: >
+          {% set T = states('sensor.193_b_thermometer_temperature') | float(20) %}
+          {% set RH = states('sensor.193_b_thermometer_humidity') | float(50) %}
+          {% if T is number and RH is number %}
+            {% set es = 6.112 * e ** (17.67 * T / (T + 243.5)) %}
+            {{ (2.1674 * es * RH / (273.15 + T)) | round(2) }}
+          {% else %}
+            unavailable
+          {% endif %}
+
+      - name: "193.C Absolute Humidity"
+        unit_of_measurement: "g/m³"
+        state_class: measurement
+        state: >
+          {% set T = states('sensor.193_c_thermometer_temperature') | float(20) %}
+          {% set RH = states('sensor.193_c_thermometer_humidity') | float(50) %}
+          {% if T is number and RH is number %}
+            {% set es = 6.112 * e ** (17.67 * T / (T + 243.5)) %}
+            {{ (2.1674 * es * RH / (273.15 + T)) | round(2) }}
+          {% else %}
+            unavailable
+          {% endif %}
+
+      - name: "193.K Absolute Humidity"
+        unit_of_measurement: "g/m³"
+        state_class: measurement
+        state: >
+          {% set T = states('sensor.193_k_thermometer_temperature') | float(20) %}
+          {% set RH = states('sensor.193_k_thermometer_humidity') | float(50) %}
+          {% if T is number and RH is number %}
+            {% set es = 6.112 * e ** (17.67 * T / (T + 243.5)) %}
+            {{ (2.1674 * es * RH / (273.15 + T)) | round(2) }}
+          {% else %}
+            unavailable
+          {% endif %}
+
+      - name: "193.Z Absolute Humidity"
+        unit_of_measurement: "g/m³"
+        state_class: measurement
+        state: >
+          {% set T = states('sensor.193_z_thermometer_temperature') | float(20) %}
+          {% set RH = states('sensor.193_z_thermometer_humidity') | float(50) %}
+          {% if T is number and RH is number %}
+            {% set es = 6.112 * e ** (17.67 * T / (T + 243.5)) %}
+            {{ (2.1674 * es * RH / (273.15 + T)) | round(2) }}
+          {% else %}
+            unavailable
+          {% endif %}
+
+# -----------------------------------------------------------------------------
+# Statistics Sensors: Rolling Baselines
+# -----------------------------------------------------------------------------
+# 20th percentile over 6 hours. This gives a stable "floor" that represents
+# normal conditions. Shower/cooking spikes don't pull the baseline up because
+# they sit in the upper percentiles. Adapts naturally to seasons and weather.
+# -----------------------------------------------------------------------------
+
+sensor:
+  - platform: statistics
+    name: "193.A Humidity Baseline"
+    entity_id: sensor.193_a_absolute_humidity
+    state_characteristic: percentile
+    sampling_size: 720
+    percentile: 20
+    max_age:
+      hours: 6
+
+  - platform: statistics
+    name: "193.B Humidity Baseline"
+    entity_id: sensor.193_b_absolute_humidity
+    state_characteristic: percentile
+    sampling_size: 720
+    percentile: 20
+    max_age:
+      hours: 6
+
+  - platform: statistics
+    name: "193.C Humidity Baseline"
+    entity_id: sensor.193_c_absolute_humidity
+    state_characteristic: percentile
+    sampling_size: 720
+    percentile: 20
+    max_age:
+      hours: 6
+
+  - platform: statistics
+    name: "193.K Humidity Baseline"
+    entity_id: sensor.193_k_absolute_humidity
+    state_characteristic: percentile
+    sampling_size: 720
+    percentile: 20
+    max_age:
+      hours: 6
+
+  - platform: statistics
+    name: "193.Z Humidity Baseline"
+    entity_id: sensor.193_z_absolute_humidity
+    state_characteristic: percentile
+    sampling_size: 720
+    percentile: 20
+    max_age:
+      hours: 6
+
+# -----------------------------------------------------------------------------
+# Input Numbers: Tunable Parameters
+# -----------------------------------------------------------------------------
+# Adjustable from the HA UI without editing YAML.
+# on_margin: absolute humidity (g/m³) above baseline to turn fan ON
+# off_margin: absolute humidity (g/m³) above baseline to turn fan OFF
+# off_margin < on_margin creates hysteresis to prevent rapid cycling
+# -----------------------------------------------------------------------------
+
+input_number:
+  # --- 193.A Bathroom ---
+  fan_193a_on_margin:
+    name: "193.A Fan On Margin"
+    min: 0.5
+    max: 8
+    step: 0.5
+    initial: 2
+    unit_of_measurement: "g/m³"
+    mode: slider
+
+  fan_193a_off_margin:
+    name: "193.A Fan Off Margin"
+    min: 0
+    max: 5
+    step: 0.5
+    initial: 1
+    unit_of_measurement: "g/m³"
+    mode: slider
+
+  # --- 193.B Bathroom ---
+  fan_193b_on_margin:
+    name: "193.B Fan On Margin"
+    min: 0.5
+    max: 8
+    step: 0.5
+    initial: 2
+    unit_of_measurement: "g/m³"
+    mode: slider
+
+  fan_193b_off_margin:
+    name: "193.B Fan Off Margin"
+    min: 0
+    max: 5
+    step: 0.5
+    initial: 1
+    unit_of_measurement: "g/m³"
+    mode: slider
+
+  # --- 193.C Ensuite ---
+  fan_193c_on_margin:
+    name: "193.C Fan On Margin"
+    min: 0.5
+    max: 8
+    step: 0.5
+    initial: 2
+    unit_of_measurement: "g/m³"
+    mode: slider
+
+  fan_193c_off_margin:
+    name: "193.C Fan Off Margin"
+    min: 0
+    max: 5
+    step: 0.5
+    initial: 1
+    unit_of_measurement: "g/m³"
+    mode: slider
+
+  fan_193c_button_duration:
+    name: "193.C Button Duration"
+    min: 5
+    max: 60
+    step: 5
+    initial: 20
+    unit_of_measurement: "min"
+    mode: slider
+
+  # --- 193.K Kitchen ---
+  fan_193k_on_margin:
+    name: "193.K Fan On Margin"
+    min: 0.5
+    max: 8
+    step: 0.5
+    initial: 1.5
+    unit_of_measurement: "g/m³"
+    mode: slider
+
+  fan_193k_off_margin:
+    name: "193.K Fan Off Margin"
+    min: 0
+    max: 5
+    step: 0.5
+    initial: 0.8
+    unit_of_measurement: "g/m³"
+    mode: slider
+
+  fan_193k_button_duration:
+    name: "193.K Button Duration"
+    min: 5
+    max: 60
+    step: 5
+    initial: 20
+    unit_of_measurement: "min"
+    mode: slider
+
+  # --- 193.Z Drying Room ---
+  fan_193z_on_margin:
+    name: "193.Z Fan On Margin"
+    min: 0.5
+    max: 8
+    step: 0.5
+    initial: 2
+    unit_of_measurement: "g/m³"
+    mode: slider
+
+  fan_193z_off_margin:
+    name: "193.Z Fan Off Margin"
+    min: 0
+    max: 5
+    step: 0.5
+    initial: 1
+    unit_of_measurement: "g/m³"
+    mode: slider
+
+  fan_193z_trv_temperature:
+    name: "193.Z Drying Room Temperature"
+    min: 18
+    max: 28
+    step: 1
+    initial: 22
+    unit_of_measurement: "°C"
+    mode: slider
+
+# -----------------------------------------------------------------------------
+# Groups: Organise settings in the UI
+# -----------------------------------------------------------------------------
+
+group:
+  fan_control_193a:
+    name: "193.A Bathroom Fan Settings"
+    entities:
+      - input_number.fan_193a_on_margin
+      - input_number.fan_193a_off_margin
+
+  fan_control_193b:
+    name: "193.B Bathroom Fan Settings"
+    entities:
+      - input_number.fan_193b_on_margin
+      - input_number.fan_193b_off_margin
+
+  fan_control_193c:
+    name: "193.C Ensuite Fan Settings"
+    entities:
+      - input_number.fan_193c_on_margin
+      - input_number.fan_193c_off_margin
+      - input_number.fan_193c_button_duration
+
+  fan_control_193k:
+    name: "193.K Kitchen Fan Settings"
+    entities:
+      - input_number.fan_193k_on_margin
+      - input_number.fan_193k_off_margin
+      - input_number.fan_193k_button_duration
+
+  fan_control_193z:
+    name: "193.Z Drying Room Settings"
+    entities:
+      - input_number.fan_193z_on_margin
+      - input_number.fan_193z_off_margin
+      - input_number.fan_193z_trv_temperature
+
+  fan_control_all:
+    name: "All Fan Control Settings"
+    entities:
+      - group.fan_control_193a
+      - group.fan_control_193b
+      - group.fan_control_193c
+      - group.fan_control_193k
+      - group.fan_control_193z
+
+# -----------------------------------------------------------------------------
+# Timers: Button-triggered fan runs
+# -----------------------------------------------------------------------------
+# Duration is set dynamically from input_number when started.
+# timer.finished event is used to detect natural expiry (not cancellation).
+# -----------------------------------------------------------------------------
+
+timer:
+  fan_193c_button:
+    name: "193.C Fan Button Timer"
+
+  fan_193k_button:
+    name: "193.K Fan Button Timer"
+
+# -----------------------------------------------------------------------------
+# Automations
+# -----------------------------------------------------------------------------
+
+automation:
+  # ===========================================================================
+  # 193.A - Bathroom A (Presence + Humidity)
+  # ===========================================================================
+  # Turn on: presence detected for 1 min, OR humidity above threshold
+  # Turn off: presence cleared 5 min AND humidity below threshold
+  # No button
+  # ===========================================================================
+
+  - id: fan_control_193a
+    alias: "Fan Control: 193.A Bathroom"
+    description: "Presence + absolute humidity fan control for Bathroom A"
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.193_a_presence_presence
+        to: "on"
+        for:
+          minutes: 1
+        id: presence_on
+
+      - trigger: state
+        entity_id: binary_sensor.193_a_presence_presence
+        to: "off"
+        for:
+          minutes: 5
+        id: presence_off
+
+      - trigger: template
+        value_template: >
+          {{ states('sensor.193_a_absolute_humidity') | float(0) >
+             states('sensor.193_a_humidity_baseline') | float(7) +
+             states('input_number.fan_193a_on_margin') | float(2.5) }}
+        id: humidity_high
+
+      - trigger: template
+        value_template: >
+          {{ states('sensor.193_a_absolute_humidity') | float(0) <
+             states('sensor.193_a_humidity_baseline') | float(7) +
+             states('input_number.fan_193a_off_margin') | float(1) }}
+        for:
+          minutes: 2
+        id: humidity_low
+
+    actions:
+      - choose:
+          # --- Fan ON: presence or humidity ---
+          - conditions:
+              - condition: trigger
+                id:
+                  - presence_on
+                  - humidity_high
+            sequence:
+              - action: switch.turn_on
+                target:
+                  entity_id: switch.193_a_fan
+
+          # --- Fan OFF: presence cleared, check humidity ---
+          - conditions:
+              - condition: trigger
+                id: presence_off
+              - condition: template
+                value_template: >
+                  {{ states('sensor.193_a_absolute_humidity') | float(0) <
+                     states('sensor.193_a_humidity_baseline') | float(7) +
+                     states('input_number.fan_193a_off_margin') | float(1) }}
+            sequence:
+              - action: switch.turn_off
+                target:
+                  entity_id: switch.193_a_fan
+
+          # --- Fan OFF: humidity dropped, check presence ---
+          - conditions:
+              - condition: trigger
+                id: humidity_low
+              - condition: state
+                entity_id: binary_sensor.193_a_presence_presence
+                state: "off"
+                for:
+                  minutes: 5
+            sequence:
+              - action: switch.turn_off
+                target:
+                  entity_id: switch.193_a_fan
+    mode: single
+
+  # ===========================================================================
+  # 193.B - Bathroom B (Presence + Humidity)
+  # ===========================================================================
+
+  - id: fan_control_193b
+    alias: "Fan Control: 193.B Bathroom"
+    description: "Presence + absolute humidity fan control for Bathroom B"
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.193_b_presence_presence
+        to: "on"
+        for:
+          minutes: 1
+        id: presence_on
+
+      - trigger: state
+        entity_id: binary_sensor.193_b_presence_presence
+        to: "off"
+        for:
+          minutes: 5
+        id: presence_off
+
+      - trigger: template
+        value_template: >
+          {{ states('sensor.193_b_absolute_humidity') | float(0) >
+             states('sensor.193_b_humidity_baseline') | float(7) +
+             states('input_number.fan_193b_on_margin') | float(2.5) }}
+        id: humidity_high
+
+      - trigger: template
+        value_template: >
+          {{ states('sensor.193_b_absolute_humidity') | float(0) <
+             states('sensor.193_b_humidity_baseline') | float(7) +
+             states('input_number.fan_193b_off_margin') | float(1) }}
+        for:
+          minutes: 2
+        id: humidity_low
+
+    actions:
+      - choose:
+          - conditions:
+              - condition: trigger
+                id:
+                  - presence_on
+                  - humidity_high
+            sequence:
+              - action: switch.turn_on
+                target:
+                  entity_id: switch.193_b_fan
+
+          - conditions:
+              - condition: trigger
+                id: presence_off
+              - condition: template
+                value_template: >
+                  {{ states('sensor.193_b_absolute_humidity') | float(0) <
+                     states('sensor.193_b_humidity_baseline') | float(7) +
+                     states('input_number.fan_193b_off_margin') | float(1) }}
+            sequence:
+              - action: switch.turn_off
+                target:
+                  entity_id: switch.193_b_fan
+
+          - conditions:
+              - condition: trigger
+                id: humidity_low
+              - condition: state
+                entity_id: binary_sensor.193_b_presence_presence
+                state: "off"
+                for:
+                  minutes: 5
+            sequence:
+              - action: switch.turn_off
+                target:
+                  entity_id: switch.193_b_fan
+    mode: single
+
+  # ===========================================================================
+  # 193.C - Ensuite (Humidity + Button)
+  # ===========================================================================
+  # Humidity triggers the fan automatically.
+  # Button turns on for a set duration or turns off early (unless humidity high).
+  # Larger room so slightly wider margins.
+  #
+  # Button entity: sensor.193_c_button_fan_action
+  # Verify the action entity name matches your Zigbee2MQTT device.
+  # ===========================================================================
+
+  - id: fan_control_193c
+    alias: "Fan Control: 193.C Ensuite"
+    description: "Absolute humidity + button fan control for the ensuite"
+    triggers:
+      - trigger: template
+        value_template: >
+          {{ states('sensor.193_c_absolute_humidity') | float(0) >
+             states('sensor.193_c_humidity_baseline') | float(7) +
+             states('input_number.fan_193c_on_margin') | float(2) }}
+        id: humidity_high
+
+      - trigger: template
+        value_template: >
+          {{ states('sensor.193_c_absolute_humidity') | float(0) <
+             states('sensor.193_c_humidity_baseline') | float(7) +
+             states('input_number.fan_193c_off_margin') | float(0.8) }}
+        for:
+          minutes: 2
+        id: humidity_low
+
+      # Ensuite button - verify entity_id matches your device
+      - trigger: state
+        entity_id: sensor.193_c_button_fan_action
+        to: "single"
+        id: button_press
+
+      - trigger: event
+        event_type: timer.finished
+        event_data:
+          entity_id: timer.fan_193c_button
+        id: button_timer_done
+
+    actions:
+      - choose:
+          # --- Humidity high: turn on ---
+          - conditions:
+              - condition: trigger
+                id: humidity_high
+            sequence:
+              - action: switch.turn_on
+                target:
+                  entity_id: switch.193_c_fan
+
+          # --- Button: fan is off, turn on + start timer ---
+          - conditions:
+              - condition: trigger
+                id: button_press
+              - condition: state
+                entity_id: switch.193_c_fan
+                state: "off"
+            sequence:
+              - action: switch.turn_on
+                target:
+                  entity_id: switch.193_c_fan
+              - action: timer.start
+                target:
+                  entity_id: timer.fan_193c_button
+                data:
+                  duration: "{{ states('input_number.fan_193c_button_duration') | int(20) * 60 }}"
+
+          # --- Button: fan is on + humidity low, turn off ---
+          - conditions:
+              - condition: trigger
+                id: button_press
+              - condition: state
+                entity_id: switch.193_c_fan
+                state: "on"
+              - condition: template
+                value_template: >
+                  {{ states('sensor.193_c_absolute_humidity') | float(0) <
+                     states('sensor.193_c_humidity_baseline') | float(7) +
+                     states('input_number.fan_193c_off_margin') | float(0.8) }}
+            sequence:
+              - action: timer.cancel
+                target:
+                  entity_id: timer.fan_193c_button
+              - action: switch.turn_off
+                target:
+                  entity_id: switch.193_c_fan
+
+          # --- Button timer expired: turn off if humidity low ---
+          - conditions:
+              - condition: trigger
+                id: button_timer_done
+              - condition: template
+                value_template: >
+                  {{ states('sensor.193_c_absolute_humidity') | float(0) <
+                     states('sensor.193_c_humidity_baseline') | float(7) +
+                     states('input_number.fan_193c_off_margin') | float(0.8) }}
+            sequence:
+              - action: switch.turn_off
+                target:
+                  entity_id: switch.193_c_fan
+
+          # --- Humidity low: turn off if no active button timer ---
+          - conditions:
+              - condition: trigger
+                id: humidity_low
+              - condition: state
+                entity_id: timer.fan_193c_button
+                state: "idle"
+            sequence:
+              - action: switch.turn_off
+                target:
+                  entity_id: switch.193_c_fan
+    mode: single
+
+  # ===========================================================================
+  # 193.K - Kitchen (Humidity + Button)
+  # ===========================================================================
+  # Same structure as 193.C but with tighter margins (cooking spikes are
+  # smaller than shower spikes) and the existing MQTT button.
+  # ===========================================================================
+
+  - id: fan_control_193k
+    alias: "Fan Control: 193.K Kitchen"
+    description: "Absolute humidity + button fan control for the kitchen"
+    triggers:
+      - trigger: template
+        value_template: >
+          {{ states('sensor.193_k_absolute_humidity') | float(0) >
+             states('sensor.193_k_humidity_baseline') | float(7) +
+             states('input_number.fan_193k_on_margin') | float(1.5) }}
+        id: humidity_high
+
+      - trigger: template
+        value_template: >
+          {{ states('sensor.193_k_absolute_humidity') | float(0) <
+             states('sensor.193_k_humidity_baseline') | float(7) +
+             states('input_number.fan_193k_off_margin') | float(0.5) }}
+        for:
+          minutes: 2
+        id: humidity_low
+
+      # 193.k.button.fan
+      - trigger: device
+        domain: mqtt
+        device_id: 14de5e074a86c206e01d1338529bb624
+        type: action
+        subtype: single
+        id: button_press
+
+      - trigger: event
+        event_type: timer.finished
+        event_data:
+          entity_id: timer.fan_193k_button
+        id: button_timer_done
+
+    actions:
+      - choose:
+          # --- Humidity high: turn on ---
+          - conditions:
+              - condition: trigger
+                id: humidity_high
+            sequence:
+              - action: switch.turn_on
+                target:
+                  entity_id: switch.193_k_fan
+
+          # --- Button: fan is off, turn on + start timer ---
+          - conditions:
+              - condition: trigger
+                id: button_press
+              - condition: state
+                entity_id: switch.193_k_fan
+                state: "off"
+            sequence:
+              - action: switch.turn_on
+                target:
+                  entity_id: switch.193_k_fan
+              - action: timer.start
+                target:
+                  entity_id: timer.fan_193k_button
+                data:
+                  duration: "{{ states('input_number.fan_193k_button_duration') | int(20) * 60 }}"
+
+          # --- Button: fan is on + humidity low, turn off ---
+          - conditions:
+              - condition: trigger
+                id: button_press
+              - condition: state
+                entity_id: switch.193_k_fan
+                state: "on"
+              - condition: template
+                value_template: >
+                  {{ states('sensor.193_k_absolute_humidity') | float(0) <
+                     states('sensor.193_k_humidity_baseline') | float(7) +
+                     states('input_number.fan_193k_off_margin') | float(0.5) }}
+            sequence:
+              - action: timer.cancel
+                target:
+                  entity_id: timer.fan_193k_button
+              - action: switch.turn_off
+                target:
+                  entity_id: switch.193_k_fan
+
+          # --- Button timer expired: turn off if humidity low ---
+          - conditions:
+              - condition: trigger
+                id: button_timer_done
+              - condition: template
+                value_template: >
+                  {{ states('sensor.193_k_absolute_humidity') | float(0) <
+                     states('sensor.193_k_humidity_baseline') | float(7) +
+                     states('input_number.fan_193k_off_margin') | float(0.5) }}
+            sequence:
+              - action: switch.turn_off
+                target:
+                  entity_id: switch.193_k_fan
+
+          # --- Humidity low: turn off if no active button timer ---
+          - conditions:
+              - condition: trigger
+                id: humidity_low
+              - condition: state
+                entity_id: timer.fan_193k_button
+                state: "idle"
+            sequence:
+              - action: switch.turn_off
+                target:
+                  entity_id: switch.193_k_fan
+    mode: single
+
+  # ===========================================================================
+  # 193.Z - Drying Room (Humidity Only)
+  # ===========================================================================
+  # Higher thresholds to conserve heat. The extractor only runs when humidity
+  # builds up faster than it can dissipate through the narrow doorways.
+  # ===========================================================================
+
+  - id: fan_control_193z
+    alias: "Fan Control: 193.Z Drying Room"
+    description: "Absolute humidity fan control for the drying room"
+    triggers:
+      - trigger: template
+        value_template: >
+          {{ states('sensor.193_z_absolute_humidity') | float(0) >
+             states('sensor.193_z_humidity_baseline') | float(7) +
+             states('input_number.fan_193z_on_margin') | float(3) }}
+        id: humidity_high
+
+      - trigger: template
+        value_template: >
+          {{ states('sensor.193_z_absolute_humidity') | float(0) <
+             states('sensor.193_z_humidity_baseline') | float(7) +
+             states('input_number.fan_193z_off_margin') | float(1.5) }}
+        for:
+          minutes: 2
+        id: humidity_low
+
+    actions:
+      - choose:
+          - conditions:
+              - condition: trigger
+                id: humidity_high
+            sequence:
+              - action: switch.turn_on
+                target:
+                  entity_id: switch.193_z_fan
+
+          - conditions:
+              - condition: trigger
+                id: humidity_low
+            sequence:
+              - action: switch.turn_off
+                target:
+                  entity_id: switch.193_z_fan
+    mode: single
+
+  # ===========================================================================
+  # 193.Z - TRV Daily Reset
+  # ===========================================================================
+  # Keeps the drying room at 22°C. Resets daily in case of manual changes.
+  # Replaces old automation that set 27-28°C.
+  # ===========================================================================
+
+  - id: fan_control_193z_trv
+    alias: "193.Z Drying Room TRV Reset"
+    description: "Reset drying room TRV to 22°C daily"
+    triggers:
+      - trigger: time
+        at: "03:00:00"
+    actions:
+      - action: climate.set_temperature
+        data:
+          temperature: "{{ states('input_number.fan_193z_trv_temperature') | int(22) }}"
+          hvac_mode: heat
+        target:
+          entity_id: climate.193_z_trv
+    mode: single

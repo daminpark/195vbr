@@ -1,0 +1,276 @@
+- id: "1770172892353"
+  alias: Locks battery refresh
+  description: Refresh battery values with 2-minute spacing to reduce Z-Wave load
+  triggers:
+    - at: "21:00:00"
+      trigger: time
+  conditions: []
+  actions:
+    - data:
+        command_class: "128"
+        method_name: get
+        parameters:
+          - 3
+        endpoint: "0"
+      target:
+        entity_id: lock.193_1_lock
+      action: zwave_js.invoke_cc_api
+    - delay: 00:02:00
+    - data:
+        command_class: "128"
+        method_name: get
+        parameters:
+          - 3
+        endpoint: "0"
+      target:
+        entity_id: lock.193_2_lock
+      action: zwave_js.invoke_cc_api
+    - delay: 00:02:00
+    - data:
+        command_class: "128"
+        method_name: get
+        parameters:
+          - 3
+        endpoint: "0"
+      target:
+        entity_id: lock.193_3_lock
+      action: zwave_js.invoke_cc_api
+    - delay: 00:02:00
+    - data:
+        command_class: "128"
+        method_name: get
+        parameters:
+          - 3
+        endpoint: "0"
+      target:
+        entity_id: lock.193_4_lock
+      action: zwave_js.invoke_cc_api
+    - delay: 00:02:00
+    - data:
+        command_class: "128"
+        method_name: get
+        parameters:
+          - 3
+        endpoint: "0"
+      target:
+        entity_id: lock.193_4_lock
+      action: zwave_js.invoke_cc_api
+    - delay: 00:02:00
+    - data:
+        command_class: "128"
+        method_name: get
+        parameters:
+          - 3
+        endpoint: "0"
+      target:
+        entity_id: lock.193_5_lock
+      action: zwave_js.invoke_cc_api
+    - delay: 00:02:00
+    - data:
+        command_class: "128"
+        method_name: get
+        parameters:
+          - 3
+        endpoint: "0"
+      target:
+        entity_id: lock.193_6_lock
+      action: zwave_js.invoke_cc_api
+    - delay: 00:02:00
+    - data:
+        command_class: "128"
+        method_name: get
+        parameters:
+          - 3
+        endpoint: "0"
+      target:
+        entity_id: lock.193_a_lock
+      action: zwave_js.invoke_cc_api
+    - delay: 00:02:00
+    - data:
+        command_class: "128"
+        method_name: get
+        parameters:
+          - 3
+        endpoint: "0"
+      target:
+        entity_id: lock.193_b_lock
+      action: zwave_js.invoke_cc_api
+    - delay: 00:02:00
+    - data:
+        command_class: "128"
+        method_name: get
+        parameters:
+          - 3
+        endpoint: "0"
+      target:
+        entity_id: lock.193_front_lock
+      action: zwave_js.invoke_cc_api
+    - delay: 00:02:00
+    - data:
+        command_class: "128"
+        method_name: get
+        parameters:
+          - 3
+        endpoint: "0"
+      target:
+        entity_id: lock.193_v_lock
+      action: zwave_js.invoke_cc_api
+    - delay: 00:02:00
+    - data:
+        command_class: "128"
+        method_name: get
+        parameters:
+          - 3
+        endpoint: "0"
+      target:
+        entity_id: lock.193_k_lock
+      action: zwave_js.invoke_cc_api
+    - delay: 00:02:00
+    - data:
+        command_class: "128"
+        method_name: get
+        parameters:
+          - 3
+        endpoint: "0"
+      target:
+        entity_id: lock.193_back_lock
+      action: zwave_js.invoke_cc_api
+    - delay: 00:02:00
+  mode: single
+- id: "1770173057939"
+  alias: Low battery level detection & notification for all battery sensors
+  description: ""
+  use_blueprint:
+    path: sbyx/low-battery-level-detection-notification-for-all-battery-sensors.yaml
+    input:
+      time: "10:00:00"
+      actions:
+        - metadata: {}
+          data:
+            message: "{{sensors}} battery low"
+          action: notify.notify
+      exclude:
+        entity_id:
+          - sensor.pixel_7_battery_level
+          - sensor.pierre_parks_ipad_battery_level
+          - sensor.pierre_parks_iphone_battery_level
+      threshold: 20
+- id: "1770173118040"
+  alias: Notify on Zigbee Device Unpaired
+  description:
+    Sends a notification to all devices when a Zigbee device leaves the
+    network and enables pairing.
+  triggers:
+    - topic: zigbee2mqtt/bridge/event
+      trigger: mqtt
+  conditions:
+    - condition: template
+      value_template: "{{ trigger.payload_json.type == 'device_leave' }}"
+  actions:
+    - data:
+        title: Zigbee Device Unpaired
+        message: 193 '{{ trigger.payload_json.data.friendly_name }}' Zigbee unpaired
+      action: notify.notify
+    - data:
+        topic: zigbee2mqtt/bridge/request/permit_join
+        payload: '{"value": true, "time": 120}'
+        qos: 0
+        retain: false
+      action: mqtt.publish
+  mode: single
+- id: "1770173205796"
+  alias: Water Leak Alert (ZG-222ZA – 5A/5B)
+  description: Alerts when water leak is detected for more than 5 seconds
+  triggers:
+    - trigger: state
+      entity_id:
+        - binary_sensor.193_b_leak_water_leak
+        - binary_sensor.193_a_leak_water_leak
+      to: "on"
+  actions:
+    - action: notify.notify
+      data:
+        title: "\U0001F6A8 193 Water leak detected"
+        message:
+          "{{ trigger.to_state.attributes.friendly_name | default(trigger.to_state.name)
+          }}  ({{ trigger.entity_id }}) reported a leak at  {{ now().strftime('%H:%M:%S')
+          }}."
+  mode: single
+# ---------------------------------------------------------
+# UPDATE: House 193 - Climate
+# ---------------------------------------------------------
+- id: "1770173118041"
+  alias: "Guidebook Push: House 193 - Climate Updates"
+  description: Pushes all climate entity state changes from house 193 to the guidebook.
+  triggers:
+    - entity_id:
+        - climate.193_1_trv
+        - climate.193_2_trv
+        - climate.193_3_trv
+        - climate.193_4_trv
+        - climate.193_5_trv
+        - climate.193_6_trv
+        - climate.193_c_trv
+      trigger: state
+  conditions: []
+  mode: queued
+  max: 10
+  actions:
+    - data:
+        house: "193"
+        entity_id: "{{ trigger.entity_id }}"
+        state: "{{ trigger.to_state.state }}"
+        attributes: "{{ trigger.to_state.attributes }}"
+      action: script.send_guidebook_update
+# ---------------------------------------------------------
+# UPDATE: House 193 - Lights
+# ---------------------------------------------------------
+- id: "1770173118042"
+
+  alias: "Guidebook Push: House 193 - Light Updates"
+  description: Pushes all light entity state changes from house 193 to the guidebook.
+  triggers:
+    - entity_id:
+        - light.193_1_lights
+        - light.193_2_lights
+        - light.193_3_lights
+        - light.193_3_lamps
+        - light.193_4_lights
+        - light.193_4_lamps
+        - light.193_5_lights
+        - light.193_6_lights
+        - light.193_c_lights
+      trigger: state
+  conditions: []
+  mode: queued
+  max: 10
+  actions:
+    - data:
+        house: "193"
+        entity_id: "{{ trigger.entity_id }}"
+        state: "{{ trigger.to_state.state }}"
+        attributes: "{{ trigger.to_state.attributes }}"
+      action: script.send_guidebook_update
+# ---------------------------------------------------------
+# UPDATE: House 193 - Occupancy
+# ---------------------------------------------------------
+- id: "1770173118043"
+
+  alias: "Guidebook Push: House 193 - Occupancy Updates"
+  description: Pushes all occupancy sensor state changes from house 193 to the guidebook.
+  triggers:
+    - entity_id:
+        - binary_sensor.193_a_presence_presence
+        - binary_sensor.193_b_presence_presence
+        - binary_sensor.193_k_presence_presence
+      trigger: state
+  conditions: []
+  mode: queued
+  max: 10
+  actions:
+    - data:
+        house: "193"
+        entity_id: "{{ trigger.entity_id }}"
+        state: "{{ trigger.to_state.state }}"
+        attributes: "{{ trigger.to_state.attributes }}"
+      action: script.send_guidebook_update

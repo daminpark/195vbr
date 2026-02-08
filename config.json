@@ -64,6 +64,10 @@
       "title": "Bathroom",
       "html": "content_html.wholeHomeBathrooms"
     },
+    "wholeHomeBathroomsCombined": {
+      "title": "Bathroom",
+      "html": "content_html.wholeHomeBathroomsCombined"
+    },
     "bathroomA": {
       "title": "Bathroom",
       "html": "content_html.bathroomA"
@@ -120,6 +124,10 @@
       "title": "Check-out",
       "html": "content_html.checkoutStatic"
     },
+    "checkoutWholeHome": {
+      "title": "Check-out",
+      "html": "content_html.checkoutWholeHome"
+    },
     "checkinStaticDetailed": {
       "title": "Check-in & Luggage",
       "html": "content_html.checkinStaticDetailed"
@@ -143,6 +151,10 @@
     "wholeHomeRubbish": {
       "title": "Rubbish Disposal",
       "html": "content_html.wholeHomeRubbish"
+    },
+    "wholeHomeBedroomsCombined": {
+      "title": "Bedroom",
+      "html": "content_html.wholeHomeBedroomsCombined"
     }
   },
   "bookings": {
@@ -723,6 +735,66 @@
           "climate.195_6_trv": "ha_entity_names.room6_radiator"
         },
         "lights": {
+          "light.195_1_lights": "ha_entity_names.room1_lights",
+          "light.195_2_lights": "ha_entity_names.room2_lights",
+          "light.195_3_lights": "ha_entity_names.room3_lights",
+          "light.195_3_lamps": "ha_entity_names.room3_lamp",
+          "light.195_c_lights": "ha_entity_names.bathroomC_lights",
+          "light.195_4_lights": "ha_entity_names.room4_lights",
+          "light.195_4_lamps": "ha_entity_names.room4_lamp",
+          "light.195_5_lights": "ha_entity_names.room5_lights",
+          "light.195_6_lights": "ha_entity_names.room6_lights"
+        }
+      }
+    },
+    "193195vbr": {
+      "content": [
+        "house193",
+        "house195",
+        "wifi193",
+        "wifi195",
+        "wholeHomeBedroomsCombined",
+        "wholeHomeBathroomsCombined",
+        "kitchenBase",
+        "wholeHomeRubbish",
+        "hasLaundry",
+        "storageUnderBed",
+        "storageInBed",
+        "windowsTiltTurn",
+        "windowsStandard",
+        "heatingBase",
+        "heatingSmartAddon",
+        "lightsNote"
+      ],
+      "house": "193195",
+      "entities": {
+        "weather": "weather.forecast_home",
+        "climate": {
+          "climate.193_1_trv": "ha_entity_names.room1_radiator",
+          "climate.193_2_trv": "ha_entity_names.room2_radiator",
+          "climate.193_3_trv": "ha_entity_names.room3_radiator",
+          "climate.193_c_trv": "ha_entity_names.bathroomC_radiator",
+          "climate.193_4_trv": "ha_entity_names.room4_radiator",
+          "climate.193_5_trv": "ha_entity_names.room5_radiator",
+          "climate.193_6_trv": "ha_entity_names.room6_radiator",
+          "climate.195_1_trv": "ha_entity_names.room1_radiator",
+          "climate.195_2_trv": "ha_entity_names.room2_radiator",
+          "climate.195_3_trv": "ha_entity_names.room3_radiator",
+          "climate.195_c_trv": "ha_entity_names.bathroomC_radiator",
+          "climate.195_4_trv": "ha_entity_names.room4_radiator",
+          "climate.195_5_trv": "ha_entity_names.room5_radiator",
+          "climate.195_6_trv": "ha_entity_names.room6_radiator"
+        },
+        "lights": {
+          "light.193_1_lights": "ha_entity_names.room1_lights",
+          "light.193_2_lights": "ha_entity_names.room2_lights",
+          "light.193_3_lights": "ha_entity_names.room3_lights",
+          "light.193_3_lamps": "ha_entity_names.room3_lamp",
+          "light.193_c_lights": "ha_entity_names.bathroomC_lights",
+          "light.193_4_lights": "ha_entity_names.room4_lights",
+          "light.193_4_lamps": "ha_entity_names.room4_lamp",
+          "light.193_5_lights": "ha_entity_names.room5_lights",
+          "light.193_6_lights": "ha_entity_names.room6_lights",
           "light.195_1_lights": "ha_entity_names.room1_lights",
           "light.195_2_lights": "ha_entity_names.room2_lights",
           "light.195_3_lights": "ha_entity_names.room3_lights",

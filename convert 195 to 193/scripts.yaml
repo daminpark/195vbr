@@ -1,0 +1,357 @@
+guidebook_log_to_frontend:
+  alias: guidebook_log_to_frontend
+  mode: parallel
+  fields:
+    level:
+      description: Log level
+      example: '''info'''
+    message:
+      description: Log message
+      example: '''Pinging...'''
+  sequence:
+  - variables:
+      house: '193'
+  - service: rest_command.send_guidebook_update_prod
+    data:
+      house: '{{ house }}'
+      entity_id: logger
+      state: '{{ level }}'
+      attributes:
+        type: log
+        level: '{{ level }}'
+        message: '{{ message }}'
+  - service: rest_command.send_guidebook_update_preview
+    data:
+      house: '{{ house }}'
+      entity_id: logger
+      state: '{{ level }}'
+      attributes:
+        type: log
+        level: '{{ level }}'
+        message: '{{ message }}'
+guidebook_ping_light:
+  alias: guidebook_ping_light
+  description: (MANAGER) Pings the first bulb for a fast response, with detailed logging.
+  mode: single
+  fields:
+    entity_id:
+      description: Light or light group entity_id
+    house:
+      description: House code ('193' or '195')
+  sequence:
+  - service: script.guidebook_log_to_frontend
+    data:
+      level: info
+      message: Ping received for {{ entity_id }}. Pinging first bulb...
+  - variables:
+      group_to_members_map:
+        light.193_1_lights:
+        - light.193_1_light_1
+        - light.193_1_light_2
+        light.193_2_lights:
+        - light.193_2_light_1
+        - light.193_2_light_2
+        light.193_3_lights:
+        - light.193_3_light_1
+        - light.193_3_light_2
+        - light.193_3_light_3
+        - light.193_3_light_4
+        - light.193_3_light_5
+        light.193_3_lamps:
+        - light.193_3_lamp_1
+        - light.193_3_lamp_2
+        - light.193_3_lamp_3
+        light.193_4_lights:
+        - light.193_4_light_1
+        - light.193_4_light_2
+        light.193_4_lamps:
+        - light.193_4_lamp_1
+        - light.193_4_lamp_2
+        - light.193_4_lamp_3
+        light.193_5_lights:
+        - light.193_5_light_1
+        - light.193_5_light_2
+        light.193_6_lights:
+        - light.193_6_light_1
+        - light.193_6_light_2
+        - light.193_6_light_3
+        - light.193_6_light_4
+        light.193_c_lights:
+        - light.193_c_light_1
+        - light.193_c_light_2
+        - light.193_c_light_3
+        light.195_1_lights:
+        - light.195_1_light_1
+        - light.195_1_light_2
+        light.195_2_lights:
+        - light.195_2_light_1
+        - light.195_2_light_2
+        light.195_3_lights:
+        - light.195_3_light_1
+        - light.195_3_light_2
+        - light.195_3_light_3
+        - light.195_3_light_4
+        - light.195_3_light_5
+        - light.195_3_light_6
+        light.195_3_lamps:
+        - light.195_3_lamp_1
+        - light.195_3_lamp_2
+        - light.195_3_lamp_3
+        light.195_4_lights:
+        - light.195_4_light_1
+        - light.195_4_light_2
+        light.195_4_lamps:
+        - light.195_4_lamp_1
+        - light.195_4_lamp_2
+        - light.195_4_lamp_3
+        light.195_5_lights:
+        - light.195_5_light_1
+        - light.195_5_light_2
+        light.195_6_lights:
+        - light.195_6_light_1
+        - light.195_6_light_2
+        - light.195_6_light_3
+        light.195_c_lights:
+        - light.195_c_light_1
+        - light.195_c_light_2
+        - light.195_c_light_3
+      entity_id_to_z2m_name:
+        light.193_1_light_1: 193.1.light.1
+        light.193_1_light_2: 193.1.light.2
+        light.193_2_light_1: 193.2.light.1
+        light.193_2_light_2: 193.2.light.2
+        light.193_3_lamp_1: 193.3.lamp.1
+        light.193_3_lamp_2: 193.3.lamp.2
+        light.193_3_lamp_3: 193.3.lamp.3
+        light.193_3_light_1: 193.3.light.1
+        light.193_3_light_2: 193.3.light.2
+        light.193_3_light_3: 193.3.light.3
+        light.193_3_light_4: 193.3.light.4
+        light.193_3_light_5: 193.3.light.5
+        light.193_4_lamp_1: 193.4.lamp.1
+        light.193_4_lamp_2: 193.4.lamp.2
+        light.193_4_lamp_3: 193.4.lamp.3
+        light.193_4_light_1: 193.4.light.1
+        light.193_4_light_2: 193.4.light.2
+        light.193_5_light_1: 193.5.light.1
+        light.193_5_light_2: 193.5.light.2
+        light.193_c_light_1: 193.c.light.1
+        light.193_c_light_2: 193.c.light.2
+        light.193_c_light_3: 193.c.light.3
+        light.193_6_light_1: 193.6.light.1
+        light.193_6_light_2: 193.6.light.2
+        light.193_6_light_3: 193.6.light.3
+        light.193_6_light_4: 193.6.light.4
+        light.195_1_light_1: 195.1.light.1
+        light.195_1_light_2: 195.1.light.2
+        light.195_2_light_1: 195.2.light.1
+        light.195_2_light_2: 195.2.light.2
+        light.195_3_lamp_1: 195.3.lamp.1
+        light.195_3_lamp_2: 195.3.lamp.2
+        light.195_3_lamp_3: 195.3.lamp.3
+        light.195_3_light_1: 195.3.light.1
+        light.195_3_light_2: 195.3.light.2
+        light.195_3_light_3: 195.3.light.3
+        light.195_3_light_4: 195.3.light.4
+        light.195_3_light_5: 195.3.light.5
+        light.195_3_light_6: 195.3.light.6
+        light.195_4_lamp_1: 195.4.lamp.1
+        light.195_4_lamp_2: 195.4.lamp.2
+        light.195_4_lamp_3: 195.4.lamp.3
+        light.195_4_light_1: 195.4.light.1
+        light.195_4_light_2: 195.4.light.2
+        light.195_5_light_1: 195.5.light.1
+        light.195_5_light_2: 195.5.light.2
+        light.195_6_light_1: 195.6.light.1
+        light.195_6_light_2: 195.6.light.2
+        light.195_6_light_3: 195.6.light.3
+        light.195_c_light_1: 195.c.light.1
+        light.195_c_light_2: 195.c.light.2
+        light.195_c_light_3: 195.c.light.3
+      members: '{{ group_to_members_map.get(entity_id, [entity_id]) }}'
+      first_bulb_to_ping: '{{ members | first }}'
+      z2m_name_first_bulb: '{{ entity_id_to_z2m_name.get(first_bulb_to_ping) }}'
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ z2m_name_first_bulb is not none }}'
+      sequence:
+      - service: mqtt.publish
+        data:
+          topic: zigbee2mqtt/{{ z2m_name_first_bulb }}/set
+          payload: '{"power_on_behavior": "on"}'
+      - wait_for_trigger:
+        - platform: mqtt
+          topic: zigbee2mqtt/{{ z2m_name_first_bulb }}
+        timeout:
+          seconds: 3
+        continue_on_timeout: true
+        alias: Wait for first bulb response
+      - choose:
+        - conditions:
+          - condition: template
+            value_template: '{{ wait.trigger is not none }}'
+          sequence:
+          - service: script.guidebook_log_to_frontend
+            data:
+              level: success
+              message: ✅ First bulb ping SUCCESS for {{ entity_id }}. Sending 'available'
+                state.
+          - service: script.send_guidebook_update
+            data:
+              house: '{{ house }}'
+              entity_id: '{{ entity_id }}'
+              state: '{{ states(entity_id) }}'
+              attributes: '{{ state_attr(entity_id, ''attributes'') }}'
+        default:
+        - service: script.guidebook_log_to_frontend
+          data:
+            level: warn
+            message: ⚠️ First bulb ping FAILED for {{ entity_id }}. Sending instant
+              'unavailable' and starting verification...
+        - service: script.send_guidebook_update
+          data:
+            house: '{{ house }}'
+            entity_id: '{{ entity_id }}'
+            state: unavailable
+            attributes: {}
+        - service: script.guidebook_verify_light_group
+          data:
+            entity_id: '{{ entity_id }}'
+            house: '{{ house }}'
+            members_to_check: '{{ members[1:] }}'
+guidebook_verify_light_group:
+  alias: guidebook_verify_light_group
+  description: (WORKER) Checks remaining bulbs with detailed logging.
+  mode: single
+  fields:
+    entity_id:
+      description: Original group entity_id
+    house:
+      description: House code ('193' or '195')
+    members_to_check:
+      description: List of remaining member entities
+  sequence:
+  - service: script.guidebook_log_to_frontend
+    data:
+      level: info
+      message: Verifying remaining {{ members_to_check | count }} bulb(s) for {{ entity_id
+        }}...
+  - variables:
+      entity_id_to_z2m_name:
+        light.193_1_light_1: 193.1.light.1
+        light.193_1_light_2: 193.1.light.2
+        light.193_2_light_1: 193.2.light.1
+        light.193_2_light_2: 193.2.light.2
+        light.193_3_lamp_1: 193.3.lamp.1
+        light.193_3_lamp_2: 193.3.lamp.2
+        light.193_3_lamp_3: 193.3.lamp.3
+        light.193_3_light_1: 193.3.light.1
+        light.193_3_light_2: 193.3.light.2
+        light.193_3_light_3: 193.3.light.3
+        light.193_3_light_4: 193.3.light.4
+        light.193_3_light_5: 193.3.light.5
+        light.193_4_lamp_1: 193.4.lamp.1
+        light.193_4_lamp_2: 193.4.lamp.2
+        light.193_4_lamp_3: 193.4.lamp.3
+        light.193_4_light_1: 193.4.light.1
+        light.193_4_light_2: 193.4.light.2
+        light.193_5_light_1: 193.5.light.1
+        light.193_5_light_2: 193.5.light.2
+        light.193_c_light_1: 193.c.light.1
+        light.193_c_light_2: 193.c.light.2
+        light.193_c_light_3: 193.c.light.3
+        light.193_6_light_1: 193.6.light.1
+        light.193_6_light_2: 193.6.light.2
+        light.193_6_light_3: 193.6.light.3
+        light.193_6_light_4: 193.6.light.4
+        light.195_1_light_1: 195.1.light.1
+        light.195_1_light_2: 195.1.light.2
+        light.195_2_light_1: 195.2.light.1
+        light.195_2_light_2: 195.2.light.2
+        light.195_3_lamp_1: 195.3.lamp.1
+        light.195_3_lamp_2: 195.3.lamp.2
+        light.195_3_lamp_3: 195.3.lamp.3
+        light.195_3_light_1: 195.3.light.1
+        light.195_3_light_2: 195.3.light.2
+        light.195_3_light_3: 195.3.light.3
+        light.195_3_light_4: 195.3.light.4
+        light.195_3_light_5: 195.3.light.5
+        light.195_3_light_6: 195.3.light.6
+        light.195_4_lamp_1: 195.4.lamp.1
+        light.195_4_lamp_2: 195.4.lamp.2
+        light.195_4_lamp_3: 195.4.lamp.3
+        light.195_4_light_1: 195.4.light.1
+        light.195_4_light_2: 195.4.light.2
+        light.195_5_light_1: 195.5.light.1
+        light.195_5_light_2: 195.5.light.2
+        light.195_6_light_1: 195.6.light.1
+        light.195_6_light_2: 195.6.light.2
+        light.195_6_light_3: 195.6.light.3
+        light.195_c_light_1: 195.c.light.1
+        light.195_c_light_2: 195.c.light.2
+        light.195_c_light_3: 195.c.light.3
+  - repeat:
+      for_each: '{{ members_to_check }}'
+      sequence:
+      - variables:
+          z2m_name_current_bulb: '{{ entity_id_to_z2m_name.get(repeat.item) }}'
+      - choose:
+        - conditions:
+          - condition: template
+            value_template: '{{ z2m_name_current_bulb is not none }}'
+          sequence:
+          - service: mqtt.publish
+            data:
+              topic: zigbee2mqtt/{{ z2m_name_current_bulb }}/set
+              payload: '{"power_on_behavior": "on"}'
+          - wait_for_trigger:
+            - platform: mqtt
+              topic: zigbee2mqtt/{{ z2m_name_current_bulb }}
+            timeout:
+              seconds: 3
+            continue_on_timeout: true
+            alias: Wait for subsequent bulb response
+          - if:
+            - condition: template
+              value_template: '{{ wait.trigger is not none }}'
+            then:
+            - service: script.guidebook_log_to_frontend
+              data:
+                level: success
+                message: ✅ Found working bulb ({{ repeat.item }}) during verification
+                  for {{ entity_id }}. Sending correction.
+            - service: script.send_guidebook_update
+              data:
+                house: '{{ house }}'
+                entity_id: '{{ entity_id }}'
+                state: '{{ states(entity_id) }}'
+                attributes: '{{ state_attr(entity_id, ''attributes'') }}'
+            - stop: Correction sent.
+  - service: script.guidebook_log_to_frontend
+    data:
+      level: warn
+      message: ⚠️ Verification complete for {{ entity_id }}. No working bulbs found.
+        Confirmed unavailable.
+send_guidebook_update:
+  alias: send_guidebook_update
+  mode: parallel
+  fields:
+    house:
+      description: House code
+    entity_id:
+      description: Entity to announce
+    state:
+      description: State string
+    attributes:
+      description: Attributes dictionary
+  sequence:
+  - variables:
+      attributes_as_json_string: '{{ (attributes if attributes is not none else {})
+        | to_json }}'
+  - data:
+      house: '{{ house }}'
+      entity_id: '{{ entity_id }}'
+      state: '{{ state }}'
+      attributes: '{{ attributes_as_json_string }}'
+    action: rest_command.send_guidebook_update_prod

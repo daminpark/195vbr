@@ -14,7 +14,7 @@ function generatePageContent(requiredKeys, guestDetails, contentFragments, booki
   // **FIX: All content, including personalized sections, is now handled here.**
   const dynamicContent = buildDynamicContent(requiredKeys, contentFragments, guestDetails, bookingKey);
   const staticContent = getStaticContent();
-  
+
   // Merge dynamic content over static content.
   return { ...staticContent, ...dynamicContent };
 }
@@ -30,14 +30,14 @@ function generatePageContent(requiredKeys, guestDetails, contentFragments, booki
  */
 function buildDynamicContent(keys, fragments, guestDetails, bookingKey) {
   const content = {};
-  
+
   // Prepare date-related replacements for personalized content
   const replacements = {};
   if (guestDetails.checkInDateISO) {
     const dateOptions = { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'Europe/London' };
     const dayBeforeCheckIn = new Date(guestDetails.checkInDateISO);
     dayBeforeCheckIn.setDate(new Date(guestDetails.checkInDateISO).getDate() - 1);
-    
+
     // **FIX: The missing calculation for dayBeforeCheckOut has been added.**
     const dayBeforeCheckOut = new Date(guestDetails.checkOutDateISO);
     dayBeforeCheckOut.setDate(new Date(guestDetails.checkOutDateISO).getDate() - 1);
@@ -51,18 +51,18 @@ function buildDynamicContent(keys, fragments, guestDetails, bookingKey) {
   // **FIX: Manually add the personalized check-in and check-out sections to the list of keys to be processed.**
   // This is the core of the fix. We ensure they are always included for non-legacy bookings.
   if (guestDetails.guestFirstName) {
-      const isWholeHome = bookingKey && bookingKey.includes('vbr');
-      // Add the correct check-in key based on booking type
-      keys.push(isWholeHome ? 'wholeHomeLuggage' : 'checkinStaticDetailed');
-      // Always add the detailed check-out key
-      keys.push('checkoutStaticDetailed');
+    const isWholeHome = bookingKey && bookingKey.includes('vbr');
+    // Add the correct check-in key based on booking type
+    keys.push(isWholeHome ? 'wholeHomeLuggage' : 'checkinStaticDetailed');
+    // Always add the detailed check-out key, using specific whole-home version if applicable
+    keys.push(isWholeHome ? 'checkoutWholeHome' : 'checkoutStaticDetailed');
   }
 
   keys.forEach(key => {
     const fragment = fragments[key];
     if (fragment) {
       if (!content[fragment.title]) {
-        const emoji = { "Address": "🏘️", "Wifi": "🛜", "Bedroom": "🛏️", "Bathroom": "🛁", "Kitchen": "🍳", "Windows": "🪟", "Laundry": "🧺", "Check-in & Luggage": "🧳", "Rubbish Disposal": "🗑️", "Check-out": "👋", "Heating and Cooling": "🌡️", "A Note on Light Controls": "🔌"}[fragment.title] || 'ℹ️';
+        const emoji = { "Address": "🏘️", "Wifi": "🛜", "Bedroom": "🛏️", "Bathroom": "🛁", "Kitchen": "🍳", "Windows": "🪟", "Laundry": "🧺", "Check-in & Luggage": "🧳", "Rubbish Disposal": "🗑️", "Check-out": "👋", "Heating and Cooling": "🌡️", "A Note on Light Controls": "🔌" }[fragment.title] || 'ℹ️';
         content[fragment.title] = { title: fragment.title, emoji: emoji, html: '' };
       }
       content[fragment.title].html += t(fragment.html, replacements);
@@ -102,21 +102,21 @@ function buildChatbotContext(content, guestDetails, bookingKey) {
     const sectionObjectKey = Object.keys(content).find(
       k => content[k].title && content[k].title.toLowerCase() === englishTitle
     );
-    
+
     if (sectionObjectKey && content[sectionObjectKey]) {
       const section = content[sectionObjectKey];
-      tempDiv.innerHTML = section.html; 
-      
+      tempDiv.innerHTML = section.html;
+
       const iframes = tempDiv.querySelectorAll('iframe');
       iframes.forEach(iframe => {
         const title = iframe.title || 'Instructional Video';
         const src = iframe.src;
-        const videoUrl = src.replace('/embed/', '/watch?v='); 
+        const videoUrl = src.replace('/embed/', '/watch?v=');
         const videoInfoNode = document.createElement('p');
         videoInfoNode.textContent = `(A video guide for "${title}" is available at this URL: ${videoUrl})`;
         tempDiv.appendChild(videoInfoNode);
       });
-      
+
       const translatedTitle = t('content_titles.' + titleKey);
       contextText += `--- Section: ${translatedTitle} ---\n`;
       const plainText = tempDiv.textContent || tempDiv.innerText || "";
@@ -125,7 +125,7 @@ function buildChatbotContext(content, guestDetails, bookingKey) {
   });
 
   const systemPrompt = `You are 'Victoria', a friendly AI assistant for the 195VBR guesthouse. You MUST base your answer ONLY on the detailed guidebook information provided below, which is in the user's language (${I18nState.langName}). This includes the guest's specific booking details and the special hidden context. IMPORTANT: When a user asks for a video, you MUST provide the direct URL to the specific video if one is mentioned in the context for that topic. For all other questions, you should use your general knowledge. Be concise, friendly, and use Markdown for formatting links like [Link Text](URL).`;
-  
+
   return `${systemPrompt}\n\nRELEVANT GUIDEBOOK CONTENT:\n${contextText}`;
 }
 
@@ -151,20 +151,20 @@ function getStaticContent() {
 
 
 function getChatbotOnlyContext(bookingId) {
-    const groundFloorLuggageQuirk = "The guest is in a ground floor room. While their room is easily accessible, they should be aware that the luggage storage cupboard (Cupboard V) is downstairs, reached by a narrow staircase. This is something to keep in mind if they plan to store heavy bags.";
-    const quirks = {
-        '31': groundFloorLuggageQuirk, '32': groundFloorLuggageQuirk + " This room also has a private patio.", '33': "The guest is in Room 3 on the first floor. It has a private en-suite bathroom. The shared kitchen is downstairs. The room is reached by a narrow staircase, which is relevant for heavy luggage.", '34': "The guest is in Room 4 on the second floor. The shared bathroom for this room is located 1.5 floors downstairs. The kitchen is also downstairs. Everything is reached via a narrow staircase. This is a key detail for mobility or heavy luggage.", '35': "The guest is in Room 5 on the second floor. The shared bathroom for this room is located 1.5 floors downstairs. The kitchen is also downstairs. Everything is reached via a narrow staircase. This is a key detail for mobility or heavy luggage.", '36': "The guest is in Room 6, a cozy top-floor loft with some low, sloping ceilings. The shared bathroom is 2.5 floors downstairs. This is a key detail for taller guests, mobility concerns, or heavy luggage.", '3a': "The guest has booked Rooms 1 & 2 on the ground floor. Their private bathroom for the group is located half a floor downstairs. This is reached via a narrow staircase, which is also something to keep in mind if using the downstairs luggage storage cupboard with heavy bags.", '3b': "The guest has booked Rooms 4, 5 & 6, a private suite on the top two floors. One bedroom is a loft with low ceilings. Their private bathroom is multiple floors downstairs on the upper ground level, reached via a narrow staircase. This layout is not a good fit for anyone with mobility concerns or heavy luggage.", '193vbr': "The guest has booked the entire house. The house has an original narrow staircase connecting all floors, which is relevant for groups with heavy luggage or mobility concerns. The common area is cozy and centered around the kitchen, rather than a large living room.",
-        '51': groundFloorLuggageQuirk, '52': groundFloorLuggageQuirk + " This room also has a private patio.", '53': "The guest is in Room 3 on the first floor. It has a private en-suite bathroom. The shared kitchen is downstairs. The room is reached by a narrow staircase, which is relevant for heavy luggage.", '54': "The guest is in Room 4 on the second floor. The shared bathroom for this room is located 1.5 floors downstairs. The kitchen is also downstairs. Everything is reached via a narrow staircase. This is a key detail for mobility or heavy luggage.", '55': "The guest is in Room 5 on the second floor. The shared bathroom for this room is located 1.5 floors downstairs. The kitchen is also downstairs. Everything is reached via a narrow staircase. This is a key detail for mobility or heavy luggage.", '56': "The guest is in Room 6, a cozy top-floor loft with some low, sloping ceilings. The shared bathroom is 2.5 floors downstairs. This is a key detail for taller guests, mobility concerns, or heavy luggage.", '5a': "The guest has booked Rooms 1 & 2 on the ground floor. Their private bathroom for the group is located half a floor downstairs. This is reached via a narrow staircase, which is also something to keep in mind if using the downstairs luggage storage cupboard with heavy bags.", '5b': "The guest has booked Rooms 4, 5 & 6, a private suite on the top two floors. One bedroom is a loft with low ceilings. Their private bathroom is multiple floors downstairs on the upper ground level, reached via a narrow staircase. This layout is not a good fit for anyone with mobility concerns or heavy luggage.", '195vbr': "The guest has booked the entire house. The house has an original narrow staircase connecting all floors, which is relevant for groups with heavy luggage or mobility concerns. The common area is cozy and centered around the kitchen, rather than a large living room.",
-    };
-    const isWholeHome = bookingId.includes('vbr');
-    const isLegacy = bookingId === 'legacy';
-    const sharedBathroomBookings = new Set(['31', '32', '34', '35', '36', '51', '52', '54', '55', '56']);
-    let context = `--- HIDDEN CONTEXT FOR AI ONLY --- **Safety Commitment:** Our property has annual gas and electrical safety certificates. There are interlinked, mains-powered smoke alarms in every room. A fire extinguisher, fire blanket, and first aid kit are provided. Security cameras are in the entrance for safety. **General Check-in Information:** Check-in is anytime from 15:00. The primary method is self check-in with a personalized keypad code, so no keys are needed. **Bedroom Amenities:** All bedrooms include a high-quality firm mattress, an electric underblanket, full blackout curtains, a 4K Smart TV (with Disney+, Apple TV+, etc.), dimmable lighting, a powerful fan, a desk with chairs, a hairdryer, a full-length mirror, and universal adapters. **Wi-Fi:** The entire property has exceptionally fast Fibre 1Gbps Wi-Fi 6. **House Rules & Policies:** - No extra guests, parties, smoking, or pets. - Be respectful of our neighbours.`;
-    if (!isWholeHome) { context += `- **Quiet hours are strictly enforced from 10:00 PM to 8:00 AM.** This is our most important rule for shared spaces.\n`; }
-    if (isWholeHome) { context += `- **Complimentary housekeeping** (towel refresh, bathroom/kitchen tidy) is available on request for whole-home bookings. The guest must message at least one day in advance. Service is between 11am - 3pm.\n`; }
-    if (!isLegacy) { context += `**Room/Booking Specific Quirks:** ${quirks[bookingId] || "No specific quirks for this booking."}\n`; }
-    if (!isWholeHome) { context += `**Shared Kitchen:** Located in the basement, it's cleaned to a high standard daily. Each room has a private, labeled compartment in the fridge and cupboard. Complimentary tea and instant coffee are provided. It is fully equipped with an induction hob, oven, microwave, dishwasher, and all cookware.`; }
-    if (sharedBathroomBookings.has(bookingId)) { context += `**Shared Bathroom:** Professionally cleaned daily. Features a superior shower with strong, hot water pressure and sustainable toiletries.`; }
-    context += `--- END HIDDEN CONTEXT ---`;
-    return context;
+  const groundFloorLuggageQuirk = "The guest is in a ground floor room. While their room is easily accessible, they should be aware that the luggage storage cupboard (Cupboard V) is downstairs, reached by a narrow staircase. This is something to keep in mind if they plan to store heavy bags.";
+  const quirks = {
+    '31': groundFloorLuggageQuirk, '32': groundFloorLuggageQuirk + " This room also has a private patio.", '33': "The guest is in Room 3 on the first floor. It has a private en-suite bathroom. The shared kitchen is downstairs. The room is reached by a narrow staircase, which is relevant for heavy luggage.", '34': "The guest is in Room 4 on the second floor. The shared bathroom for this room is located 1.5 floors downstairs. The kitchen is also downstairs. Everything is reached via a narrow staircase. This is a key detail for mobility or heavy luggage.", '35': "The guest is in Room 5 on the second floor. The shared bathroom for this room is located 1.5 floors downstairs. The kitchen is also downstairs. Everything is reached via a narrow staircase. This is a key detail for mobility or heavy luggage.", '36': "The guest is in Room 6, a cozy top-floor loft with some low, sloping ceilings. The shared bathroom is 2.5 floors downstairs. This is a key detail for taller guests, mobility concerns, or heavy luggage.", '3a': "The guest has booked Rooms 1 & 2 on the ground floor. Their private bathroom for the group is located half a floor downstairs. This is reached via a narrow staircase, which is also something to keep in mind if using the downstairs luggage storage cupboard with heavy bags.", '3b': "The guest has booked Rooms 4, 5 & 6, a private suite on the top two floors. One bedroom is a loft with low ceilings. Their private bathroom is multiple floors downstairs on the upper ground level, reached via a narrow staircase. This layout is not a good fit for anyone with mobility concerns or heavy luggage.", '193vbr': "The guest has booked the entire house. The house has an original narrow staircase connecting all floors, which is relevant for groups with heavy luggage or mobility concerns. The common area is cozy and centered around the kitchen, rather than a large living room.",
+    '51': groundFloorLuggageQuirk, '52': groundFloorLuggageQuirk + " This room also has a private patio.", '53': "The guest is in Room 3 on the first floor. It has a private en-suite bathroom. The shared kitchen is downstairs. The room is reached by a narrow staircase, which is relevant for heavy luggage.", '54': "The guest is in Room 4 on the second floor. The shared bathroom for this room is located 1.5 floors downstairs. The kitchen is also downstairs. Everything is reached via a narrow staircase. This is a key detail for mobility or heavy luggage.", '55': "The guest is in Room 5 on the second floor. The shared bathroom for this room is located 1.5 floors downstairs. The kitchen is also downstairs. Everything is reached via a narrow staircase. This is a key detail for mobility or heavy luggage.", '56': "The guest is in Room 6, a cozy top-floor loft with some low, sloping ceilings. The shared bathroom is 2.5 floors downstairs. This is a key detail for taller guests, mobility concerns, or heavy luggage.", '5a': "The guest has booked Rooms 1 & 2 on the ground floor. Their private bathroom for the group is located half a floor downstairs. This is reached via a narrow staircase, which is also something to keep in mind if using the downstairs luggage storage cupboard with heavy bags.", '5b': "The guest has booked Rooms 4, 5 & 6, a private suite on the top two floors. One bedroom is a loft with low ceilings. Their private bathroom is multiple floors downstairs on the upper ground level, reached via a narrow staircase. This layout is not a good fit for anyone with mobility concerns or heavy luggage.", '195vbr': "The guest has booked the entire house. The house has an original narrow staircase connecting all floors, which is relevant for groups with heavy luggage or mobility concerns. The common area is cozy and centered around the kitchen, rather than a large living room.",
+  };
+  const isWholeHome = bookingId.includes('vbr');
+  const isLegacy = bookingId === 'legacy';
+  const sharedBathroomBookings = new Set(['31', '32', '34', '35', '36', '51', '52', '54', '55', '56']);
+  let context = `--- HIDDEN CONTEXT FOR AI ONLY --- **Safety Commitment:** Our property has annual gas and electrical safety certificates. There are interlinked, mains-powered smoke alarms in every room. A fire extinguisher, fire blanket, and first aid kit are provided. Security cameras are in the entrance for safety. **General Check-in Information:** Check-in is anytime from 15:00. The primary method is self check-in with a personalized keypad code, so no keys are needed. **Bedroom Amenities:** All bedrooms include a high-quality firm mattress, an electric underblanket, full blackout curtains, a 4K Smart TV (with Disney+, Apple TV+, etc.), dimmable lighting, a powerful fan, a desk with chairs, a hairdryer, a full-length mirror, and universal adapters. **Wi-Fi:** The entire property has exceptionally fast Fibre 1Gbps Wi-Fi 6. **House Rules & Policies:** - No extra guests, parties, smoking, or pets. - Be respectful of our neighbours.`;
+  if (!isWholeHome) { context += `- **Quiet hours are strictly enforced from 10:00 PM to 8:00 AM.** This is our most important rule for shared spaces.\n`; }
+
+  if (!isLegacy) { context += `**Room/Booking Specific Quirks:** ${quirks[bookingId] || "No specific quirks for this booking."}\n`; }
+  if (!isWholeHome) { context += `**Shared Kitchen:** Located in the basement, it's cleaned to a high standard daily. Each room has a private, labeled compartment in the fridge and cupboard. Complimentary tea and instant coffee are provided. It is fully equipped with an induction hob, oven, microwave, dishwasher, and all cookware.`; }
+  if (sharedBathroomBookings.has(bookingId)) { context += `**Shared Bathroom:** Professionally cleaned daily. Features a superior shower with strong, hot water pressure and sustainable toiletries.`; }
+  context += `--- END HIDDEN CONTEXT ---`;
+  return context;
 }

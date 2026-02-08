@@ -1,0 +1,436 @@
+# =============================================================================
+# Heating Control Package
+# =============================================================================
+#
+# Calendar-driven TRV control for short-term rental units.
+#
+# Room → Calendar mapping:
+#   193.1.calendar → climate.193_1_trv
+#   193.2.calendar → climate.193_2_trv
+#   193.3.calendar → climate.193_3_trv + climate.193_c_trv (ensuite)
+#   193.4.calendar → climate.193_4_trv
+#   193.5.calendar → climate.193_5_trv
+#   193.6.calendar → climate.193_6_trv
+#   193.a.calendar → rooms 1+2 (unit A)
+#   193.b.calendar → rooms 4+5+6 (unit B)
+#   193vbr.calendar → all rooms + ensuite (whole house)
+#
+# Service areas (not calendar-driven):
+#   193.A (Bathroom A) → 20°C default
+#   193.B (Bathroom B) → 20°C default
+#   193.K (Kitchen)    → 18°C default
+#   193.Z (Drying Room)→ managed by fan_control package
+#
+# Old automations to remove:
+#   - heating_enforce_limits_5x
+#   - 1762440986036  (TRVs from Calendars)
+#   - 1762543332903  (Set TRVs back to Heat)
+#   - 1762548405049  (Manual Temp Revert)
+# =============================================================================
+
+
+automation:
+
+  # ===========================================================================
+  # Calendar → TRV Control
+  # ===========================================================================
+  # Check-in (event start + 14h = 2pm): heat to 18°C
+  # Check-out (event end + 11h = 11am): drop to 14°C
+  # Ignores events titled "Blocked" or "shut down"
+  #
+  # The room_map variable maps trigger IDs to TRV entities.
+  # To add/remove rooms, edit the map and add/remove triggers.
+  # ===========================================================================
+
+  - id: heating_calendar_193
+    alias: "Heating · TRVs from Calendars"
+    description: "Calendar-driven heating for guest rooms"
+    variables:
+      room_map:
+        "193_1":
+          - climate.193_1_trv
+        "193_2":
+          - climate.193_2_trv
+        "193_3":
+          - climate.193_3_trv
+          - climate.193_c_trv
+        "193_4":
+          - climate.193_4_trv
+        "193_5":
+          - climate.193_5_trv
+        "193_6":
+          - climate.193_6_trv
+        "193_a":
+          - climate.193_1_trv
+          - climate.193_2_trv
+        "193_b":
+          - climate.193_4_trv
+          - climate.193_5_trv
+          - climate.193_6_trv
+        "193vbr":
+          - climate.193_1_trv
+          - climate.193_2_trv
+          - climate.193_3_trv
+          - climate.193_4_trv
+          - climate.193_5_trv
+          - climate.193_6_trv
+          - climate.193_c_trv
+      checkin_temp: 18
+      checkout_temp: 14
+    triggers:
+      # --- Room 1 ---
+      - trigger: calendar
+        entity_id: calendar.193_1_calendar
+        event: start
+        offset: "14:00:00"
+        id: checkin_193_1
+      - trigger: calendar
+        entity_id: calendar.193_1_calendar
+        event: end
+        offset: "11:00:00"
+        id: checkout_193_1
+
+      # --- Room 2 ---
+      - trigger: calendar
+        entity_id: calendar.193_2_calendar
+        event: start
+        offset: "14:00:00"
+        id: checkin_193_2
+      - trigger: calendar
+        entity_id: calendar.193_2_calendar
+        event: end
+        offset: "11:00:00"
+        id: checkout_193_2
+
+      # --- Room 3 + Ensuite ---
+      - trigger: calendar
+        entity_id: calendar.193_3_calendar
+        event: start
+        offset: "14:00:00"
+        id: checkin_193_3
+      - trigger: calendar
+        entity_id: calendar.193_3_calendar
+        event: end
+        offset: "11:00:00"
+        id: checkout_193_3
+
+      # --- Room 4 ---
+      - trigger: calendar
+        entity_id: calendar.193_4_calendar
+        event: start
+        offset: "14:00:00"
+        id: checkin_193_4
+      - trigger: calendar
+        entity_id: calendar.193_4_calendar
+        event: end
+        offset: "11:00:00"
+        id: checkout_193_4
+
+      # --- Room 5 ---
+      - trigger: calendar
+        entity_id: calendar.193_5_calendar
+        event: start
+        offset: "14:00:00"
+        id: checkin_193_5
+      - trigger: calendar
+        entity_id: calendar.193_5_calendar
+        event: end
+        offset: "11:00:00"
+        id: checkout_193_5
+
+      # --- Room 6 ---
+      - trigger: calendar
+        entity_id: calendar.193_6_calendar
+        event: start
+        offset: "14:00:00"
+        id: checkin_193_6
+      - trigger: calendar
+        entity_id: calendar.193_6_calendar
+        event: end
+        offset: "11:00:00"
+        id: checkout_193_6
+
+      # --- Unit A (rooms 1+2) ---
+      - trigger: calendar
+        entity_id: calendar.193_a_calendar
+        event: start
+        offset: "14:00:00"
+        id: checkin_193_a
+      - trigger: calendar
+        entity_id: calendar.193_a_calendar
+        event: end
+        offset: "11:00:00"
+        id: checkout_193_a
+
+      # --- Unit B (rooms 4+5+6) ---
+      - trigger: calendar
+        entity_id: calendar.193_b_calendar
+        event: start
+        offset: "14:00:00"
+        id: checkin_193_b
+      - trigger: calendar
+        entity_id: calendar.193_b_calendar
+        event: end
+        offset: "11:00:00"
+        id: checkout_193_b
+
+      # --- Whole house ---
+      # Verify this calendar entity_id matches your new instance
+      - trigger: calendar
+        entity_id: calendar.193vbr_calendar
+        event: start
+        offset: "14:00:00"
+        id: checkin_193vbr
+      - trigger: calendar
+        entity_id: calendar.193vbr_calendar
+        event: end
+        offset: "11:00:00"
+        id: checkout_193vbr
+
+    conditions:
+      - condition: template
+        value_template: >
+          {% set s = (trigger.calendar_event.summary or '') | lower %}
+          {{ 'blocked' not in s and 'shut down' not in s }}
+
+    actions:
+      - variables:
+          is_checkin: "{{ trigger.id.startswith('checkin') }}"
+          room_key: "{{ trigger.id | replace('checkin_', '') | replace('checkout_', '') }}"
+          target_temp: "{{ checkin_temp if is_checkin else checkout_temp }}"
+      - action: climate.set_hvac_mode
+        target:
+          entity_id: "{{ room_map[room_key] }}"
+        data:
+          hvac_mode: heat
+      - action: climate.set_temperature
+        target:
+          entity_id: "{{ room_map[room_key] }}"
+        data:
+          temperature: "{{ target_temp | int }}"
+    mode: parallel
+    max: 20
+
+
+  # ===========================================================================
+  # Enforce Temperature Limits (14–24°C)
+  # ===========================================================================
+  # If a guest sets a TRV outside this range, it reverts after 1 hour.
+  # Only applies to guest rooms + ensuite (not service areas).
+  # ===========================================================================
+
+  - id: heating_enforce_limits_193
+    alias: "Heating · Enforce Limits"
+    description: "Clamps guest room TRVs to 14-24°C range"
+    variables:
+      lower: 14
+      upper: 24
+      revert_delay: "01:00:00"
+    triggers:
+      - trigger: state
+        entity_id:
+          - climate.193_0_trv
+          - climate.193_1_trv
+          - climate.193_2_trv
+          - climate.193_3_trv
+          - climate.193_4_trv
+          - climate.193_5_trv
+          - climate.193_6_trv
+          - climate.193_c_trv
+        attribute: temperature
+    actions:
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ (trigger.to_state.attributes.temperature | float) > upper }}"
+            sequence:
+              - delay: "{{ revert_delay }}"
+              - action: climate.set_temperature
+                target:
+                  entity_id: "{{ trigger.entity_id }}"
+                data:
+                  temperature: "{{ upper }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ (trigger.to_state.attributes.temperature | float) < lower }}"
+            sequence:
+              - delay: "{{ revert_delay }}"
+              - action: climate.set_temperature
+                target:
+                  entity_id: "{{ trigger.entity_id }}"
+                data:
+                  temperature: "{{ lower }}"
+    mode: restart
+
+
+  # ===========================================================================
+  # Force Heat Mode
+  # ===========================================================================
+  # TRVs sometimes flip to 'auto' or 'off' after firmware updates or
+  # battery changes. This reverts them to 'heat' after 5 minutes.
+  # Covers ALL TRVs including service areas.
+  # ===========================================================================
+
+  - id: heating_force_heat_193
+    alias: "Heating · Force Heat Mode"
+    description: "Revert any TRV that leaves heat mode"
+    triggers:
+      - trigger: state
+        entity_id:
+          - climate.193_0_trv
+          - climate.193_1_trv
+          - climate.193_2_trv
+          - climate.193_3_trv
+          - climate.193_4_trv
+          - climate.193_5_trv
+          - climate.193_6_trv
+          - climate.193_a_trv
+          - climate.193_b_trv
+          - climate.193_c_trv
+          - climate.193_k_trv
+          - climate.193_z_trv
+        to: "auto"
+        for:
+          minutes: 5
+      - trigger: state
+        entity_id:
+          - climate.193_0_trv
+          - climate.193_1_trv
+          - climate.193_2_trv
+          - climate.193_3_trv
+          - climate.193_4_trv
+          - climate.193_5_trv
+          - climate.193_6_trv
+          - climate.193_a_trv
+          - climate.193_b_trv
+          - climate.193_c_trv
+          - climate.193_k_trv
+          - climate.193_z_trv
+        to: "off"
+        for:
+          minutes: 5
+    actions:
+      - action: climate.set_hvac_mode
+        target:
+          entity_id: "{{ trigger.entity_id }}"
+        data:
+          hvac_mode: heat
+    mode: restart
+
+
+  # ===========================================================================
+  # Manual Temperature Revert (Service Areas)
+  # ===========================================================================
+  # If someone manually adjusts a service area TRV, revert to its default
+  # after 4 hours. Prevents forgotten overrides.
+  #
+  # Defaults:
+  #   193.A, 193.B (Bathrooms) → 20°C (mould prevention)
+  #   193.K (Kitchen) → 18°C
+  #   193.Z (Drying Room) → from input_number.fan_193z_trv_temperature
+  # ===========================================================================
+
+  - id: heating_manual_revert_193
+    alias: "Heating · Manual Temp Revert"
+    description: "Reverts service area TRVs to defaults after 4 hours"
+    triggers:
+      - trigger: state
+        entity_id:
+          - climate.193_a_trv
+          - climate.193_b_trv
+          - climate.193_k_trv
+          - climate.193_z_trv
+        attribute: temperature
+        for:
+          hours: 4
+    actions:
+      - choose:
+          # Bathrooms → 20°C
+          - conditions:
+              - condition: template
+                value_template: >
+                  {{ trigger.entity_id in
+                     ['climate.193_a_trv', 'climate.193_b_trv'] }}
+            sequence:
+              - action: climate.set_temperature
+                target:
+                  entity_id: "{{ trigger.entity_id }}"
+                data:
+                  temperature: 20
+
+          # Kitchen → 18°C
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.entity_id == 'climate.193_k_trv' }}"
+            sequence:
+              - action: climate.set_temperature
+                target:
+                  entity_id: "{{ trigger.entity_id }}"
+                data:
+                  temperature: 18
+
+          # Drying room → from slider
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.entity_id == 'climate.193_z_trv' }}"
+            sequence:
+              - action: climate.set_temperature
+                target:
+                  entity_id: "{{ trigger.entity_id }}"
+                data:
+                  temperature: "{{ states('input_number.fan_193z_trv_temperature') | int(22) }}"
+    mode: restart
+
+
+  # ===========================================================================
+  # Master Boiler Control
+  # ===========================================================================
+  # Turns the boiler on when any TRV is actively heating (hvac_action =
+  # "heating"), off when none are. This is demand-based — the boiler only
+  # fires when at least one room needs heat.
+  #
+  # Old automation to remove: 1761760696188
+  # ===========================================================================
+
+  - id: heating_boiler_193
+    alias: "Heating · Master Boiler Control"
+    description: "Boiler on when any TRV demands heat, off when none do"
+    triggers:
+      - trigger: state
+        entity_id:
+          - climate.193_0_trv
+          - climate.193_1_trv
+          - climate.193_2_trv
+          - climate.193_3_trv
+          - climate.193_4_trv
+          - climate.193_5_trv
+          - climate.193_6_trv
+          - climate.193_a_trv
+          - climate.193_b_trv
+          - climate.193_c_trv
+          - climate.193_k_trv
+          - climate.193_z_trv
+        attribute: hvac_action
+    actions:
+      - variables:
+          heating_trvs: >
+            {% set trvs = [
+              'climate.193_0_trv', 'climate.193_1_trv', 'climate.193_2_trv',
+              'climate.193_3_trv', 'climate.193_4_trv', 'climate.193_5_trv',
+              'climate.193_6_trv', 'climate.193_a_trv', 'climate.193_b_trv',
+              'climate.193_c_trv', 'climate.193_k_trv', 'climate.193_z_trv'
+            ] %}
+            {{ trvs | select('is_state_attr', 'hvac_action', 'heating') | list }}
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ heating_trvs | count > 0 }}"
+            sequence:
+              - action: switch.turn_on
+                target:
+                  entity_id: switch.193_y_boiler
+        default:
+          - action: switch.turn_off
+            target:
+              entity_id: switch.193_y_boiler
+    mode: single
